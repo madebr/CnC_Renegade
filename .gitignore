@@ -29,6 +29,8 @@ GMax_Hybrid/
 *.idb
 *.pdb
 *.ilk
+*.lib
+*.map
 *.res
 *.exp
 *.obj
