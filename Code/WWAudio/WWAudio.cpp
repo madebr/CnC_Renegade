@@ -70,7 +70,7 @@ static const char VALUE_INI_SPEAKER_TYPE[]		= "SpeakerType";
 //	INI names
 ////////////////////////////////////////////////////////////////////////////////////////////////
 static const char WWAUDIO_INI_FILENAME[]				= "WWAudio.ini";
-static const char WWAUDIO_INI_RELATIVE_PATHNAME[]	= "Data\\WWAudio.ini";
+static const char WWAUDIO_INI_RELATIVE_PATHNAME[]	= "Data/WWAudio.ini";
 static const char INI_DEFAULT_VOLUME_SECTION[]		= "Default Volume";
 static const char INI_MUSIC_VOLUME_ENTRY[]			= "MUSIC_VOLUME"; 
 static const char INI_SOUND_VOLUME_ENTRY[]			= "SOUND_VOLUME";
@@ -1583,7 +1583,7 @@ WWAudioClass::Is_Disabled (void) const
 		//
 		//	Read the disabled key from the registry
 		//
-		RegistryClass registry ("SOFTWARE\\Westwood\\WWAudio");
+		RegistryClass registry ("SOFTWARE/Westwood/WWAudio");
 		if (registry.Is_Valid ()) {
 			if (registry.Get_Int ("Disabled", 0) == 1) {
 				_disabled = true;
