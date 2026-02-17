@@ -77,6 +77,7 @@
 #include "bound.h"
 #include "ini.h"
 #include "openw3d.h"
+#include "consolefunction.h"
 #include "soutil.h"
 
 const int DEFAULT_RESOLUTION_WIDTH = 800;
@@ -2767,6 +2768,7 @@ void DX8Wrapper::Set_Gamma(float gamma,float bright,float contrast,bool calibrat
 	if (Get_Current_Caps()->Support_Gamma())	{
 		DX8Wrapper::_Get_D3D_Device8()->SetGammaRamp(0,flag,&ramp);
 	} else {
+#ifdef _WIN32
 		HWND hwnd = GetDesktopWindow();
 		HDC hdc = GetDC(hwnd);
 		if (hdc)
@@ -2774,6 +2776,9 @@ void DX8Wrapper::Set_Gamma(float gamma,float bright,float contrast,bool calibrat
 			SetDeviceGammaRamp (hdc, &ramp);
 			ReleaseDC (hwnd, hdc);
 		}
+#else
+		ConsoleFunctionClass::Print("Changing Gamma Ramp is not supported\n");
+#endif
 	}
 }
 
