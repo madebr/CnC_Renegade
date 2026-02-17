@@ -265,7 +265,7 @@ ThumbnailClass::~ThumbnailClass()
 void ThumbnailManagerClass::Create_Thumbnails()
 {
 	SimpleFileFactoryClass ff;
-	ff.Set_Sub_Directory("Data\\");
+	ff.Set_Sub_Directory("Data/");
 
 	MixFileFactoryClass mix(MixFileName, &ff);
 	FileFactoryClass* old_file_factory=_TheFileFactory;
@@ -575,7 +575,7 @@ void ThumbnailManagerClass::Remove_From_Hash(ThumbnailClass* thumb)
 void ThumbnailManagerClass::Update_Thumbnail_File(const char* mix_file_name,bool display_message_box)
 {
 	SimpleFileFactoryClass ff;
-	ff.Set_Sub_Directory("Data\\");
+	ff.Set_Sub_Directory("Data/");
 
 	StringClass thumb_file_name(mix_file_name,true);
 	const size_t len_sz=thumb_file_name.Get_Length();
