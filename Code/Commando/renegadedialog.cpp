@@ -35,8 +35,12 @@
 
 #include "wwdebug.h"
 
+#ifdef _WIN32
 #include <windows.h>
 #include <commctrl.h>
+#else
+#define ARRAYSIZE(A) (sizeof(A)/sizeof((A)[0]))
+#endif
 
 static const DialogResourceControl controls_IDD_MENU_OPTIONS[] = {
 	{ CONTROL_BUTTON,    149,  56, 132,  21, IDC_MENU_CONTROLS_BUTTON, WS_VISIBLE|BS_LEFT|WS_TABSTOP|WS_CHILD|BS_FLAT|BS_PUSHBUTTON, U_CHAR("IDS_MENU_TEXT046") },

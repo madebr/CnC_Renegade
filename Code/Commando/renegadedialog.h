@@ -173,6 +173,14 @@ enum class RenegadeDialogID {
     IDD_MENU_SPLASH2 =                256,
     IDD_MULTIPLAY_CONNECTION_REFUSED = 257,
 };
+
+#ifndef _WIN32
+#define IDOK                            1
+#define IDCANCEL                        2
+#define IDYES                           6
+#define IDNO                            7
+#endif
+
 #define IDC_INVITE_BUDDY_BUTTON         3
 #define IDC_PAGE_BUTTON                 4
 #define IDC_BUDDY_LIST_BUTTON           7
