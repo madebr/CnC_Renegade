@@ -42,6 +42,8 @@
 #ifndef FRAMEGRAB_H
 #define FRAMEGRAB_H
 
+#ifdef _WIN32
+
 #ifndef ALWAYS_H
 #include "always.h"
 #endif
@@ -105,5 +107,7 @@ protected:
 	void ConvertFrame(void *BitmapPointer);
 
 };
+
+#endif
 
 #endif

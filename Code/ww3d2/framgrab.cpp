@@ -21,6 +21,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "framgrab.h"
+
+#ifdef _WIN32
+
 #include <stdio.h>
 #include <io.h>
 //#include <errno.h>
@@ -189,3 +192,5 @@ void FrameGrabClass::ConvertFrame(void *BitmapPointer)
 		}
 	}
 }
+
+#endif

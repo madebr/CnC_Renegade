@@ -1533,7 +1533,7 @@ bool WW3D::Is_Recording_Next_Frame()
  *=============================================================================================*/
 bool WW3D::Is_Movie_Ready()
 {
-	return Movie != 0;
+	return Movie != nullptr;
 }
 
 
