@@ -34,6 +34,7 @@
 #include <d3dx9tex.h>
 #include <cstdio>
 #include "wwmemlog.h"
+#include "systimer.h"
 #include "texture.h"
 #include "formconv.h"
 #include "texturethumbnail.h"
@@ -774,7 +775,6 @@ void TextureLoader::Flush_Pending_Load_Tasks(void)
 
 
 // Nework update macro for texture loader.
-#include <mmsystem.h>
 #define UPDATE_NETWORK 											\
 	if (network_callback) {                            \
 		unsigned int time2 = timeGetTime();            \
