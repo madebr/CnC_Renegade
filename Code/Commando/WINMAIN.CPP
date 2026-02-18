@@ -731,9 +731,11 @@ void On_Focus_Loss(void)
  *=============================================================================================*/
 void On_Focus_Restore(void)
 {
+#if WEBBROWSER_ENABLED
 	if (WebBrowser::IsWebPageDisplayed() == false) {
 		DirectInput::Acquire();
 	}
+#endif
 
 	GameModeManager::Hide_Render_Frames(1);	// Hide the first rendered frame
 }

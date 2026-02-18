@@ -131,10 +131,12 @@ void _Game_Main_Loop_Loop(void)
 		cNetwork::Update();
 	}
 
+#if WEBBROWSER_ENABLED
 	// Denzil - Embedded browser
 	if (WebBrowser::IsWebPageDisplayed() == false) {
 		GameModeManager::Render();
 	}
+#endif
 
 	if (AutoRestart.Is_Active()) {
 		AutoRestart.Think();
