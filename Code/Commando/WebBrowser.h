@@ -37,6 +37,14 @@
 #ifndef __WEBBROWSER_H__
 #define __WEBBROWSER_H__
 
+#ifdef _WIN32
+#define WEBBROWSER_ENABLED 1
+#else
+#define WEBBROWSER_ENABLED 0
+#endif
+
+#if WEBBROWSER_ENABLED
+
 #include "WOLBrowser/WOLBrowser.h"
 #include <wwlib/Notify.h>
 #include "atlbase_compat.h"
@@ -173,5 +181,7 @@ class WebBrowser :
 		STDMETHOD(OnErrorMsg)(const wchar_t* error) override;
 		STDMETHOD(OnRegisterLogin)(const wchar_t* nick, const wchar_t* pass) override;
 	};
+
+#endif // WEBBROWSER_ENABLED
 
 #endif // __WEBBROWSER_H__
