@@ -100,7 +100,7 @@ class BandwidthCheckerClass
 
 		static class BandwidthCheckerThreadClass : public ThreadClass {
 			public:
-				BandwidthCheckerThreadClass(const char *thread_name = "Bandwidth checker thread") : ThreadClass(thread_name, &Exception_Handler) {}
+				BandwidthCheckerThreadClass(const char *thread_name = "Bandwidth checker thread") : ThreadClass(thread_name) {}
 				void Thread_Function(void) override {BandwidthCheckerClass::Check();};
 		} Thread;
 		friend BandwidthCheckerThreadClass;
