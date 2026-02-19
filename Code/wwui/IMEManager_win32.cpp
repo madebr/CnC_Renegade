@@ -413,9 +413,9 @@ bool IMEManager::IsDisabled(void) const
 *
 ******************************************************************************/
 
-bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& outResult)
+bool IMEManager::ProcessMessage(UI::WindowMessage message, LRESULT& outResult)
 	{
-	if (hwnd != mHWND)
+	if (message.hWnd != mHWND)
 		{
 		return false;
 		}
@@ -423,16 +423,16 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	bool handled = true;
 	outResult = 0;
 
-	switch (msg)
+	switch (message.uMsg)
 		{
 		// Request New keyboard layout and / or Input method
 		case WM_INPUTLANGCHANGEREQUEST:
 			{
-			HKL layout = InputLanguageChangeRequest((HKL)lParam);
+			HKL layout = InputLanguageChangeRequest((HKL)message.lParam);
 
 			if (layout)
 				{
-				lParam = (LPARAM)layout;
+				message.lParam = (LPARAM)layout;
 				handled = false;
 				}
 			}
@@ -440,7 +440,7 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		// Input language has changed.
 		case WM_INPUTLANGCHANGE:
-			InputLanguageChanged((HKL)lParam);
+			InputLanguageChanged((HKL)message.lParam);
 			outResult = true;
 			handled = false;
 			break;
@@ -452,7 +452,7 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		// We will handle all of the UI so clear all of the flags.
 		case WM_IME_SETCONTEXT:
-			lParam &= ~(ISC_SHOWUIALL);
+			message.lParam &= ~(ISC_SHOWUIALL);
 			handled = false;
 			break;
 
@@ -464,7 +464,7 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		// Sent when composition status has changed in response to a keystroke.
 		case WM_IME_COMPOSITION:
-			DoComposition(wParam, lParam);
+			DoComposition(message.wParam, message.lParam);
 			break;
 
 		// Sent when composition has closed.
@@ -483,13 +483,13 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		// Sent when the IME status has changed.
 		case WM_IME_NOTIFY:
-			outResult = IMENotify(wParam, lParam);
+			outResult = IMENotify(message.wParam, message.lParam);
 			break;
 
 		// IMEs send this message when the user accepts the conversion string.
 		// wParam contains a single-byte or double-byte character.
 		case WM_IME_CHAR:
-			handled = IMECharHandler((unsigned short)wParam);
+			handled = IMECharHandler((unsigned short)message.wParam);
 
 			if (handled)
 				{
@@ -498,7 +498,7 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			break;
 
 		case WM_CHAR:
-			handled = CharHandler((unsigned short)wParam);
+			handled = CharHandler((unsigned short)message.wParam);
 
 			if (handled)
 				{
@@ -509,7 +509,7 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_KEYDOWN:
 			if (mInComposition)
 				{
-				outResult = DefWindowProc(hwnd, msg, wParam, lParam);
+				outResult = DefWindowProc(message.hWnd, message.uMsg, message.wParam, message.lParam);
 				}
 			else
 				{
@@ -552,7 +552,7 @@ bool IMEManager::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					}
 				#endif
 
-				outResult = DefWindowProc(hwnd, msg, wParam, lParam);
+				outResult = DefWindowProc(message.hWnd, message.uMsg, message.wParam, message.lParam);
 				}
 			else
 				{

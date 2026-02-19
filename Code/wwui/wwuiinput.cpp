@@ -77,29 +77,29 @@ IME::IMEManager* WWUIInputClass::GetIME(void) const
 }
 
 
-bool WWUIInputClass::ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result)
+bool WWUIInputClass::ProcessMessage(UI::WindowMessage message, LRESULT& result)
 {
 	WWMEMLOG(MEM_GAMEDATA);
 
 	if (mIMEManager) {
-		if (mIMEManager->ProcessMessage(hwnd, msg, wParam, lParam, result)) {
+		if (mIMEManager->ProcessMessage(message, result)) {
 			return true;
 		}
 	}
 
 	result = 0;
 
-	switch (msg) {
+	switch (message.uMsg) {
 		case WM_KEYDOWN:
-			return DialogMgrClass::On_Key_Down(wParam, lParam);
+			return DialogMgrClass::On_Key_Down(message.wParam, message.lParam);
 			break;
 
 		case WM_KEYUP:
-			return DialogMgrClass::On_Key_Up(wParam);
+			return DialogMgrClass::On_Key_Up(message.wParam);
 			break;
 
 		case WM_CHAR:
-			DialogMgrClass::On_Unicode_Char((unichar_t)wParam);
+			DialogMgrClass::On_Unicode_Char((unichar_t)message.wParam);
 			return true;
 			break;
 

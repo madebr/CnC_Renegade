@@ -46,6 +46,7 @@
 #include "bittype.h"
 #include "win.h"
 #include "IMEManager.h"
+#include "wwui.h"
 
 ////////////////////////////////////////////////////////////////
 //
@@ -97,9 +98,9 @@ public:
 	virtual void				Enter_Menu_Mode (void)	{};
 	virtual void				Exit_Menu_Mode (void)	{};
 
-	bool ProcessMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result);
+	bool ProcessMessage(UI::WindowMessage message, UI::MessageResult& result);
 
-	void InitIME(HWND hwnd);
+	void InitIME(UI::Window hwnd);
 
 	IME::IMEManager* GetIME(void) const;
 		

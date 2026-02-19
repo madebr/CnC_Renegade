@@ -104,7 +104,7 @@ private:
 	StringClass							GDIFontName;
 	HFONT									OldGDIFont;
 	HBITMAP								OldGDIBitmap;
-	HBITMAP								GDIBitmap;	
+	HBITMAP								GDIBitmap;
 	HFONT									GDIFont;
 	uint8 *								GDIBitmapBits;
 	HDC									MemDC;

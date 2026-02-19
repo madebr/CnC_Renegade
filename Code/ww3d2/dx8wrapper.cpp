@@ -765,6 +765,7 @@ bool DX8Wrapper::Set_Render_Device(int dev, int width, int height, int bits, int
 	if (IsWindowed) {
 		WWDEBUG_SAY(("Initializing windowed mode\r\n"));
 
+#ifdef _WIN32
 // 10/23/01 - Denzil - DX window initialization
 		/*
 		** Enforce a required set of window styles and size if the main window
@@ -777,6 +778,7 @@ bool DX8Wrapper::Set_Render_Device(int dev, int width, int height, int bits, int
 			resize_window = true;
 		}
 // End Denzil - DX window initialzaion
+#endif
 
 		// In windowed mode, define the bitdepth from desktop mode (as it can't be changed)
 		switch (_PresentParameters.BackBufferFormat) {
@@ -817,6 +819,7 @@ bool DX8Wrapper::Set_Render_Device(int dev, int width, int height, int bits, int
 
 	} else {
 
+#ifdef _WIN32
 // 10/23/01 - Denzil - DX Window initialization
 		// For fullscreen set the window style to WS_POPUP (Recommended in DX docs)
 		SetWindowLong(_Hwnd, GWL_STYLE, WS_POPUP);
@@ -832,6 +835,7 @@ bool DX8Wrapper::Set_Render_Device(int dev, int width, int height, int bits, int
 		// We already resized the window
 		resize_window = false;
 // End Denzil - DX window initialization
+#endif
 
 		WWDEBUG_SAY(("Initializing full-screen mode\r\n"));
 

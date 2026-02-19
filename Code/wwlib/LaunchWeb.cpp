@@ -32,11 +32,13 @@
 ******************************************************************************/
 
 #include "LaunchWeb.h"
+#if defined(OPENW3D_WIN32)
 #include <windows.h>
+#include <objbase.h>
 #include <shellapi.h>
-#include <stdio.h>
-#include <assert.h>
-#include <limits>
+#elif defined(OPENW3D_SDL3)
+#include <SDL3/SDL.h>
+#endif
 
 /******************************************************************************
 *
@@ -48,76 +50,20 @@
 *
 * INPUTS
 *     URL      - Website address
-*     Wait     - Wait for user to close browser (default = false)
-*     Callback - User callback to invoke during wait (default = NULL callback)
 *
 * RESULT
 *     Success - True if successful; otherwise false
 *
 ******************************************************************************/
-
 bool LaunchWebBrowser(const char* url)
-	{
-	// Just return if no URL specified
-	if (!url || (strlen(url) == 0))
-		{
-		return false;
-		}
-
-	// Create a temporary file with HTML content
-	char tempPath[MAX_PATH];
-	GetWindowsDirectoryA(tempPath, MAX_PATH);
-	
-	char filename[MAX_PATH];
-	GetTempFileNameA(tempPath, "WWS", 0, filename);
-
-	char* extPtr = strrchr(filename, '.');
-	strcpy(extPtr, ".html");
-
-	HANDLE file = CreateFileA(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL, NULL);
-
-	assert(INVALID_HANDLE_VALUE != file && "Failed to create temporary HTML file.");
-
-	if (INVALID_HANDLE_VALUE == file)
-		{
-		return false;
-		}
-
-	// Write generic contents
-	const char* contents = "<title>ViewHTML</title>";
-	DWORD written;
-	const size_t content_length = ::strlen(contents);
-	assert(content_length <= std::numeric_limits<DWORD>::max());
-	WriteFile(file, contents, static_cast<DWORD>(content_length), &written, NULL);
-	CloseHandle(file);
-
-	// Find the executable that can launch this file
-	char exeName[MAX_PATH];
-	HINSTANCE hInst = FindExecutableA(filename, NULL, exeName);
-	assert(((uintptr_t)hInst > 32) && "Unable to find executable that will display HTML files.");
-
-	// Delete temporary file
-	DeleteFileA(filename);
-
-	if ((uintptr_t)hInst <= 32)
-		{
-		return false;
-		}
-
-	// Launch browser with specified URL
-	char commandLine[MAX_PATH];
-	sprintf(commandLine, "[open] %s", url);
-
-  STARTUPINFOA startupInfo;
-	memset(&startupInfo, 0, sizeof(startupInfo));
-	startupInfo.cb = sizeof(startupInfo);
-  
-	PROCESS_INFORMATION processInfo;
-	BOOL createSuccess = CreateProcessA(exeName, commandLine, NULL, NULL, false,
-			0, NULL, NULL, &startupInfo, &processInfo);
-
-	assert(createSuccess && "Failed to launch default WebBrowser.");
-
-	return (createSuccess != 0);
-	}
+{
+#if defined(OPENW3D_WIN32)
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	// HINSTANCE result = ShellExecuteW(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
+	HINSTANCE result = ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
+	CoUninitialize();
+	return result >= reinterpret_cast<HINSTANCE>(static_cast<uintptr_t>(32));
+#elif defined(OPENW3D_SDL3)
+	return SDL_OpenURL(url);
+#endif
+}

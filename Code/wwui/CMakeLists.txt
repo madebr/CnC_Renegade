@@ -13,9 +13,11 @@ set(WWUI_SRC
     editctrl.cpp
     healthbarctrl.cpp
     imagectrl.cpp
-    IMECandidate.cpp
+    IMECandidate_sdl3.cpp
+    IMECandidate_win32.cpp
     IMECandidateCtrl.cpp
-    IMEManager.cpp
+    IMEManager_sdl3.cpp
+    IMEManager_win32.cpp
     inputctrl.cpp
     listctrl.cpp
     listiconmgr.cpp

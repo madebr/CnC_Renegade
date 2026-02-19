@@ -53,6 +53,13 @@ typedef enum
 	WOLLOGON_PATCHREQUIRED
 	} WOLLogonAction;
 
+// namespace WWOnline {
+// class ServerError;
+// enum ConnectionStatus;
+// class MessageOfTheDayEvent;
+// class IRCServerData;
+// }
+
 class WOLLogonMgr :
 		public RefCountClass,
 		public Notifier<WOLLogonAction>,

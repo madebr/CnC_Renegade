@@ -40,6 +40,7 @@
 #include "texturethumbnail.h"
 #include "ddsfile.h"
 #include "bitmaphandler.h"
+#include "Except.h"
 
 bool TextureLoader::TextureLoadSuspended;
 
@@ -207,6 +208,7 @@ static class LoaderThreadClass : public ThreadClass
 {
 public:
 	LoaderThreadClass(const char *thread_name = "Texture loader thread") : ThreadClass(thread_name) {}
+
 
 	void Thread_Function() override;
 } _TextureLoadThread;

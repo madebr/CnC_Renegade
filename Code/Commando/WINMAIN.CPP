@@ -43,8 +43,12 @@
 
 
 #include "WINMAIN.H"
+#if defined(OPENW3D_WIN32)
 #define _WIN32_WINDOWS 0x0401
 #include "winmain_compat.h"
+#elif defined(OPENW3D_SDL3)
+#include <SDL3/SDL.h>
+#endif
 #include "win.h"
 #include "resource.h"
 #include "ww3d.h"
@@ -57,7 +61,6 @@
 #include "ffactory.h"
 
 #include "debug.h"
-#include "verchk.h"
 #include "devoptions.h"
 #include "dialogmgr.h"
 #include "renegadedialogmgr.h"
@@ -86,9 +89,9 @@
 #include "ini.h"
 #include "soutil.h"
 
-#ifdef _DEBUG
-#include	<crtdbg.h>
-#endif //_DEBUG
+// #ifdef _DEBUG
+// #include	<crtdbg.h>
+// #endif //_DEBUG
 #include <iostream>
 #include "singletoninstancekeeper.h"
 #include "packetmgr.h"
@@ -470,6 +473,7 @@ int Start_Application(void)
 	return exitCode;
 }
 
+#ifdef OPENW3D_WIN32
 /***********************************************************************************************
  * Main_Window_Proc -- Windows Proc for the main game window                                   *
  *                                                                                             *
@@ -496,11 +500,17 @@ LRESULT CALLBACK Main_Window_Proc( HWND hwnd, UINT message, WPARAM wParam, LPARA
 	**	this information.
 	*/
 	if (_TheWWUIInput && Input::Is_Console_Enabled () == false) {
-		LRESULT result = 0;
+		UI::MessageResult result = 0;
 
+		auto windowMessage = UI::WindowMessage{
+			hwnd,
+			message,
+			wParam,
+			lParam,
+		};
 		//DialogWalker->Process_Message(hwnd, message, wParam, lParam, result);
 
-		if (_TheWWUIInput->ProcessMessage(hwnd, message, wParam, lParam, result)) {
+		if (_TheWWUIInput->ProcessMessage(windowMessage, result)) {
 			return result;
 		}
 	}
@@ -744,6 +754,7 @@ void On_Focus_Restore(void)
 void Prog_End(void)
 {
 }
+#endif
 
 
 /***********************************************************************************************

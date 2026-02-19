@@ -41,7 +41,9 @@
 #include "dx8wrapper.h"
 #include "formconv.h"
 #include <windows.h>
+#ifdef _WIN32
 #include <mmsystem.h>
+#endif
 
 static StringClass CapsWorkString;
 
