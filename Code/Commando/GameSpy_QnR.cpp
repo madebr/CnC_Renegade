@@ -586,6 +586,9 @@ bool Resolve_Master_With_Timeout(const char *host, WORD port, sockaddr_in &out_a
 		hints.ai_socktype = SOCK_DGRAM;
 		hints.ai_protocol = IPPROTO_UDP;
 		char port_buf[8] = {};
+#ifdef snprintf
+#undef snprintf
+#endif
 		std::snprintf(port_buf, sizeof(port_buf), "%u", static_cast<unsigned>(port));
 
 		addrinfo *info = nullptr;

@@ -21,12 +21,7 @@
 #include "always.h"
 
 #include <atomic>
-
-#if defined(OPENW3D_WIN32)
-#include <windows.h>
-#elif defined(OPENW3D_SDL3)
-#include <SDL3/SDL_thread.h>
-#endif
+#include <thread>
 
 
 // ****************************************************************************
@@ -91,16 +86,7 @@ protected:
 	unsigned mThreadID;
 
 private:
-#if defined(OPENW3D_WIN32)
-	using ThreadHandle = HANDLE;
-	using InternalThreadFunctionReturnType = DWORD;
-#define INTERNAL_THREAD_FUNCTION_CALL_CONVENTION WINAPI
-#elif defined(OPENW3D_SDL3)
-	using ThreadHandle = SDL_Thread *;
-	using InternalThreadFunctionReturnType = int;
-#define INTERNAL_THREAD_FUNCTION_CALL_CONVENTION SDLCALL
-#endif
-	static InternalThreadFunctionReturnType INTERNAL_THREAD_FUNCTION_CALL_CONVENTION Internal_Thread_Function(void *param);
-	ThreadHandle mHandle;
+	static void Internal_Thread_Function(void *param);
+	std::thread mThread;
 	int mThread_priority;
 };
