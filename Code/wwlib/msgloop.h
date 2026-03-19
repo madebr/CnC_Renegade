@@ -45,10 +45,6 @@
 // Main message handler.
 void Windows_Message_Handler(void);
 
-// Modeless dialog box support routines.
-void Remove_Modeless_Dialog(HWND dialog);
-void Add_Modeless_Dialog(HWND dialog);
-
 // Accelerator keys support routines.
 void Add_Accelerator(HWND window, HACCEL accelerator);
 void Remove_Accelerator(HACCEL accelerator);
