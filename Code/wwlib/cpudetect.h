@@ -161,8 +161,17 @@ public:
 	inline static bool Has_MMX_Instruction_Set() { return HasMMXSupport; }
 	inline static bool Has_SSE_Instruction_Set() { return HasSSESupport; }
 	inline static bool Has_SSE2_Instruction_Set() { return HasSSE2Support; }
+	inline static bool Has_SSE3_Instruction_Set() { return HasSSE3Support; }
+	inline static bool Has_SSE41_Instruction_Set() { return HasSSE41Support; }
+	inline static bool Has_SSE42_Instruction_Set() { return HasSSE42Support; }
+	inline static bool Has_AVX_Instruction_Set() { return HasAVXSupport; }
+	inline static bool Has_AVX2_Instruction_Set() { return HasAVX2Support; }
+	inline static bool Has_AVX512F_Instruction_Set() { return HasAVX512FSupport; }
 	inline static bool Has_3DNow_Instruction_Set() { return Has3DNowSupport; }
 	inline static bool Has_Extended_3DNow_Instruction_Set() { return HasExtended3DNowSupport; }
+	inline static bool HAS_NEON_Instruction_Set() { return HasNEONSupport; }
+	inline static bool HAS_LSX_Instruction_Set() { return HasLSXSupport; }
+	inline static bool HAS_LASX_Instruction_Set() { return HasLASXSupport; }
 
 	// Call these functions after determining the manufacturer to find out which of the manufacturers processors
 	// the system has.
@@ -292,16 +301,27 @@ private:
 	static unsigned TotalVirtualMemory;
 	static unsigned AvailableVirtualMemory;
 
+#if defined(OPENW3D_WIN32)
 	static unsigned OSVersionNumberMajor;
 	static unsigned OSVersionNumberMinor;
 	static unsigned OSVersionBuildNumber;
 	static unsigned OSVersionPlatformId;
 	static StringClass OSVersionExtraInfo;
+#endif
 
 	static bool HasCPUIDInstruction;
 	static bool HasRDTSCInstruction;
 	static bool HasSSESupport;
 	static bool HasSSE2Support;
+	static bool HasSSE3Support;
+	static bool HasSSE41Support;
+	static bool HasSSE42Support;
+	static bool HasAVXSupport;
+	static bool HasAVX2Support;
+	static bool HasAVX512FSupport;
+	static bool HasNEONSupport;
+	static bool HasLSXSupport;
+	static bool HasLASXSupport;
 	static bool HasCMOVSupport;
 	static bool HasMMXSupport;
 	static bool Has3DNowSupport;

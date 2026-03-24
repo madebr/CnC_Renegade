@@ -16,6 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef _WIN32
+
 /******************************************************************************
 *
 * NAME
@@ -240,3 +242,5 @@ bool UnregisterCOMServer(const char* dllName)
 
 	return success;
 	}
+
+#endif

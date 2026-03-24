@@ -789,11 +789,11 @@ void Prog_End(void)
  *=============================================================================================*/
 bool Set_Working_Directory(void)
 {
-	char path_buffer[_MAX_PATH];
 	const char *gamedir = cUserOptions::GameDir.Get();
 #if defined(OPENW3D_WIN32)
 	if (gamedir == NULL || gamedir[0] == '\0') {
-		char path_to_exe[256];
+		char path_buffer[_MAX_PATH];
+		char path_to_exe[MAX_PATH];
 		char drive[_MAX_DRIVE];
 		char dir[_MAX_DIR];
 		GetModuleFileNameA(NULL, path_to_exe, sizeof(path_to_exe));

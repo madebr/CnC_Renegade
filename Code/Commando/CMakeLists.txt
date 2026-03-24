@@ -463,9 +463,12 @@ endif()
 if(MSVC)
     target_link_options(commando INTERFACE "/NODEFAULTLIB:libci.lib")
 endif()
+
+configure_file(chat.rc.in chat.rc @ONLY)
+
 if(WIN32)
     list(APPEND COMMANDO_SRC
-        chat.rc
+        "${CMAKE_CURRENT_BINARY_DIR}/chat.rc"
         ../WOLBrowser/WOLBrowser_i.c
         ../wolapi/WOLAPI_i.c
     )

@@ -18,8 +18,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,37,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@,@PROJECT_VERSION_TWEAK@
+ PRODUCTVERSION @PROJECT_VERSION_MAJOR@,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -35,7 +35,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
+            VALUE "CompanyName", "W3DHub\0"
             VALUE "FileDescription", "\0"
             VALUE "FileVersion", "0, 0, 0, 0\0"
             VALUE "InternalName", "\0"

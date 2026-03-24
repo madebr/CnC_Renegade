@@ -35,6 +35,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "mixfile.h"
+
+#include <filesystem>
+
 #include "wwdebug.h"
 #include "ffactory.h"
 #include "wwfile.h"
@@ -61,6 +64,9 @@ typedef struct
 
 } MIXFILE_DATA_HEADER;
 
+static_assert(sizeof(MIXFILE_HEADER) == 12);
+static_assert(sizeof(MIXFILE_DATA_HEADER) == 4);
+
 
 /*
 **
@@ -81,7 +87,7 @@ MixFileFactoryClass::MixFileFactoryClass( const char * mix_filename, FileFactory
 	// First, open the mix file
 	FileClass * file = factory->Get_File( mix_filename );
 
-//	WWASSERT( file );
+	WWASSERT( file );
 
 	if ( file && file->Is_Available() ) {
 
@@ -126,7 +132,7 @@ MixFileFactoryClass::MixFileFactoryClass( const char * mix_filename, FileFactory
 		if ( IsValid ) {
 			BaseOffset	= 0;
 			NamesOffset	= header.names_offset;
-			WWDEBUG_SAY(( "MixFileFactory( %s ) loaded successfully  %d files\n", MixFilename, FileInfo.Length() ));
+			WWDEBUG_SAY(( "MixFileFactory( %s ) loaded successfully  %d files\n", MixFilename.Peek_Buffer(), FileInfo.Length() ));
 		} else {
 			FileInfo.Resize(0);
 		}
@@ -312,18 +318,16 @@ MixFileFactoryClass::Flush_Changes (void)
 	//
 	//	Get the path of the mix file
 	//
-	char drive[_MAX_DRIVE] = { 0 };
-	char dir[_MAX_DIR] = { 0 };
-	::_splitpath (MixFilename, drive, dir, NULL, NULL);
-	StringClass path	= drive;
-	path					+= dir;
+	std::filesystem::path mix_path = std::filesystem::path{MixFilename.Peek_Buffer()};
+	std::filesystem::path mix_dir_path = mix_path.parent_path();
+	StringClass path	= StringClass{mix_dir_path.generic_string().c_str()};
 
 	//
 	//	Try to find a temp filename
 	//
-	StringClass full_path;
-	if (Get_Temp_Filename (path, full_path)) {
-		MixFileCreator new_mix_file (full_path);
+	StringClass tmp_full_path;
+	if (Get_Temp_Filename (path, tmp_full_path)) {
+		MixFileCreator new_mix_file (tmp_full_path);
 
 		//
 		//	Add all the remaining files from our file set
@@ -365,8 +369,9 @@ MixFileFactoryClass::Flush_Changes (void)
 	//
 	//	Delete the old mix file and rename the new one
 	//
-	::DeleteFileA (MixFilename);
-	::MoveFileA (full_path, MixFilename);
+	std::error_code ec;
+	std::filesystem::remove(mix_path, ec);
+	std::filesystem::rename(tmp_full_path.Peek_Buffer(), mix_path, ec);
 
 	//
 	//	Reset the lists
@@ -589,51 +594,4 @@ void	MixFileCreator::Add_File( const char * filename, FileClass *file )
 	}
 
 	return ;
-}
-
-
-/*
-**
-*/
-void	Add_Files( const char * dir, MixFileCreator & mix )
-{
-	BOOL bcontinue = true;
-	HANDLE hfile_find;
-	WIN32_FIND_DATAA find_info = {0};
-	StringClass path;
-	path.Format( "data/makemix/%s*.*", dir );
-	WWDEBUG_SAY(( "Adding files from %s\n", path ));
-
-	for (hfile_find = ::FindFirstFileA( path, &find_info);
-		 (hfile_find != INVALID_HANDLE_VALUE) && bcontinue;
-		  bcontinue = ::FindNextFileA(hfile_find, &find_info)) {
-		if ( find_info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
-			if ( find_info.cFileName[0] != '.' ) {
-				StringClass	path;
-				path.Format( "%s%s/", dir, find_info.cFileName );
-				Add_Files( path, mix );
-			}
-		} else {
-			StringClass name;
-			name.Format( "%s%s", dir, find_info.cFileName );
-			StringClass	source;
-			source.Format( "makemix/%s", name );
-			mix.Add_File( source, name );
-//			WWDEBUG_SAY(( "Adding file from %s %s\n", source, name ));
-		}
-	}
-}
-
-void	Setup_Mix_File( void )
-{
-	_SimpleFileFactory.Set_Sub_Directory( "DATA/" );
-//	_SimpleFileFactory.Set_Strip_Path( true );
-
-	WWDEBUG_SAY(( "Mix File Create .....\n" ));
-
-	{
-		MixFileCreator mix( "MAKEMIX.MIX" );
-		Add_Files( "", mix );
-	}
-
 }

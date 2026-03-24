@@ -42,6 +42,7 @@
 #include "refcount.h"
 #include <windows.h>
 
+#include <SDL3/SDL_assert.h>
 
 #ifndef NDEBUG
 
@@ -174,7 +175,13 @@ void RefCountClass::Add_Ref(void)
 
 	// See if programmer set break on for a specific address.
 	if (this == BreakOnReference) {
+#if defined(OPENW3D_WIN32)
 		DebugBreak();  // trigger the debugger
+#elif defined(OPENW3D_SDL3)
+		SDL_TriggerBreakpoint();
+#else
+		#error "Not implemented"
+#endif
 	}
 	Inc_Total_Refs(this);
 }
@@ -201,7 +208,13 @@ void	RefCountClass::Dec_Total_Refs(RefCountClass * obj)
 
 	// See if programmer set break on for a specific address.
 	if (obj == BreakOnReference) {
-		 DebugBreak();  // trigger the debugger
+#if defined(OPENW3D_WIN32)
+		DebugBreak();  // trigger the debugger
+#elif defined(OPENW3D_SDL3)
+		SDL_TriggerBreakpoint();
+#else
+		#error "Not implemented"
+#endif
 	}
 }
 

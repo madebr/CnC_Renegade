@@ -45,11 +45,24 @@
 // Main message handler.
 void Windows_Message_Handler(void);
 
+#if defined(OPENW3D_WIN32)
 // Accelerator keys support routines.
 void Add_Accelerator(HWND window, HACCEL accelerator);
 void Remove_Accelerator(HACCEL accelerator);
 
 // General purpose message intercept handler.
 extern bool (*Message_Intercept_Handler)(MSG &msg);
+#elif defined(OPENW3D_SDL3)
+
+#include <SDL3/SDL_events.h>
+
+// false: message is NOT handled by this message, and will be sent to the next handler
+// true: message is handled. Stop processing current message.
+typedef bool sdl3_event_handler_cbfn(SDL_Event *event);
+
+void Add_Event_Handler(sdl3_event_handler_cbfn *cbfn);
+bool Remove_Event_Handler(sdl3_event_handler_cbfn *cbfn);
+
+#endif
 
 #endif

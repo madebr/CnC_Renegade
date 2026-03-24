@@ -800,8 +800,6 @@ bool Game_Init(void)
 
 	AudioFileFactory.Set_Base_Factory( _TheFileFactory );
 
-	//Setup_Mix_File();
-
 	// Lets seed the Random Generator, a little
 	int count = TIMEGETTIME() & 0xFF;
 	while ( count-- > 0 ) {

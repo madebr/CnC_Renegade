@@ -103,6 +103,7 @@ private:
 		unsigned int Offset;			// Offset from start of data section.
 		unsigned int Size;				// Size of data subfile.
 	};
+	static_assert(sizeof(FileInfoStruct) == 12);
 
 	struct AddInfoStruct {
 		bool operator== (const AddInfoStruct &/* src*/)	{ return false; }
@@ -155,10 +156,5 @@ private:
 	DynamicVectorClass<FileInfoStruct>	FileInfo;
 	FileClass								*	MixFile;
 };
-
-/*
-**
-*/
-void	Setup_Mix_File( void );
 
 #endif

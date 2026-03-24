@@ -38,18 +38,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
+#include	"msgloop.h"
 #include	"vector.h"
 #include	"win.h"
+#include "wwdebug.h"
 
 
+#if defined(OPENW3D_WIN32)
 /*
 **	Tracks windows accelerators with this structure.
 */
 struct AcceleratorTracker {
 	AcceleratorTracker(HWND window = NULL, HACCEL accelerator = NULL) : Accelerator(accelerator), Window(window) {}
 
-	int operator == (AcceleratorTracker const & acc) const {return(Accelerator == acc.Accelerator && Window == acc.Window);}
-	int operator != (AcceleratorTracker const & acc) const {return(!(*this == acc));}
+	bool operator == (AcceleratorTracker const & acc) const {return(Accelerator == acc.Accelerator && Window == acc.Window);}
+	bool operator != (AcceleratorTracker const & acc) const {return(!(*this == acc));}
 
 	HACCEL Accelerator;
 	HWND Window;
@@ -183,3 +186,43 @@ void Remove_Accelerator(HACCEL accelerator)
 		}
 	}
 }
+#elif defined(OPENW3D_SDL3)
+
+#include <vector>
+
+namespace {
+	std::vector<sdl3_event_handler_cbfn *> g_SDL3_event_handlers;
+}
+
+void Add_Event_Handler(sdl3_event_handler_cbfn *cbfn)
+{
+	g_SDL3_event_handlers.push_back(cbfn);
+}
+
+bool Remove_Event_Handler(sdl3_event_handler_cbfn *cbfn)
+{
+	for (auto it = g_SDL3_event_handlers.rbegin(); it != g_SDL3_event_handlers.rend(); it++) {
+		if (*it == cbfn) {
+			g_SDL3_event_handlers.erase(it.base() - 1);
+			return true;
+		}
+	}
+	return false;
+}
+
+void Windows_Message_Handler(void)
+{
+	SDL_Event event;
+
+	WWASSERT(g_SDL3_event_handlers.size() != 0);
+
+	while (SDL_PollEvent(&event)) {
+		for (const auto handler : g_SDL3_event_handlers) {
+			if (!handler(&event)) {
+				break;
+			}
+		}
+	}
+}
+
+#endif

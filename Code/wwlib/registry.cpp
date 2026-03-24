@@ -34,6 +34,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "registry.h"
+
+#ifdef _WIN32
+
 #include "rawfile.h"
 #include "ini.h"
 #include "inisup.h"
@@ -732,16 +735,4 @@ void RegistryClass::Delete_Registry_Tree(char *path)
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // _WIN32

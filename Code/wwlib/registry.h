@@ -40,6 +40,8 @@
 #ifndef REGISTRY_H
 #define REGISTRY_H
 
+#ifdef _WIN32
+
 #ifndef ALWAYS_H
 #include "always.h"
 #endif
@@ -123,5 +125,7 @@ private:
 	//
 	static bool IsLocked;
 };
+
+#endif // _WIN32
 
 #endif // REGISTRY_H

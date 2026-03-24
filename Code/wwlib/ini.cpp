@@ -1644,22 +1644,20 @@ bool INIClass::Put_String(char const * section, char const * entry, char const *
 	*/
 	INIEntry * entryptr = secptr->Find_Entry(entry);
 	if (entryptr != NULL) {
-      if (strcmp(entryptr->Entry, entry)) {
-         DuplicateCRCError("INIClass::Put_String", section, entry);
-      } else {
-   		OutputDebugStringA("INIClass::Put_String - Duplicate Entry \"");
-	   	OutputDebugStringA(entry);
-		   OutputDebugStringA("\"\n");
-      }
-   	secptr->EntryIndex.Remove_Index(entryptr->Index_ID());
-	   delete entryptr;
+		if (strcmp(entryptr->Entry, entry)) {
+			DuplicateCRCError("INIClass::Put_String", section, entry);
+		} else {
+			WWDEBUG_SAY(("INIClass::Put_String - Duplicate Entry \"%s\"", entry));
+		}
+		secptr->EntryIndex.Remove_Index(entryptr->Index_ID());
+		delete entryptr;
 	}
 
 	/*
 	**	Create and add the new entry.
 	*/
 	if (string != NULL && strlen(string) > 0) {
-		entryptr = new INIEntry(strdup(entry), strdup(string));
+		entryptr = new (std::nothrow) INIEntry(strdup(entry), strdup(string));
 
 		if (entryptr == NULL) {
 			return(false);
@@ -2356,11 +2354,9 @@ int INIClass::CRC(const char *string)
  *=============================================================================================*/
 void INIClass::DuplicateCRCError(const char *message, const char *section, const char *entry)
 {
-	char buffer[512];
-	snprintf(buffer, sizeof(buffer), "%s - Duplicate Entry \"%s\" in section \"%s\" (%s)\n", message,
-		entry, section, Filename);
+	WWDEBUG_SAY(("%s - Duplicate Entry \"%s\" in section \"%s\" (%s)\n", message,
+		entry, section, Filename));
 
-	OutputDebugStringA(buffer);
 	assert(0);
 
 #ifdef NDEBUG

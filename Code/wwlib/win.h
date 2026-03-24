@@ -49,19 +49,18 @@
 **	4069, 4200, 4237, 4103, 4001, 4035, 4164. Makes you wonder, eh?
 */
 
-#ifdef _WIN32
-#include	<windows.h>
-#endif
-//#include <mmsystem.h>
-//#include	<windowsx.h>
-//#include	<winnt.h>
-//#include	<winuser.h>
+#include "wwui.h"
 
-#ifdef _WIN32
+#if defined(OPENW3D_WIN32)
+#include <windows.h>
+
 extern HINSTANCE	ProgramInstance;
-extern HWND			MainWindow;
+#endif
+
+extern UI::Window	MainWindow;
 extern bool GameInFocus;
 
+#ifdef _WIN32
 #ifdef _DEBUG
 
 void __cdecl Print_Win32Error(unsigned int win32Error);
@@ -71,9 +70,6 @@ void __cdecl Print_Win32Error(unsigned int win32Error);
 #define Print_Win32Error
 
 #endif // _DEBUG
-
-#else // _WIN32
-//#include <unistd.h>
 #endif // _WIN32
 
 #endif // WIN_H

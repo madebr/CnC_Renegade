@@ -21,19 +21,72 @@
 #include "wwdebug.h"
 #include "thread.h"
 #include "mpu.h"
-#include <windows.h>
 #include "systimer.h"
 
-#if CPU_X86 || CPU_X86_64
-#include <intrin.h>
+#if defined(OPENW3D_WIN32)
+#include <windows.h>
+#elif defined(OPENW3D_SDL3)
+#include <SDL3/SDL.h>
 #endif
 
+#if CPU_X86 || CPU_X86_64
+#if (defined(__GNUC__) || defined(__llvm__)) && defined(__i386__)
+#define cpuid(func, a, b, c, d)                      \
+	__asm__ __volatile__(                        \
+		"        pushl %%ebx        \n"      \
+		"        xorl %%ecx,%%ecx   \n"      \
+		"        cpuid              \n"      \
+		"        movl %%ebx, %%esi  \n"      \
+		"        popl %%ebx         \n"      \
+		: "=a"(a), "=S"(b), "=c"(c), "=d"(d) \
+		: "a"(func))
+#elif (defined(__GNUC__) || defined(__llvm__)) && defined(__x86_64__)
+#define cpuid(func, a, b, c, d)                      \
+	__asm__ __volatile__(                        \
+		"        pushq %%rbx        \n"      \
+		"        xorq %%rcx,%%rcx   \n"      \
+		"        cpuid              \n"      \
+		"        movq %%rbx, %%rsi  \n"      \
+		"        popq %%rbx         \n"      \
+		: "=a"(a), "=S"(b), "=c"(c), "=d"(d) \
+		: "a"(func))
+#elif defined(_MSC_VER) && defined(_M_IX86)
+#define cpuid(func, a, b, c, d) \
+	__asm {                 \
+		mov eax, func   \
+		xor ecx, ecx    \
+		cpuid           \
+		mov a, eax      \
+		mov b, ebx      \
+		mov c, ecx      \
+		mov d, edx      \
+	}
+#elif (defined(_MSC_VER) && defined(_M_X64))
+#define cpuid(func, a, b, c, d)              \
+	{                                    \
+		int CPUInfo[4];              \
+		__cpuidex(CPUInfo, func, 0); \
+		a = CPUInfo[0];              \
+		b = CPUInfo[1];              \
+		c = CPUInfo[2];              \
+		d = CPUInfo[3];              \
+	}
+#endif
+#endif
+
+#if defined(OPENW3D_WIN32)
 #if CPU_X86 || CPU_X86_64
 #define READ_TSC() __rdtsc()
 #else
 #error "READ_TSC() unimplemented for current cpu"
 #endif
+#elif defined(OPENW3D_SDL3)
+#define READ_TSC() SDL_GetPerformanceCounter()
+#else
+#error "Not implemented"
+#endif
 
+#if defined(OPENW3D_WIN32)
 struct OSInfoStruct {
 	const char* Code;
 	const char* SubCode;
@@ -44,29 +97,6 @@ struct OSInfoStruct {
 	unsigned char BuildMajor;
 	unsigned char BuildMinor;
 	unsigned short BuildSub;
-/*	OSInfoStruct() {}
-	OSInfoStruct(
-		const char* code,
-		const char* subcode,
-		const char* versionstring,
-		unsigned char versionmajor,
-		unsigned char versionminor,
-		unsigned short versionsub,
-		unsigned char buildmajor,
-		unsigned char buildminor,
-		unsigned short buildsub) :
-		Code(code),
-		SubCode(subcode),
-		VersionString(versionstring),
-		VersionMajor(versionmajor),
-		VersionMinor(versionminor),
-		VersionSub(versionsub),
-		BuildMajor(buildmajor),
-		BuildMinor(buildminor),
-		BuildSub(buildsub)
-	{
-	}
-*/
 };
 
 static void Get_OS_Info(
@@ -75,7 +105,7 @@ static void Get_OS_Info(
 	unsigned OSVersionNumberMajor,
 	unsigned OSVersionNumberMinor,
 	unsigned OSVersionBuildNumber);
-
+#endif
 
 StringClass CPUDetectClass::ProcessorLog;
 StringClass CPUDetectClass::CompactLog;
@@ -110,20 +140,32 @@ unsigned CPUDetectClass::AvailablePageMemory;
 unsigned CPUDetectClass::TotalVirtualMemory;
 unsigned CPUDetectClass::AvailableVirtualMemory;
 
+#if defined(OPENW3D_WIN32)
 unsigned CPUDetectClass::OSVersionNumberMajor;
 unsigned CPUDetectClass::OSVersionNumberMinor;
 unsigned CPUDetectClass::OSVersionBuildNumber;
 unsigned CPUDetectClass::OSVersionPlatformId;
 StringClass CPUDetectClass::OSVersionExtraInfo;
+#endif
 
 bool CPUDetectClass::HasCPUIDInstruction=false;
 bool CPUDetectClass::HasRDTSCInstruction=false;
 bool CPUDetectClass::HasSSESupport=false;
 bool CPUDetectClass::HasSSE2Support=false;
+bool CPUDetectClass::HasSSE3Support=false;
+bool CPUDetectClass::HasSSE41Support=false;
+bool CPUDetectClass::HasSSE42Support=false;
+bool CPUDetectClass::HasAVXSupport=false;
+bool CPUDetectClass::HasAVX2Support=false;
+bool CPUDetectClass::HasAVX512FSupport=false;
 bool CPUDetectClass::HasCMOVSupport=false;
 bool CPUDetectClass::HasMMXSupport=false;
 bool CPUDetectClass::Has3DNowSupport=false;
 bool CPUDetectClass::HasExtended3DNowSupport=false;
+
+bool CPUDetectClass::HasNEONSupport=false;
+bool CPUDetectClass::HasLSXSupport=false;
+bool CPUDetectClass::HasLASXSupport=false;
 
 CPUDetectClass::ProcessorManufacturerType CPUDetectClass::ProcessorManufacturer = CPUDetectClass::MANUFACTURER_UNKNOWN;
 CPUDetectClass::IntelProcessorType CPUDetectClass::IntelProcessor;
@@ -863,13 +905,37 @@ void CPUDetectClass::Init_Processor_Features()
 {
 	if (!CPUDetectClass::Has_CPUID_Instruction()) return;
 
-	CPUIDStruct id(1);
-	FeatureBits=id.Edx;
+	CPUIDStruct id1(1);
+	CPUIDStruct id7(7);
+	FeatureBits=id1.Edx;
 	HasRDTSCInstruction=(!!(FeatureBits&(1<<4)));
 	HasCMOVSupport=(!!(FeatureBits&(1<<15)));
+#if defined(OPENW3D_WIN32)
 	HasMMXSupport=(!!(FeatureBits&(1<<23)));
 	HasSSESupport=!!(FeatureBits&(1<<25));
 	HasSSE2Support=!!(FeatureBits&(1<<26));
+	HasSSE3Support=!!(id1.Ecx&(1<<0));
+	HasSSE41Support=!!(id1.Ecx&(1<<19));
+	HasSSE42Support=!!(id1.Ecx&(1<<20));
+	HasAVXSupport=!!(id1.Ecx&(1<<28));
+	HasAVX2Support=!!(id7.Ebx&(1<<5));
+	HasAVX512FSupport=!!(id7.Ebx&(1<<20));
+#elif defined(OPENW3D_SDL3)
+	HasMMXSupport = SDL_HasMMX();
+	HasSSESupport = SDL_HasSSE();
+	HasSSE2Support = SDL_HasSSE2();
+	HasSSE3Support = SDL_HasSSE3();
+	HasSSE41Support = SDL_HasSSE41();
+	HasSSE42Support = SDL_HasSSE42();
+	HasAVXSupport = SDL_HasAVX();
+	HasAVX2Support = SDL_HasAVX2();
+	HasAVX512FSupport = SDL_HasAVX512F();
+	HasNEONSupport = SDL_HasNEON();
+	HasLSXSupport = SDL_HasLSX();
+	HasLASXSupport = SDL_HasLASX();
+#else
+#error "Not implemented"
+#endif
 
 	Has3DNowSupport=false;
 	ExtendedFeatureBits=0;
@@ -888,6 +954,7 @@ void CPUDetectClass::Init_Processor_Features()
 
 void CPUDetectClass::Init_Memory()
 {
+#if defined(OPENW3D_WIN32)
 	MEMORYSTATUS mem;
 	GlobalMemoryStatus(&mem);
 	TotalPhysicalMemory=mem.dwTotalPhys;
@@ -896,10 +963,23 @@ void CPUDetectClass::Init_Memory()
 	AvailablePageMemory=mem.dwAvailPageFile;
 	TotalVirtualMemory=mem.dwTotalVirtual;
 	AvailableVirtualMemory=mem.dwAvailVirtual;
+#elif defined(OPENW3D_SDL3)
+	Uint32 ram_bytes = SDL_GetSystemRAM() * 1024 * 1024;
+	TotalPhysicalMemory = ram_bytes;
+	TotalPhysicalMemory = ram_bytes;
+	AvailablePhysicalMemory = ram_bytes;
+	TotalPageMemory = ram_bytes;
+	AvailablePageMemory = ram_bytes;
+	TotalVirtualMemory = ram_bytes;
+	AvailableVirtualMemory = ram_bytes;
+#else
+#error "Not implemented"
+#endif
 }
 
 void CPUDetectClass::Init_OS()
 {
+#if defined(OPENW3D_WIN32)
 	// GetVersionEx only returns the version of Windows it was manifested for since Windows 8.
 	// RtlGetVersion returns the correct information at least at the time of writing.
 	typedef LONG(WINAPI * RtlGetVersionFuncPtr)(PRTL_OSVERSIONINFOW);
@@ -915,7 +995,7 @@ void CPUDetectClass::Init_OS()
 			OSVersionNumberMinor = os.dwMinorVersion;
 			OSVersionBuildNumber = os.dwBuildNumber;
 			OSVersionPlatformId = os.dwPlatformId;
-            OSVersionExtraInfo = os.szCSDVersion;
+			OSVersionExtraInfo = os.szCSDVersion;
 			return;
 		}
 	}
@@ -924,7 +1004,11 @@ void CPUDetectClass::Init_OS()
 	OSVersionNumberMinor = 2;
 	OSVersionBuildNumber = 0;
 	OSVersionPlatformId = 2;
-    OSVersionExtraInfo = "";
+	OSVersionExtraInfo = "";
+#elif defined(OPENW3D_SDL3)
+#else
+	#error "Not implemented"
+#endif
 }
 
 bool CPUDetectClass::CPUID(
@@ -938,13 +1022,7 @@ bool CPUDetectClass::CPUID(
 	if (!Has_CPUID_Instruction()) {
 		return false;	// Most processors since 486 have CPUID...
 	}
-	int cpuInfo[4];
-	__cpuid(cpuInfo, cpuid_type);
-
-	u_eax_=cpuInfo[0];
-	u_ebx_=cpuInfo[1];
-	u_ecx_=cpuInfo[2];
-	u_edx_=cpuInfo[3];
+	cpuid(cpuid_type, u_eax_, u_ebx_, u_ecx_, u_edx_);
 
 	return true;
 #else
@@ -959,22 +1037,27 @@ void CPUDetectClass::Init_Processor_Log()
 	StringClass work(0,true);
 
 	SYSLOG(("Operating System: "));
+#if defined(OPENW3D_WIN32)
 	switch (OSVersionPlatformId) {
 	case VER_PLATFORM_WIN32s: SYSLOG(("Windows 3.1")); break;
 	case VER_PLATFORM_WIN32_WINDOWS: SYSLOG(("Windows 9x")); break;
 	case VER_PLATFORM_WIN32_NT: SYSLOG(("Windows NT")); break;
 	}
-	SYSLOG(("\r\n"));
 
-	SYSLOG(("Operating system version %d.%d\r\n",OSVersionNumberMajor,OSVersionNumberMinor));
-	SYSLOG(("Operating system build: %d.%d.%d\r\n",
+	SYSLOG(("Operating system version %d.%d\n",OSVersionNumberMajor,OSVersionNumberMinor));
+	SYSLOG(("Operating system build: %d.%d.%d\n",
 		(OSVersionBuildNumber&0xff000000)>>24,
 		(OSVersionBuildNumber&0xff0000)>>16,
 		(OSVersionBuildNumber&0xffff)));
-	SYSLOG(("OS-Info: %s\r\n",OSVersionExtraInfo));
+	SYSLOG(("OS-Info: %s\n",OSVersionExtraInfo));SYSLOG(("\n"));
+#elif defined(OPENW3D_SDL3)
+	SYSLOG(("OS: %s\n", SDL_GetPlatform()));
+#else
+#error "Not implemented"
+#endif
 
-	SYSLOG(("Processor: %s\r\n",CPUDetectClass::Get_Processor_String()));
-	SYSLOG(("Clock speed: ~%dMHz\r\n",CPUDetectClass::Get_Processor_Speed()));
+	SYSLOG(("Processor: %s\n",CPUDetectClass::Get_Processor_String()));
+	SYSLOG(("Clock speed: ~%dMHz\n",CPUDetectClass::Get_Processor_Speed()));
 	StringClass cpu_type(0,true);
 	switch (CPUDetectClass::Get_Processor_Type()) {
 	case 0: cpu_type="Original OEM"; break;
@@ -982,72 +1065,81 @@ void CPUDetectClass::Init_Processor_Log()
 	case 2: cpu_type="Dual"; break;
 	case 3: cpu_type="*Intel Reserved*"; break;
 	}
-	SYSLOG(("Processor type: %s\r\n",cpu_type));
+	SYSLOG(("Processor type: %s\n", cpu_type.Peek_Buffer()));
 
-	SYSLOG(("\r\n"));
+	SYSLOG(("\n"));
 
-	SYSLOG(("Total physical memory: %dMb\r\n",Get_Total_Physical_Memory()/(1024*1024)));
-	SYSLOG(("Available physical memory: %dMb\r\n",Get_Available_Physical_Memory()/(1024*1024)));
-	SYSLOG(("Total page file size: %dMb\r\n",Get_Total_Page_File_Size()/(1024*1024)));
-	SYSLOG(("Total available page file size: %dMb\r\n",Get_Available_Page_File_Size()/(1024*1024)));
-	SYSLOG(("Total virtual memory: %dMb\r\n",Get_Total_Virtual_Memory()/(1024*1024)));
-	SYSLOG(("Available virtual memory: %dMb\r\n",Get_Available_Virtual_Memory()/(1024*1024)));
+	SYSLOG(("Total physical memory: %dMb\n",Get_Total_Physical_Memory()/(1024*1024)));
+	SYSLOG(("Available physical memory: %dMb\n",Get_Available_Physical_Memory()/(1024*1024)));
+	SYSLOG(("Total page file size: %dMb\n",Get_Total_Page_File_Size()/(1024*1024)));
+	SYSLOG(("Total available page file size: %dMb\n",Get_Available_Page_File_Size()/(1024*1024)));
+	SYSLOG(("Total virtual memory: %dMb\n",Get_Total_Virtual_Memory()/(1024*1024)));
+	SYSLOG(("Available virtual memory: %dMb\n",Get_Available_Virtual_Memory()/(1024*1024)));
 
-	SYSLOG(("\r\n"));
+	SYSLOG(("\n"));
 
-	SYSLOG(("CPUID: %s\r\n",CPUDetectClass::Has_CPUID_Instruction() ? "Yes" : "No"));
-	SYSLOG(("RDTSC: %s\r\n",CPUDetectClass::Has_RDTSC_Instruction() ? "Yes" : "No"));
-	SYSLOG(("CMOV: %s\r\n",CPUDetectClass::Has_CMOV_Instruction() ? "Yes" : "No"));
-	SYSLOG(("MMX: %s\r\n",CPUDetectClass::Has_MMX_Instruction_Set() ? "Yes" : "No"));
-	SYSLOG(("SSE: %s\r\n",CPUDetectClass::Has_SSE_Instruction_Set() ? "Yes" : "No"));
-	SYSLOG(("SSE2: %s\r\n",CPUDetectClass::Has_SSE2_Instruction_Set() ? "Yes" : "No"));
-	SYSLOG(("3DNow!: %s\r\n",CPUDetectClass::Has_3DNow_Instruction_Set() ? "Yes" : "No"));
-	SYSLOG(("Extended 3DNow!: %s\r\n",CPUDetectClass::Has_Extended_3DNow_Instruction_Set() ? "Yes" : "No"));
-	SYSLOG(("CPU Feature bits: 0x%x\r\n",CPUDetectClass::Get_Feature_Bits()));
-	SYSLOG(("Ext. CPU Feature bits: 0x%x\r\n",CPUDetectClass::Get_Extended_Feature_Bits()));
+	SYSLOG(("CPUID: %s\n",CPUDetectClass::Has_CPUID_Instruction() ? "Yes" : "No"));
+	SYSLOG(("RDTSC: %s\n",CPUDetectClass::Has_RDTSC_Instruction() ? "Yes" : "No"));
+	SYSLOG(("CMOV: %s\n",CPUDetectClass::Has_CMOV_Instruction() ? "Yes" : "No"));
+	SYSLOG(("MMX: %s\n",CPUDetectClass::Has_MMX_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("SSE: %s\n",CPUDetectClass::Has_SSE_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("SSE2: %s\n",CPUDetectClass::Has_SSE2_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("SSE3: %s\n",CPUDetectClass::Has_SSE3_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("SSE4.1: %s\n",CPUDetectClass::Has_SSE41_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("SSE4.2: %s\n",CPUDetectClass::Has_SSE42_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("AVX: %s\n",CPUDetectClass::Has_AVX_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("AVX2: %s\n",CPUDetectClass::Has_AVX2_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("AVX512F: %s\n",CPUDetectClass::Has_AVX512F_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("3DNow!: %s\n",CPUDetectClass::Has_3DNow_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("Extended 3DNow!: %s\n",CPUDetectClass::Has_Extended_3DNow_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("CPU Feature bits: 0x%x\n",CPUDetectClass::Get_Feature_Bits()));
+	SYSLOG(("Ext. CPU Feature bits: 0x%x\n",CPUDetectClass::Get_Extended_Feature_Bits()));
+	SYSLOG(("NEON: %s\n",CPUDetectClass::HAS_NEON_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("LSX: %s\n",CPUDetectClass::HAS_LSX_Instruction_Set() ? "Yes" : "No"));
+	SYSLOG(("LASX: %s\n",CPUDetectClass::HAS_LASX_Instruction_Set() ? "Yes" : "No"));
 
-	SYSLOG(("\r\n"));
+	SYSLOG(("\n"));
 
 	if (CPUDetectClass::Get_L1_Data_Cache_Size()) {
-		SYSLOG(("L1 Data Cache: %d byte cache lines, %d way set associative, %dk\r\n",
+		SYSLOG(("L1 Data Cache: %d byte cache lines, %d way set associative, %dk\n",
 			CPUDetectClass::Get_L1_Data_Cache_Line_Size(),
 			CPUDetectClass::Get_L1_Data_Cache_Set_Associative(),
 			CPUDetectClass::Get_L1_Data_Cache_Size()/1024));
 	}
 	else {
-		SYSLOG(("L1 Data Cache: None\r\n"));
+		SYSLOG(("L1 Data Cache: None\n"));
 	}
 
 	if (CPUDetectClass::Get_L1_Instruction_Cache_Size()) {
-		SYSLOG(("L1 Instruction Cache: %d byte cache lines, %d way set associative, %dk\r\n",
+		SYSLOG(("L1 Instruction Cache: %d byte cache lines, %d way set associative, %dk\n",
 			CPUDetectClass::Get_L1_Instruction_Cache_Line_Size(),
 			CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
 			CPUDetectClass::Get_L1_Instruction_Cache_Size()/1024));
 	}
 	else {
-		SYSLOG(("L1 Instruction Cache: None\r\n"));
+		SYSLOG(("L1 Instruction Cache: None\n"));
 	}
 
 	if (CPUDetectClass::Get_L1_Instruction_Trace_Cache_Size()) {
-		SYSLOG(("L1 Instruction Trace Cache: %d way set associative, %dk uOPs\r\n",
+		SYSLOG(("L1 Instruction Trace Cache: %d way set associative, %dk uOPs\n",
 			CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
 			CPUDetectClass::Get_L1_Instruction_Cache_Size()/1024));
 	}
 	else {
-		SYSLOG(("L1 Instruction Trace Cache: None\r\n"));
+		SYSLOG(("L1 Instruction Trace Cache: None\n"));
 	}
 
 
 	if (CPUDetectClass::Get_L2_Cache_Size()) {
-		SYSLOG(("L2 Cache: %d byte cache lines, %d way set associative, %dk\r\n",
+		SYSLOG(("L2 Cache: %d byte cache lines, %d way set associative, %dk\n",
 			CPUDetectClass::Get_L2_Cache_Line_Size(),
 			CPUDetectClass::Get_L2_Cache_Set_Associative(),
 			CPUDetectClass::Get_L2_Cache_Size()/1024));
 	}
 	else {
-		SYSLOG(("L2 cache: None\r\n"));
+		SYSLOG(("L2 cache: None\n"));
 	}
-	SYSLOG(("\r\n"));
+	SYSLOG(("\n"));
 }
 
 // OSCODE OSSUBCODE CPUMANUFACTURER CPUSPEED MEMORY CPUBITS EXTCPUBITS
@@ -1057,6 +1149,7 @@ void CPUDetectClass::Init_Compact_Log()
 {
 	StringClass work(0,true);
 
+#if defined(OPENW3D_WIN32)
 	TIME_ZONE_INFORMATION time_zone;
 	GetTimeZoneInformation(&time_zone);
 	COMPACTLOG(("%d\t",time_zone.Bias));
@@ -1077,6 +1170,26 @@ void CPUDetectClass::Init_Compact_Log()
 	COMPACTLOG(("%d\t",Get_Total_Physical_Memory()/(1024*1024)+1));
 
 	COMPACTLOG(("%x\t%x\t",Get_Feature_Bits(),Get_Extended_Feature_Bits()));
+#elif defined(OPENW3D_SDL3)
+	SDL_Time ticks;
+	SDL_DateTime dt;
+	SDL_zero(ticks);
+	SDL_zero(dt);
+	SDL_GetCurrentTime(&ticks);
+	SDL_TimeToDateTime(ticks, &dt, true);
+	COMPACTLOG(("%d\t",dt.utc_offset / 60));
+
+	int sdl3_version = SDL_GetVersion();
+	COMPACTLOG(("SDL3 %d.%d.%d\t", SDL_VERSIONNUM_MAJOR(sdl3_version), SDL_VERSIONNUM_MINOR(sdl3_version), SDL_VERSIONNUM_MICRO(sdl3_version)));
+
+	COMPACTLOG(("%s\t", SDL_GetPlatform()))
+
+	COMPACTLOG(("%s\t%d\t",Get_Processor_Manufacturer_Name(),Get_Processor_Speed()));
+
+	COMPACTLOG(("%d\t",Get_Total_Physical_Memory()/(1024*1024)+1));
+#else
+#error "Not implemented"
+#endif
 }
 
 static class CPUDetectInitClass
@@ -1103,8 +1216,9 @@ public:
 	}
 } _CPU_Detect_Init;
 
+#if defined(OPENW3D_WIN32)
 
-OSInfoStruct Windows9xVersionTable[]={
+static OSInfoStruct Windows9xVersionTable[]={
 	{"WIN95",	"FINAL",		"Windows 95",								4,0,950,			4,0,950		},
 	{"WIN95",	"A",			"Windows 95a OSR1 final Update",		4,0,950,			4,0,951		},
 	{"WIN95",	"B20OEM",	"Windows 95B OSR 2.0 final OEM",		4,0,950,			4,0,1111		},
@@ -1317,3 +1431,4 @@ void Get_OS_Info(
 		return;
 	}
 }
+#endif
