@@ -728,39 +728,6 @@ PresetMgrClass::Get_Next
 
 ///////////////////////////////////////////////////////////////////////
 //
-//	Validate_Version
-//
-///////////////////////////////////////////////////////////////////////
-void
-PresetMgrClass::Validate_Version (void)
-{
-
-#ifndef PUBLIC_EDITOR_VER
-
-	if (::Get_File_Mgr ()->Is_VSS_Read_Only () == false) {
-
-		if (Check_Editor_Version () == false) {
-
-			//
-			//	Force the database to be read-only
-			//
-			::Get_File_Mgr ()->Set_Read_Only_VSS (true);
-
-			//
-			//	Warn the user
-			//
-			Message_Box (NULL, IDS_VERSION_ERROR_MSG, IDS_VERSION_ERROR_TITLE, MB_ICONEXCLAMATION | MB_OK | MB_SETFOREGROUND | MB_SYSTEMMODAL);
-		}
-	}
-
-#endif //PUBLIC_EDITOR_VER
-
-	return ;
-}
-
-
-///////////////////////////////////////////////////////////////////////
-//
 //	Check_Out_Database
 //
 ///////////////////////////////////////////////////////////////////////
@@ -777,12 +744,6 @@ PresetMgrClass::Check_Out_Database (uint32 class_id, bool *should_undo_on_err)
 	//
 	CString path;
 	::Get_File_Mgr ()->Get_Preset_Library_Path (class_id, false, path);
-
-	//
-	//	Do a quick check to make sure the current version of the
-	// editor is allowed to update the asset database.
-	//
-	Validate_Version ();
 
 	//
 	//	Can't check out the database if we are in read-only mode.

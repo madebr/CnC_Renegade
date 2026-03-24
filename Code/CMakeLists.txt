@@ -44,6 +44,7 @@ target_include_directories(wwcommon INTERFACE
     wwutil
     wolapi
     .
+    "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 target_link_libraries(wwcommon INTERFACE

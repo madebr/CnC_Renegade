@@ -209,7 +209,6 @@ protected:
 		//	VSS methods
 		//
 		bool								Initialize_VSS (void);
-		bool								Do_Version_Check (void);
 
 		//
 		//	Export methods

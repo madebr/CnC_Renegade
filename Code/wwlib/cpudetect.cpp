@@ -76,6 +76,7 @@
 
 #if defined(OPENW3D_WIN32)
 #if CPU_X86 || CPU_X86_64
+#include <intrin.h>
 #define READ_TSC() __rdtsc()
 #else
 #error "READ_TSC() unimplemented for current cpu"

@@ -44,6 +44,7 @@
 #include <wwlib/cpudetect.h>
 #include <wwlib/verchk.h>
 #include <wwlib/cpudetect.h>
+#include <wwlib/wwversion.h>
 #include <ww3d2/dx8wrapper.h>
 #include <windows.h>
 #include <cstdlib>
@@ -97,14 +98,12 @@ void SendGameResults(unsigned int gameID, cGameData* theGame, SList<cPlayer>* pl
 	stats.Add_Field("GSKU", gameSKU);
 
 	// Version of executable.
-	char filename[MAX_PATH];
-	GetModuleFileNameA(NULL, filename, sizeof(filename));
-	VS_FIXEDFILEINFO version;
-	GetVersionInfo(filename, &version);
-	stats.Add_Field("VERS", (unsigned int)version.dwFileVersionMS);
+	stats.Add_Field("VERS", OPENW3D_VERSION_MAJOR);
 
 	// Executable build date
 	FileCreationTime time;
+	char filename[MAX_PATH];
+	GetModuleFileNameA(NULL, filename, sizeof(filename));
 	GetFileCreationTime(filename, &time);
 
 	char buildDate[20];

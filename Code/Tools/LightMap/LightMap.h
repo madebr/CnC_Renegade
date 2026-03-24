@@ -73,8 +73,6 @@ class LightMapApp : public CWinApp
 
 	private:
 
-		void  Do_Version_Check();
-
 		char  WorkingPath [_MAX_PATH];	// Path of executing application.
 		char  InstanceName [_MAX_PATH];	// Name unique to this instance of the application.
 

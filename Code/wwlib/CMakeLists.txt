@@ -1,3 +1,5 @@
+configure_file(wwversion.h.in wwversion.h @ONLY)
+
 # Set source files
 set(WWLIB_SRC
     argv.cpp
@@ -144,6 +146,7 @@ set(WWLIB_SRC
     wwdialog.h
     wwfile.h
     wwstring.h
+    "${CMAKE_CURRENT_BINARY_DIR}/wwversion.h"
     xmouse.h
     xpipe.h
     xstraw.h

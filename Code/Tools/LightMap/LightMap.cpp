@@ -152,8 +152,6 @@ BOOL LightMapApp::InitInstance()
 	// of your final executable, you should remove from the following
 	// specific initialization routines you do not need.
 
-	Do_Version_Check();
-
 	// Set the working path.
 	_getdcwd (0, WorkingPath, sizeof (WorkingPath));
 	strcat (WorkingPath, "\\");
@@ -218,41 +216,6 @@ BOOL LightMapApp::InitInstance()
 	m_pMainWnd->DragAcceptFiles();
 
 	return (true);
-}
-
-
-/***********************************************************************************************
- * LightMapApp::Do_Version_Check --	 Check if this version of lightmap is newer or older than  *
- *												 a version at a designated location on the network and if  *
- *												 older then report this fact to user.							  *
- *																															  *
- * INPUT:                                                                                      *
- *                                                                                             *
- * OUTPUT:                                                                                     *
- *                                                                                             *
- * WARNINGS:                                                                                   *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/15/00    IML : Created.                                                                *
- *=============================================================================================*/
-void LightMapApp::Do_Version_Check()
-{
-	const char *networkpath		= "\\\\Mobius\\Project7\\Projects\\Renegade\\Programming\\Tools\\Lightmap";
-	const char *newversiontext = "There is a newer version of the Lightmap tool. Please run 'Renegade Update' to update your local copy.";
-
-	char pathname [_MAX_PATH];
-	char filename [_MAX_FNAME];
-	char extension [_MAX_EXT];
-
-	::GetModuleFileName (NULL, pathname, MAX_PATH);
-	_splitpath (pathname, NULL, NULL, filename, extension);
-	strcpy (pathname, "\\\\Mobius\\Project7\\Projects\\Renegade\\Programming\\Tools\\Lightmap\\");
-	strcat (pathname, filename);
-	strcat (pathname, extension);
-
-	if (Compare_EXE_Version (::AfxGetInstanceHandle(), pathname) < 0) {
-		::MessageBox (NULL, newversiontext, "Version Information", MB_ICONEXCLAMATION | MB_OK | MB_SETFOREGROUND | MB_SYSTEMMODAL);
-	}
 }
 
 

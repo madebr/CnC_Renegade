@@ -182,9 +182,6 @@ protected:
 	bool							Save_Embedded_Node_Data (ChunkSaveClass &csave);
 	bool							Load_Embedded_Node_Data (ChunkLoadClass &csave);
 
-	// Version methods
-	static void					Validate_Version (void);
-
 	// Tree building methods
 	static void					Add_Children_To_Tree (uint32 parent_id, PRESET_TREE_LEAF *leaf, bool include_twiddlers);
 

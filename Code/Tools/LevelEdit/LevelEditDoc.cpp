@@ -571,40 +571,6 @@ void CLevelEditDoc::Dump(CDumpContext& dc) const
 
 ///////////////////////////////////////////////////////////////
 //
-//  Do_Version_Check
-//
-////////////////////////////////////////////////////////////
-bool
-CLevelEditDoc::Do_Version_Check (void)
-{
-	bool retval = true;
-
-#ifndef PUBLIC_EDITOR_VER
-	//
-	//	Check the version of the level editor that is out on the network
-	// against the version we are running.  We don't want people making modifications
-	// with and older version
-	//
-	if (Check_Editor_Version () == false) {
-		if (Message_Box (NULL, IDS_VERSION_ERROR_MSG, IDS_VERSION_ERROR_TITLE, MB_ICONEXCLAMATION | MB_OKCANCEL | MB_SETFOREGROUND | MB_SYSTEMMODAL) == IDCANCEL) {
-
-			//
-			//	Just for kicks, exit the process pretty violently
-			//
-			ExitProcess (1);
-			retval = false;
-		}
-		m_pFileMgr->Set_Read_Only_VSS (true);
-	}
-
-#endif //PUBLIC_EDITOR_VER
-
-	return retval;
-}
-
-
-///////////////////////////////////////////////////////////////
-//
 //  Preload_Assets
 //
 ////////////////////////////////////////////////////////////
@@ -758,11 +724,6 @@ CLevelEditDoc::Init_Scene (void)
 		//
 		ConversationEditorMgrClass::Get_Latest_Version ();
 		ConversationEditorMgrClass::Load_Global_Database ();
-
-		//
-		//	Make sure we are using the right version of the editor
-		//
-		Do_Version_Check ();
 
 		//
 		//	Make sure certain *required* assets are loaded into memory...

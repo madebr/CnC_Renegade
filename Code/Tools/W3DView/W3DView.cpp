@@ -129,32 +129,6 @@ WinMain
 }
 
 
-///////////////////////////////////////////////////////////////
-//
-//  Do_Version_Check
-//
-////////////////////////////////////////////////////////////
-void
-Do_Version_Check (void)
-{
-	char curr_filename[MAX_PATH];
-	::GetModuleFileName (NULL, curr_filename, MAX_PATH);
-
-	CString filename = "\\\\cabal\\mis\\r&d\\w3d\\w3dview\\";
-	filename += ::Get_Filename_From_Path (curr_filename);
-
-	//
-	//	Check the version of the viewer that is out on the network
-	// against the version we are running.
-	//
-	if (Compare_EXE_Version (::AfxGetInstanceHandle (), filename) < 0) {
-		::MessageBox (NULL, "There is a newer version of the W3DViewer, please run W3DUpdate to upgrade your local copy.", "Version Info", MB_ICONEXCLAMATION | MB_OK | MB_SETFOREGROUND | MB_SYSTEMMODAL);
-	}
-
-	return ;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // InitInstance
@@ -165,8 +139,6 @@ BOOL CW3DViewApp::InitInstance (void)
 	// If you are not using these features and wish to reduce the size
 	//  of your final executable, you should remove from the following
 	//  the specific initialization routines you do not need.
-
-	Do_Version_Check ();
 
 	RegisterColorPicker (::AfxGetInstanceHandle ());
 	RegisterColorBar (::AfxGetInstanceHandle ());

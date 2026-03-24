@@ -2189,33 +2189,6 @@ Instance_Definition (DefinitionClass *definition)
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//	Check_Editor_Version
-//
-/////////////////////////////////////////////////////////////////////////////
-bool
-Check_Editor_Version (void)
-{
-#ifndef PUBLIC_EDITOR_VER
-	char curr_filename[MAX_PATH];
-	::GetModuleFileName (NULL, curr_filename, MAX_PATH);
-
-	CString filename = "\\\\mobius\\project7\\projects\\renegade\\programming\\tools\\level edit\\";
-	filename += ::Get_Filename_From_Path (curr_filename);
-
-	//
-	//	Check the version of the level editor that is out on the network
-	// against the version we are running.  We don't want people making modifications
-	// with and older version
-	//
-	return (::Compare_EXE_Version (::AfxGetInstanceHandle (), filename) >= 0);
-#else
-	return true;
-#endif
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Perform_Job

@@ -329,11 +329,6 @@ bool								Browse_For_Folder (CString &folder, HWND hparentwnd, LPCTSTR default
 bool								Copy_File (LPCTSTR existing_filename, LPCTSTR new_filename, bool bforce_copy = false);
 
 //
-//	Version routines
-//
-bool								Check_Editor_Version (void);
-
-//
 //	Message/Debug routines
 //
 void								Output_Message (LPCTSTR message);

@@ -63,6 +63,7 @@ jobs:
                --target
                scripts
                bandtest
+               wwlib
                wwsaveload
                wwmath
                wwutil
