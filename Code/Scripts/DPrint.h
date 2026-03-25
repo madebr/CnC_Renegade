@@ -45,7 +45,7 @@ extern "C"
 
 #ifdef _DEBUG
 //! Ouput debug print messages to the debugger and log file.
-void __cdecl DebugPrint(const char* string, ...);
+void __cdecl DebugPrint(const char* string, ...) OPENW3D_PRINTF_VARARG_FUNC(1);
 #else
 #define DebugPrint
 #endif
