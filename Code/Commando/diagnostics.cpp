@@ -600,18 +600,6 @@ void cDiagnostics::Render(void)
 					Translate_Location(PWC->CurrentLocation));
 			}
 
-			Add_Diagnostic("ENTRIES:");
-			int index = 0;
-			MenuEntryClass * p_entry;
-			do {
-				p_entry = MenuManager::Find_Entry(index);
-				if (p_entry != NULL) {
-					Add_Diagnostic("%2d. %s (%d)",
-						index, p_entry->Get_Name(), p_entry->Is_Cancel_Option());
-				}
-				index++;
-			} while (p_entry != NULL);
-
 			if (PWC != NULL) {
 				SLNode<cNick> * objnode;
 				for (objnode = PWC->Get_Banned_List()->Head(); objnode; objnode = objnode->Next()) {
