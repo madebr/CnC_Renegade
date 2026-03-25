@@ -238,10 +238,14 @@ int main(int argc, char *argv[])
 
 static bool Graphics_Settings_Trouble_Shooting()
 {
+#if 0 // FIMXME: Use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if (!registry.Is_Valid()) return true;
 
 	int progress=registry.Get_Int( VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 0 );
+#else
+	int progress = 0;
+#endif
 	if (progress) {
 		const char * args[] = {
 			"wwconfig.exe",
@@ -708,16 +712,27 @@ static BOOL Create_Main_Window(void)
 		rc = RegisterClassA( &wc);
 		if (!rc ) return FALSE;
 
+#if defined(OPENW3D_WIN32)
 		// Assume windowed mode
 		MainWindow = CreateWindowExA(0, SingletonInstanceKeeperClass::Get_GUID(), "Renegade",
 			WS_SYSMENU|WS_CAPTION|WS_MINIMIZEBOX|WS_CLIPCHILDREN,
 				0, 0, 0, 0, NULL, NULL, ProgramInstance, NULL);
+#elif defined(OPENW3D_SDL3)
+		MainWindow = SDL_CreateWindow("Renegade", 0, 0, SDL_WINDOW_RESIZABLE);
+#else
+#error "Not implemented"
+#endif
 
 		if (!MainWindow) {
 			return FALSE;
 		}
 
+#if defined(OPENW3D_WIN32)
 		SetFocus(MainWindow);
+#elif defined(OPENW3D_SDL3)
+		SDL_SetWindowFocusable(MainWindow, true);
+		SDL_RaiseWindow(MainWindow);
+#endif
 	}
 
 	return TRUE;

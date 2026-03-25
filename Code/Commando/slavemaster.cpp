@@ -364,6 +364,7 @@ SlaveServerClass *SlaveMasterClass::Get_Slave(int index)
  *=============================================================================================*/
 void SlaveMasterClass::Save(void)
 {
+#if 0 // FIXME: Use INI
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
 	if (reg.Is_Valid()) {
 		reg.Set_Int(KEY_NUM_SLAVES, NumSlaveServers);
@@ -397,6 +398,7 @@ void SlaveMasterClass::Save(void)
 		}
 		reg.Set_String(entry, encrypted_serial.Peek_Buffer());
 	}
+#endif
 }
 
 
@@ -417,6 +419,7 @@ void SlaveMasterClass::Save(void)
  *=============================================================================================*/
 void SlaveMasterClass::Load(void)
 {
+#if 0 // FIXME: Use INI
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
 	if (reg.Is_Valid()) {
 		NumSlaveServers = reg.Get_Int(KEY_NUM_SLAVES, 0);
@@ -460,6 +463,7 @@ void SlaveMasterClass::Load(void)
 			strcpy(SlaveServers[i].SettingsFileName, "svrcfg_cnc.ini");
 		}
 	}
+#endif
 }
 
 
@@ -563,7 +567,9 @@ void SlaveMasterClass::Startup_Slaves(void)
 							char slave_name[64];
 							sprintf(slave_name, "\\slave_%d", i);
 							strcpy(DefaultRegistryModifier, slave_name+1);
+#if 0 // FIXME: INI
 							RegistryClass slave_reg(APPLICATION_SUB_KEY_NAME);
+#endif
 							DefaultRegistryModifier[0] = 0;
 
 							/*
@@ -601,12 +607,14 @@ void SlaveMasterClass::Startup_Slaves(void)
 								** Set a registry flag to say this server is active. We need to know this if the master server (us)
 								** crashes and restarts.
 								*/
+#if 0 // FIXME: INI
 								RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
 								if (reg.Is_Valid()) {
 									char entry[128];
 									sprintf(entry, "%s%d", KEY_SLAVE_RUNNING_ID, i);
 									reg.Set_Int(entry, SlaveServers[i].ProcessInfo->Pid());
 								}
+#endif
 
 							} else {
 								WWDEBUG_SAY(("Failed to start slave process - error code %d\n", GetLastError()));
@@ -643,8 +651,10 @@ void SlaveMasterClass::Shutdown_Slaves(void)
 {
 	if (!SlaveMode) {
 		char password[64] = DEFAULT_SERVER_CONTROL_PASSWORD;
+#if 0 // FIXME: Use INI
 		RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
 		reg.Get_String(SERVER_CONTROL_PASSWORD_KEY, password, sizeof(password), password);
+#endif
 
 		for (int i=0 ; i<NumSlaveServers ; i++) {
 			if (SlaveServers[i].IsRunning) {
@@ -655,9 +665,11 @@ void SlaveMasterClass::Shutdown_Slaves(void)
 				char slave_name[64];
 				sprintf(slave_name, "\\slave_%d", i);
 				strcpy(DefaultRegistryModifier, slave_name+1);
+#if 0 // FIXME: Use INI
 				RegistryClass slave_reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				DefaultRegistryModifier[0] = 0;
 				slave_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 0);
+#endif
 
 				/*
 				** Send the password to the slave to authenticate the connection.
@@ -669,12 +681,14 @@ void SlaveMasterClass::Shutdown_Slaves(void)
 				/*
 				** Remember that we shut this guy down.
 				*/
+#if 0 // FIXME: Use INI
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
 				if (reg.Is_Valid()) {
 					char entry[128];
 					sprintf(entry, "%s%d", KEY_SLAVE_RUNNING_ID, i);
 					reg.Set_Int(entry, 0);
 				}
+#endif
 			}
 		}
 	}
@@ -703,8 +717,10 @@ bool SlaveMasterClass::Shutdown_Slave(char *slave_login)
 {
 	if (!SlaveMode && slave_login) {
 		char password[64] = DEFAULT_SERVER_CONTROL_PASSWORD;
+#if 0 // FIXME: Use INI
 		RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
 		reg.Get_String(SERVER_CONTROL_PASSWORD_KEY, password, sizeof(password), password);
+#endif
 
 		for (int i=0 ; i<NumSlaveServers ; i++) {
 			if (SlaveServers[i].IsRunning && stricmp(slave_login, SlaveServers[i].NickName) == 0) {
@@ -715,9 +731,11 @@ bool SlaveMasterClass::Shutdown_Slave(char *slave_login)
 				char slave_name[64];
 				sprintf(slave_name, "/slave_%d", i);
 				strcpy(DefaultRegistryModifier, slave_name+1);
+#if 0 // FIXME: Use INI
 				RegistryClass slave_reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				DefaultRegistryModifier[0] = 0;
 				slave_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 0);
+#endif
 
 				/*
 				** Send the password to the slave to authenticate the connection.
@@ -729,12 +747,14 @@ bool SlaveMasterClass::Shutdown_Slave(char *slave_login)
 				/*
 				** Remember that we shut this guy down.
 				*/
+#if 0 // FIXME: Use INI
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
 				if (reg.Is_Valid()) {
 					char entry[128];
 					sprintf(entry, "%s%d", KEY_SLAVE_RUNNING_ID, i);
 					reg.Set_Int(entry, 0);
 				}
+#endif
 				SlaveServers[i].IsRunning = false;
 				return(true);
 			}
@@ -806,6 +826,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 {
 	WWASSERT(!SlaveMode);
 
+#if 0 // FIXME: Use INI
 	/*
 	** Make sure the Process ID isn't set in our base registry. It's shouldn't be unless I ran with the --slave command during dev.
 	*/
@@ -815,6 +836,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 	}
 
 	RegistryClass::Save_Registry(RegistryFileName, APPLICATION_SUB_KEY_NAME);
+#endif
 
 	char new_path[1024];
 	char slave_name[64];
@@ -824,7 +846,9 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 			strcpy(new_path, APPLICATION_SUB_KEY_NAME);
 			sprintf(slave_name, "\\slave_%d", i);
 			strcat(new_path, slave_name);
+#if 0 // FIXME: Use INI
 			RegistryClass::Load_Registry(RegistryFileName, APPLICATION_SUB_KEY_NAME, new_path);
+#endif
 
 			/*
 			** Store the slave settings into the registry.
@@ -835,10 +859,15 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 			*/
 			{
 				strcpy(DefaultRegistryModifier, slave_name+1);
+#if 0 // FIXME: Use INI
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
+#endif
 				DefaultRegistryModifier[0] = 0;
+#if 0 // FIXME: Use INI
 				RegistryClass my_reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
+#endif
 
+#if 0 // FIXME: Use INI
 				if (SlaveServers[i].Port != 0) {
 					reg.Set_Int("ForcePort", SlaveServers[i].Port);
 				} else {
@@ -858,6 +887,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 					}
 					reg.Set_Int("PortPool", port);
 				}
+#endif
 			}
 
 
@@ -865,6 +895,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 			** Server control info.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
 				DefaultRegistryModifier[0] = 0;
@@ -894,29 +925,34 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 				//} else {
 				//	reg.Set_Int(SERVER_CONTROL_LOOPBACK_KEY, 0);
 				//}
+#endif
 			}
 
 			/*
 			** Login name.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				DefaultRegistryModifier[0] = 0;
 
 				reg.Set_String("AutoLogin", SlaveServers[i].NickName);
 				reg.Set_String("LastLogin", SlaveServers[i].NickName);
+#endif
 			}
 
 			/*
 			** Password name.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				DefaultRegistryModifier[0] = 0;
 
 				reg.Set_String("AutoPassword", SlaveServers[i].Password);
+#endif
 			}
 
 
@@ -924,6 +960,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 			** Serial number.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME);
 				DefaultRegistryModifier[0] = 0;
@@ -934,12 +971,14 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 					ServerSettingsClass::Encrypt_Serial(serial, encrypted_serial);
 				}
 				reg.Set_String(KEY_SLAVE_SERIAL, encrypted_serial.Peek_Buffer());
+#endif
 			}
 
 			/*
 			** Make it autostart.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				DefaultRegistryModifier[0] = 0;
@@ -954,26 +993,31 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 					}
 					reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, game_type);
 				}
+#endif
 			}
 
 			/*
 			** Tell it which multiplayer settings to use.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_OPTIONS);
 				DefaultRegistryModifier[0] = 0;
 				reg.Set_String("MultiplayerSettings", SlaveServers[i].SettingsFileName);
+#endif
 			}
 
 			/*
 			** Set the SKU number to be the FDS SKU. Do this whether the Master is a FDS or not.
 			*/
 			{
+#if 0 // FIXME: use INI
 				strcpy(DefaultRegistryModifier, slave_name+1);
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME);
 				DefaultRegistryModifier[0] = 0;
 				reg.Set_Int("SKU", RENEGADE_FDS_SKU);
+#endif
 			}
 
 			/*
@@ -981,6 +1025,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 			** A value of 0 means auto. A value of 0xffffffff means not specified (i.e. use master settings).
 			*/
 			{
+#if 0 // FIXME: use INI
 				int bw = SlaveServers[i].Bandwidth;
 				if (bw != -1) {
 					strcpy(DefaultRegistryModifier, slave_name+1);
@@ -1007,6 +1052,7 @@ void SlaveMasterClass::Create_Registry_Copies(void)
 					reg_bw.Set_Int("Up", slave_bw);
 					reg_bw.Set_Int("Down", slave_bw);
 				}
+#endif
 			}
 
 
@@ -1059,7 +1105,9 @@ void SlaveMasterClass::Delete_Registry_Copies(void)
 			strcpy(new_path, APPLICATION_SUB_KEY_NAME);
 			sprintf(slave_name, "\\slave_%d", index);
 			strcat(new_path, slave_name);
+#if 0 // FIXME: use INI
 			RegistryClass::Delete_Registry_Tree(new_path);
+#endif
 			index++;
 		}
 	}

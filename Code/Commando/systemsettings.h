@@ -92,14 +92,17 @@ class	SystemSettingEntry {
 
 public:
 	virtual	~SystemSettingEntry(void){};
+	// FIXME: combine Get_Name and Get_INI_Name
 	virtual	const char *	Get_Name( void )							= 0;
 	virtual	const char *	Get_INI_Name( void )					= 0;
 	virtual	const char *	Get_Help( void )							= 0;
 	virtual	void				Apply( void )								= 0;
 
+#if 0 // FIXME: use INI
 	// Registry save and load
 	virtual	void	Registry_Save( RegistryClass & registry )		= 0;
 	virtual	void	Registry_Load( RegistryClass & registry )		= 0;
+#endif
 
 	// INI save and load
 	virtual	void	INI_Save( INIClass & ini )		= 0;
@@ -119,8 +122,10 @@ public:
 
 	virtual	void					Apply( void ) override;
 
+#if 0 // FIXME: use INI
 	virtual	void					Registry_Save( RegistryClass & registry ) override;
 	virtual	void					Registry_Load( RegistryClass & registry ) override;
+#endif
 
 	virtual	void					INI_Save( INIClass & ini ) override;
 	virtual	void					INI_Load( INIClass & ini ) override;
@@ -148,8 +153,10 @@ public:
 
 	virtual	void					Apply( void ) override;
 
+#if 0 // FIXME: use INI
 	virtual	void					Registry_Save( RegistryClass & registry ) override;
 	virtual	void					Registry_Load( RegistryClass & registry ) override;
+#endif
 
 	virtual	void					INI_Save( INIClass & ini ) override;
 	virtual	void					INI_Load( INIClass & ini ) override;
@@ -186,8 +193,10 @@ public:
 
 	virtual	void					Apply( void ) override;
 
+#if 0 // FIXME: use INI
 	virtual	void					Registry_Save( RegistryClass & registry ) override;
 	virtual	void					Registry_Load( RegistryClass & registry ) override;
+#endif
 
 	virtual	void					INI_Save( INIClass & ini ) override;
 	virtual	void					INI_Load( INIClass & ini ) override;

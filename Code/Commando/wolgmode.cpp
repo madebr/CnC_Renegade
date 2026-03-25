@@ -1719,6 +1719,7 @@ void WolGameModeClass::HandleNotification(GameOptionsMessage& message)
 			if (cmd == request) {
 				static int sysinfo_log_disabled=-1;
 				if (sysinfo_log_disabled==-1) {	// Read from registry only once per run
+#if 0 // FIXME: use INI
 					RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 					if ( registry.Is_Valid() ) {
 						sysinfo_log_disabled=registry.Get_Int( VALUE_NAME_DISABLE_SERVER_SYSINFO_COLLECTING, -1 );
@@ -1728,6 +1729,7 @@ void WolGameModeClass::HandleNotification(GameOptionsMessage& message)
 							registry.Set_Int( VALUE_NAME_DISABLE_SERVER_SYSINFO_COLLECTING, sysinfo_log_disabled);
 						}
 					}
+#endif
 				}
 				// Only copy the sysinfo if it isn't disabled in registry
 				if (sysinfo_log_disabled==0) {

@@ -335,10 +335,13 @@ void	CampaignManager::Continue( bool /* success */ )
 			//	Add this movie name to the registry (that way the user
 			// can watch it later)
 			//
+
+#if 0 // FIXME: use INI
 			RegistryClass registry( APPLICATION_SUB_KEY_NAME_MOVIES );
 			if ( registry.Is_Valid() ) {
 				registry.Set_String( filename, description );
 			}
+#endif
 		}
 
 	} else {

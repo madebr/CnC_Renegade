@@ -158,7 +158,11 @@ LoginProfile* LoginProfile::Get(const unichar_t* loginName, bool createOK)
 		StringClass regKey(255, true);
 		regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, loginName);
 
+#if 0 // FIXME: Use INI
 		if (RegistryClass::Exists(regKey) || createOK)
+#else
+		if (TRUE)
+#endif
 			{
 			return Create(loginName);
 			}
@@ -226,6 +230,7 @@ void LoginProfile::Delete(const unichar_t* loginName)
 	{
 	if (loginName && u_strlen(loginName))
 		{
+#if 0 // FIXME: Use INI
 		RegistryClass registry(APPLICATION_SUB_KEY_NAME_LOGINS, false);
 
 		if (registry.Is_Valid())
@@ -234,6 +239,7 @@ void LoginProfile::Delete(const unichar_t* loginName)
 			u_wstomb(valueName, loginName, sizeof(valueName));
 			registry.Delete_Value(valueName);
 			}
+#endif
 		}
 	}
 
@@ -514,6 +520,7 @@ void LoginProfile::LoadSettings(void)
 	StringClass regKey(255, true);
 	regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
+#if 0 // FIXME: Use INI
 	RegistryClass registry(regKey, false);
 
 	if (registry.Is_Valid())
@@ -522,6 +529,7 @@ void LoginProfile::LoadSettings(void)
 		mSidePref = registry.Get_Int(REG_VALUE_SIDEPREF, -1);
 		mGamesPlayed = registry.Get_Int(REG_VALUE_GAMESPLAYED, 0);
 		}
+#endif
 
 	LoadRank(REG_VALUE_TEAMRANK, mTeamRank);
 	LoadRank(REG_VALUE_CLANRANK, mClanRank);
@@ -564,6 +572,7 @@ void LoginProfile::SaveSettings(void)
 		StringClass regKey(255, true);
 		regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
+#if 0 // FIXME: Use INI
 		RegistryClass registry(regKey);
 
 		if (registry.Is_Valid())
@@ -572,6 +581,7 @@ void LoginProfile::SaveSettings(void)
 			registry.Set_Int(REG_VALUE_SIDEPREF, mSidePref);
 			registry.Set_Int(REG_VALUE_GAMESPLAYED, mGamesPlayed);
 			}
+#endif
 
 		SaveRank(REG_VALUE_TEAMRANK, mTeamRank);
 		SaveRank(REG_VALUE_CLANRANK, mClanRank);
@@ -603,6 +613,7 @@ void LoginProfile::LoadRank(const char* valueName, LoginProfile::Ranking& rank)
 	StringClass regKey(255, true);
 	regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
+#if 0 // FIXME: Use INI
 	RegistryClass registry(regKey, false);
 
 	if (registry.Is_Valid())
@@ -622,6 +633,7 @@ void LoginProfile::LoadRank(const char* valueName, LoginProfile::Ranking& rank)
 		rank.Points = (unsigned)-1;
 		rank.Rank = (unsigned)-1;
 		}
+#endif
 	}
 
 
@@ -649,6 +661,7 @@ void LoginProfile::SaveRank(const char* valueName, const LoginProfile::Ranking& 
 	StringClass regKey(255, true);
 	regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
+#if 0 // FIXME: Use INI
 	RegistryClass registry(regKey);
 
 	if (registry.Is_Valid())
@@ -659,6 +672,7 @@ void LoginProfile::SaveRank(const char* valueName, const LoginProfile::Ranking& 
 
 		registry.Set_String(valueName, rankData);
 		}
+#endif
 	}
 
 

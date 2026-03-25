@@ -20,13 +20,26 @@
 #include "win.h"
 #include "wwdebug.h"
 
-#if defined(OPENW3D_WIN32)
+#if defined(_WIN32)
 HINSTANCE	ProgramInstance;
+
 #endif
 UI::Window	MainWindow;
 bool GameInFocus = false;
 
 #ifdef _WIN32
+
+HWND GetWin32Window(void)
+{
+#if defined(OPENW3D_WIN32)
+	return MainWindow;
+#elif defined(OPENW3D_SDL3)
+	return static_cast<HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(MainWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL));
+#else
+#error "Not implemented"
+#endif
+}
+
 /***********************************************************************************************
  * Print_Win32Error -- Print the Win32 error message.                                          *
  *                                                                                             *

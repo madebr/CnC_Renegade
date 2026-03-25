@@ -362,6 +362,7 @@ static void Log_System_Information()
 	HANDLE file;
 
 #ifdef WWDEBUG
+#if 0 // FIXME Use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		int disable=registry.Get_Int( SYSTEM_INFO_LOG_DISABLE );
@@ -381,6 +382,7 @@ static void Log_System_Information()
 			}
 		}
 	}
+#endif
 #endif
 
 	// Write log to local work folder
@@ -497,10 +499,12 @@ void Game_Shutdown(void)
 	}
 
 
+#if 0 // FIXME Use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
 	}
+#endif
 
 #ifdef FREEDEDICATEDSERVER
 	Copy_Logs(DebugManager::Get_Version_Number());

@@ -154,6 +154,7 @@ void WOLNATInterfaceClass::Init(void)
 	/*
 	** Read default values from the registry.
 	*/
+#if defined(OPENW3D_WIN32)
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
 	fw_assert(reg.Is_Valid());
 
@@ -184,6 +185,7 @@ void WOLNATInterfaceClass::Init(void)
 		PortBase = reg.Get_Int("PortBase", PortBase);
 		//ForcePort = reg.Get_Int("ForcePort", ForcePort);
 	}
+#endif
 
 	/*
 	** Make sure the base port is reasonable.
@@ -537,6 +539,7 @@ void WOLNATInterfaceClass::Shutdown(void)
 	*/
 	SessionPtr.Release();
 
+#if 0 // FIXME: Use INI
 	/*
 	** Now we need to write out any registry values that might have changed.
 	*/
@@ -571,6 +574,7 @@ void WOLNATInterfaceClass::Shutdown(void)
 
 		Set_Config(&reg, ForcePort, send_delay);
 	}
+#endif
 
 	/*
 	** Shut down the firewall helper class.
@@ -582,6 +586,7 @@ void WOLNATInterfaceClass::Shutdown(void)
 
 
 
+#if 0 // FIXME: Use INI
 /***********************************************************************************************
  * WOLNATInterfaceClass::Get_Config -- Get config settings from the registry.                  *
  *                                                                                             *
@@ -655,6 +660,7 @@ void WOLNATInterfaceClass::Set_Config(RegistryClass *reg, int port_number, bool 
 		delete local_reg;
 	}
 }
+#endif
 
 
 
@@ -1571,6 +1577,7 @@ void WOLNATInterfaceClass::Set_Server_Negotiated_Address(IPAddressClass *server_
  *=============================================================================================*/
 void WOLNATInterfaceClass::Save_Firewall_Info_To_Registry(void)
 {
+#if 0 // FIXME: Use INI
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
 	fw_assert(reg.Is_Valid());
 
@@ -1581,6 +1588,7 @@ void WOLNATInterfaceClass::Save_Firewall_Info_To_Registry(void)
 			reg.Set_Int("ExternalPort", addr.Get_Port());
 		}
 	}
+#endif
 }
 
 

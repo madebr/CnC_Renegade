@@ -160,9 +160,11 @@ void CCDKeyAuth::AuthSerial(const char *challenge, StringClass &resp) {
 
 void CCDKeyAuth::GetSerialNum(StringClass &serial) {
 
+#if 0 // FIXME: Use INI
 	RegistryClass main_reg(APPLICATION_SUB_KEY_NAME);
 	StringClass stringval;
 	StringClass serial_out;
 	main_reg.Get_String("Serial", stringval);
 	ServerSettingsClass::Encrypt_Serial(stringval, serial, false);
+#endif
 }

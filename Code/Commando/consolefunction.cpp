@@ -1101,6 +1101,7 @@ public:
 		}
 		*/
 
+#if 0 // FIXME: Use INI
 		//
 		// Default to third person
 		//
@@ -1127,6 +1128,7 @@ public:
 		WWASSERT(registry.Is_Valid());
 		registry.Set_Int("DisableCDCheck", true);
 		}
+#endif
 
 		//
 		// Set gamma etc so that they don't screw up debugging
@@ -4421,19 +4423,23 @@ public:
 
 		if (!::stricmp(input, "on")) {
 
+#if 0 // FIXME: use INI
 			RegistryClass registry(APPLICATION_SUB_KEY_NAME_DEBUG);
 			WWASSERT(registry.Is_Valid());
 			registry.Set_Int("SystemInfoLogDisable", false);
 			registry.Set_Int("DisableLogCopying", false);
+#endif
 
 			Print("Log copying is ON.");
 
 		} else if (!::stricmp(input, "off")) {
 
+#if 0 // FIXME: use INI
 			RegistryClass registry(APPLICATION_SUB_KEY_NAME_DEBUG);
 			WWASSERT(registry.Is_Valid());
 			registry.Set_Int("SystemInfoLogDisable", true);
 			registry.Set_Int("DisableLogCopying", true);
+#endif
 
 			Print("Log copying is OFF.");
 

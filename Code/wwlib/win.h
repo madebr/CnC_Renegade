@@ -51,8 +51,10 @@
 
 #include "wwui.h"
 
-#if defined(OPENW3D_WIN32)
+#if defined(_WIN32)
 #include <windows.h>
+
+HWND GetWin32Window(void);
 
 extern HINSTANCE	ProgramInstance;
 #endif

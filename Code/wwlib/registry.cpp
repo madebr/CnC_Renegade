@@ -35,7 +35,7 @@
 
 #include "registry.h"
 
-#ifdef _WIN32
+#if defined(OPENW3D_WIN32)
 
 #include "rawfile.h"
 #include "ini.h"
@@ -735,4 +735,4 @@ void RegistryClass::Delete_Registry_Tree(char *path)
 		}
 	}
 }
-#endif // _WIN32
+#endif // OPENW3D_WIN32

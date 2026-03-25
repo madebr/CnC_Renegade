@@ -412,9 +412,11 @@ void PingServerData::SetPingTime(int time)
 	{
 	mPingTime = time;
 
+#if 0 // FIXME: sav ping time somewhere
 	// Save the ping time in the registry.
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_SERVER_LIST);
 	reg.Set_Int(GetHostAddress(), time);
+#endif
 	}
 
 }

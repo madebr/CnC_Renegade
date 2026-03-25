@@ -91,7 +91,9 @@ MultiplayOptionsMenuClass::On_Init_Dialog (void)
 	//
 	bool is_send_delay	= false;
 	int	port_number		= 0;
+#if 0 // FIXME: Use INI
 	WOLNATInterface.Get_Config(NULL, port_number, is_send_delay);
+#endif
 
 	//
 	//	Configure the firewall options
@@ -172,6 +174,8 @@ MultiplayOptionsMenuClass::Save_Settings (void)
 	bool is_send_delay	= Is_Dlg_Button_Checked (IDC_SEND_DELAY_CHECK);
 	int port_number		= Get_Dlg_Item_Int (IDC_PORT_EDIT);
 
+#if 0 // FIXME: Use INI
 	WOLNATInterface.Set_Config(NULL, port_number, is_send_delay);
+#endif
 	return ;
 }

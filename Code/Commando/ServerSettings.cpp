@@ -242,6 +242,7 @@ bool ServerSettingsClass::Parse(bool apply)
 		** Restart Flag
 		*/
 
+#if 0 // FIXME: INI
 		RegistryClass restart_reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 		if (restart_reg.Is_Valid ()) {
 			restart_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
@@ -255,6 +256,7 @@ bool ServerSettingsClass::Parse(bool apply)
 					break;
 			}
 		}
+#endif
 
 		/*
 		** Nickname.
@@ -391,6 +393,7 @@ bool ServerSettingsClass::Parse(bool apply)
 		** Get the remote admin settings.
 		*/
 		bool allow_remote = ini.Get_Bool(MasterServerSection, "AllowRemoteAdmin", false);
+#if 0 // FIXME: INI
 		RegistryClass reg_remote(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
 		if (allow_remote) {
 			ini.Get_String(MasterServerSection, "RemoteAdminPassword", "", remote_admin_pass, sizeof(remote_admin_pass));
@@ -448,6 +451,7 @@ bool ServerSettingsClass::Parse(bool apply)
 			reg_remote.Set_Int(SERVER_CONTROL_LOOPBACK_KEY, 1);
 			ServerControl.Allow_Remote_Admin(false);
 		}
+#endif
 
 
 		/*
@@ -463,16 +467,19 @@ bool ServerSettingsClass::Parse(bool apply)
 					StringClass serial(master_serial, true);
 					StringClass encrypted_serial;
 					Encrypt_Serial(serial, encrypted_serial);
+#if 0 // FIXME: INI
 					RegistryClass reg_base(APPLICATION_SUB_KEY_NAME);
 					if (reg_base.Is_Valid()) {
 						reg_base.Set_String(KEY_SLAVE_SERIAL, encrypted_serial.Peek_Buffer());
 					}
+#endif
 				}
 
 				/*
 				** Nickname.
 				*/
 				if (strlen(master_nick)) {
+#if 0 // FIXME: INI
 					RegistryClass reg_wol(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 					if (reg_wol.Is_Valid()) {
 						reg_wol.Set_String("AutoLogin", master_nick);
@@ -480,6 +487,7 @@ bool ServerSettingsClass::Parse(bool apply)
 						reg_wol.Set_Int("AutoLoginPrompt", 0);
 						MPSettingsMgrClass::Set_Auto_Login(master_nick);
 					}
+#endif
 				}
 
 				/*
@@ -491,8 +499,10 @@ bool ServerSettingsClass::Parse(bool apply)
 				** Port number.
 				*/
 				if (master_port != 0xffffffff) {
+#if 0 // FIXME: INI
 					RegistryClass reg_fw(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
 					reg_fw.Set_Int("ForcePort", master_port);
+#endif
 				}
 			}
 
@@ -500,6 +510,7 @@ bool ServerSettingsClass::Parse(bool apply)
 			** Bandwidth.
 			*/
 			if (master_bw != 0xffffffff) {
+#if 0 // FIXME: INI
 				RegistryClass reg_netopt(APPLICATION_SUB_KEY_NAME_NETOPTIONS);
 				if (reg_netopt.Is_Valid()) {
 					if (cGameSpyAdmin::Is_Gamespy_Game()) {
@@ -524,6 +535,7 @@ bool ServerSettingsClass::Parse(bool apply)
 						}
 					}
 				}
+#endif
 			}
 		//}
 

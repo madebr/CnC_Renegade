@@ -140,12 +140,12 @@ void DirectInput::Init( void )
 		// First we try for "exclusive" access (mainly so debugging works well) if that fails
 		// then we'll take non-exclusive access.
 #if 0
-		hr = DIKeyboardDevice->SetCooperativeLevel( MainWindow,DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+		hr = DIKeyboardDevice->SetCooperativeLevel( GetWin32Window(),DISCL_FOREGROUND | DISCL_EXCLUSIVE);
 		if (FAILED(hr)) {
-			DIKeyboardDevice->SetCooperativeLevel( MainWindow, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+			DIKeyboardDevice->SetCooperativeLevel( GetWin32Window(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 		}
 #else
-			DIKeyboardDevice->SetCooperativeLevel( MainWindow, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+			DIKeyboardDevice->SetCooperativeLevel( GetWin32Window(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 #endif
 
 		// Set Keyboard Buffer Size
@@ -184,7 +184,7 @@ void DirectInput::Init( void )
 
 		/**/
 		// Set the mouse's cooperative level
-		hr = DIMouseDevice->SetCooperativeLevel( MainWindow,
+		hr = DIMouseDevice->SetCooperativeLevel( GetWin32Window(),
 						DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 		WWASSERT( !FAILED(hr) );
 		/**/
@@ -227,7 +227,7 @@ void DirectInput::Init( void )
 		WWASSERT( !FAILED(hr) );
 
 		// Set the joystick's cooperative level
-		hr = DIJoystickDevice->SetCooperativeLevel( MainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+		hr = DIJoystickDevice->SetCooperativeLevel( GetWin32Window(), DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 		WWASSERT( !FAILED(hr) );
 
 		DIPROPRANGE diprg;
@@ -346,7 +346,7 @@ void DirectInput::Acquire(void)
 
 		POINT cursorPos;
 		GetCursorPos(&cursorPos);
-		ScreenToClient(MainWindow, &cursorPos);
+		ScreenToClient(GetWin32Window(), &cursorPos);
 
 		CursorPos.X = (float)cursorPos.x;
 		CursorPos.Y = (float)cursorPos.y;
@@ -379,7 +379,7 @@ void DirectInput::Unacquire(void)
 		POINT cursorPos;
 		cursorPos.x = (LONG)CursorPos.X;
 		cursorPos.y = (LONG)CursorPos.Y;
-		ClientToScreen(MainWindow, &cursorPos);
+		ClientToScreen(GetWin32Window(), &cursorPos);
 		SetCursorPos(cursorPos.x, cursorPos.y);
 
 		Captured = false;

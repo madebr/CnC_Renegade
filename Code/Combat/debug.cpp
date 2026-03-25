@@ -160,6 +160,8 @@ void	DebugManager::Update( void )
 
 void	DebugManager::Load_Registry_Settings( const char * sub_key )
 {
+	// FIXME: use INI
+#if 0
 	RegistryClass registry( sub_key );
 	if ( registry.Is_Valid() ) {
 		EnabledDevices = registry.Get_Int( "EnabledDevices",	EnabledDevices );
@@ -174,11 +176,13 @@ void	DebugManager::Load_Registry_Settings( const char * sub_key )
 #ifdef LOG_MEMORY
 		Debug_Say(( "*** Memory Logging Enabled ***\n" ));
 #endif
-
+#endif
 }
 
 void	DebugManager::Save_Registry_Settings( const char * sub_key )
 {
+#if 0
+	// FIXME: use INI
 	RegistryClass registry( sub_key );
 	if ( registry.Is_Valid() ) {
 		registry.Set_Int( "EnabledDevices",			EnabledDevices );
@@ -189,6 +193,7 @@ void	DebugManager::Save_Registry_Settings( const char * sub_key )
 		registry.Set_Bool( "LoadDebugScripts",	LoadDebugScripts );
 		registry.Set_Bool( "AllowCinematicKeys",	AllowCinematicKeys );
 	}
+#endif
 }
 
 /*

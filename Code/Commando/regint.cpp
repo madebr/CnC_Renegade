@@ -49,10 +49,12 @@ cRegistryInt::cRegistryInt(const char *registry_location, const char *key_name, 
       strcpy(RegistryLocation, registry_location);
       strcpy(KeyName, key_name);
 
+#if 0 // FIXME: use INI
 	   RegistryClass * registry = new RegistryClass(RegistryLocation);
 	   WWASSERT(registry != NULL && registry->Is_Valid());
       Value = registry->Get_Int(KeyName, default_value);
    	delete registry;
+#endif
 
       Set(Value);
    }
@@ -64,9 +66,11 @@ void cRegistryInt::Set(int value)
    Value = value;
 
    if (strcmp(RegistryLocation, "")) {
+#if 0 // FIXME: use INI
 	   RegistryClass * registry = new RegistryClass(RegistryLocation);
 	   WWASSERT(registry != NULL && registry->Is_Valid());
       registry->Set_Int(KeyName, Value);
    	delete registry;
+#endif
    }
 }

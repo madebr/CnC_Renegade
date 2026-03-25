@@ -95,6 +95,7 @@ cLanChat::~cLanChat(void)
 void cLanChat::Load_Lan_Registry_Keys(void)
 {
 	WWDEBUG_SAY(("cLanChat::Load_Lan_Registry_Keys\n"));
+#if 0 // FIXME: Use INI
 
 	RegistryClass * registry = new RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS);
 	WWASSERT(registry);
@@ -121,11 +122,13 @@ void cLanChat::Load_Lan_Registry_Keys(void)
 	cNetInterface::Set_Side_Preference(sidePref);
 
 	delete registry;
+#endif
 }
 
 //-----------------------------------------------------------------------------
 void cLanChat::Save_Lan_Registry_Keys(void)
 {
+#if 0 // FIXME: Use INI
 	WWDEBUG_SAY(("cLanChat::Save_Lan_Registry_Keys...\n"));
 
 	RegistryClass * registry = new RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS);
@@ -140,7 +143,8 @@ void cLanChat::Save_Lan_Registry_Keys(void)
 
 	registry->Set_Int("SidePref", cNetInterface::Get_Side_Preference());
 
-	delete registry;
+	delete registry;]
+#endif
 }
 
 //-----------------------------------------------------------------------------

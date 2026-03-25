@@ -86,14 +86,22 @@ void GameSideServerControlClass::Init(void)
 			/*
 			** Get the port number from the registry.
 			*/
+#if 0 // FIXME: Use INI
 			RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
 			int port = reg.Get_Int(SERVER_CONTROL_PORT_KEY, DEFAULT_SERVER_CONTROL_PORT);
+#else
+			int port = DEFAULT_SERVER_CONTROL_PORT;
+#endif
 			if (port != 0) {
 
 				/*
 				** See if we should only bind to the loopback address (for slaves).
 				*/
+#if 0 // FIXME: Use INI
 				int loopback = reg.Get_Int(SERVER_CONTROL_LOOPBACK_KEY, 0);
+#else
+				int loopback = FALSE;
+#endif
 				if (SlaveMaster.Am_I_Slave()) {
 					ServerControl.Allow_Remote_Admin((loopback == 0) ? true : false);
 				}
@@ -101,12 +109,20 @@ void GameSideServerControlClass::Init(void)
 				/*
 				** Get the bind IP from the registry.
 				*/
+#if 0 // FIXME: Use INI
 				unsigned int ip = reg.Get_Int(SERVER_CONTROL_IP_KEY, 0);
+#else
+				unsigned int ip = 0;
+#endif
 
+#if 0 // FIXME: Use INI
 				/*
 				** Get the password from the registry.
 				*/
 				reg.Get_String(SERVER_CONTROL_PASSWORD_KEY, password, sizeof(password), password);
+#else
+				password[0] = '\0';
+#endif
 
 				/*
 				** Start listening.

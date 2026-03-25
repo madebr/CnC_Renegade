@@ -205,7 +205,7 @@ RenegadeDialogMgrClass::Initialize (void)
 	const char *	STYLE_MGR_INI	= "stylemgr.ini";
 
 	_TheWWUIInput = new RenegadeUIInputClass;
-	_TheWWUIInput->InitIME(MainWindow);
+	_TheWWUIInput->InitIME(GetWin32Window());
 
 	//
 	//	Simple-pass thru to the WWUI dialog mgr system

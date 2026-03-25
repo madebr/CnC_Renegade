@@ -28,7 +28,6 @@
 #include "savegame.h"
 #include "systimer.h"
 #include "specialbuilds.h"
-
 const unsigned NUM_GAMES_LOGGED=10;
 
 //#define	COMBAT_SUB_KEY_NAME_DEBUG				"Software\\Westwood\\Renegade\\Debug"
@@ -50,6 +49,13 @@ const unsigned NUM_GAMES_LOGGED=10;
 #define	SYSTEM_INFO_LOG_CURRENT_STATE			"SystemInfoLog_CurrentState"
 #define	SYSTEM_INFO_LOG_LATEST_GAME			"SystemInfoLog_LatestGame"
 
+enum {
+	STATE_INIT = 0,
+	STATE_LOADING = 1,
+	STATE_PLAYING = 2,
+	STATE_EXITING = 3,
+};
+
 static int Team0TotalSizes;
 static int Team0SizeReported;
 static int Team1TotalSizes;
@@ -68,6 +74,7 @@ static unsigned TotalPlayingTime;
 static StringClass CurrentLevel;
 static StringClass CurrentString;
 
+#if 0  // FIXME: LOG TO LOG FILE
 static void Get_Latest_Game_String(RegistryClass& reg, int i, StringClass& string)
 {
 	StringClass keyname(0,true);
@@ -81,6 +88,7 @@ static void Set_Latest_Game_String(RegistryClass& reg, int i, const StringClass&
 	keyname.Format("%s%d",SYSTEM_INFO_LOG_LATEST_GAME,i+1);
 	reg.Set_String(keyname, string);
 }
+#endif
 
 void SystemInfoLog::Set_State_Loading()
 {
@@ -92,9 +100,10 @@ void SystemInfoLog::Set_State_Loading()
 	CurrentFPSCount=0;
 	CurrentLoadingTime=0;
 
+#if 0 // FIXME: Use INI
 	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, 1 );
+		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_LOADING );
 		StringClass string(0,true);
 		for (int i=NUM_GAMES_LOGGED-1;i>0;--i) {
 			Get_Latest_Game_String(registry,i-1,string);
@@ -106,10 +115,12 @@ void SystemInfoLog::Set_State_Loading()
 
 		Set_Latest_Game_String(registry, 0, CurrentString );
 	}
+#endif
 }
 
 void SystemInfoLog::Set_Current_Level(const char* level_name)
 {
+#if 0 // FIXME: Use INI
 	CurrentLevel=level_name;
 	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
@@ -118,17 +129,20 @@ void SystemInfoLog::Set_Current_Level(const char* level_name)
 		Set_Latest_Game_String(registry,0,CurrentString );
 
 	}
+#endif
 }
 
 void SystemInfoLog::Set_State_Playing()
 {
+#if 0 // FIXME: Use INI
 	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, 2 );
+		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_PLAYING );
 		Get_Final_String(CurrentString);
 		CurrentString+="Crashed while playing";
 		Set_Latest_Game_String(registry,0,CurrentString );
 	}
+#endif
 	PlayingStartTime=TIMEGETTIME();
 }
 
@@ -142,12 +156,12 @@ void SystemInfoLog::Get_Final_String(StringClass& string)
 	avgfps.Format("%d.%1.1d",AvgFPS/10,AvgFPS%10);
 	string.Format(
 		"%5s %16s %6s %6d %6d %6s %8d ",
-		vnum,
-		CurrentLevel,
-		ptime,
+		vnum.Peek_Buffer(),
+		CurrentLevel.Peek_Buffer(),
+		ptime.Peek_Buffer(),
 		MinFPS!=1000 ? MinFPS : 0,
 		MaxFPS,
-		avgfps,
+		avgfps.Peek_Buffer(),
 		CurrentLoadingTime);
 }
 
@@ -160,29 +174,33 @@ void SystemInfoLog::Set_State_Exiting()
 		AvgFPS=CurrentTotalFPS*10/CurrentFPSCount;
 	}
 
+#if 0 // FIXME: Use INI
 	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, 3 );
+		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_EXITING );
 
 		Get_Final_String(CurrentString);
 		CurrentString+="Crashed while exiting.";
 		Set_Latest_Game_String(registry,0,CurrentString);
 	}
+#endif
 }
 
 void SystemInfoLog::Reset_State()
 {
+#if 0 // FIXME: Use INI
 	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		int old_state=registry.Get_Int( SYSTEM_INFO_LOG_CURRENT_STATE);
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, 0 );
+		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_INIT );
 		// If was exiting...
-		if (old_state==3) {
+		if (old_state==STATE_EXITING) {
 			Get_Final_String(CurrentString);
 			CurrentString+="OK";
 			Set_Latest_Game_String(registry,0,CurrentString);
 		}
 	}
+#endif
 	CurrentLevel="";
 }
 
@@ -213,6 +231,7 @@ void SystemInfoLog::Record_Frame()
 
 void SystemInfoLog::Get_Log(StringClass& string)
 {
+#if 0 // FIXME: Use INI
 	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		string.Format(
@@ -239,6 +258,7 @@ void SystemInfoLog::Get_Log(StringClass& string)
 			string+="\r\n";
 		}
 	}
+#endif
 }
 
 void SystemInfoLog::Get_Compact_Log(StringClass& string)
@@ -274,7 +294,7 @@ void PlayerInfoLog::Append_To_Log(PlayerDataClass* data)
 #ifdef WWDEBUG
 	StringClass tmp;
 	StringClass work(0,true);
-	ADD_HISTORY(("Map name: %s\r\n",CurrentMapName));
+	ADD_HISTORY(("Map name: %s\r\n",CurrentMapName.Peek_Buffer()));
 	ADD_HISTORY(("Game time: %2.2f\r\n",data->Get_Game_Time()));
 	ADD_HISTORY(("Session time: %2.2f\r\n",data->Get_Session_Time()));
 	ADD_HISTORY(("Enemies killed: %d\r\n",data->Get_Enemies_Killed()));
@@ -283,10 +303,10 @@ void PlayerInfoLog::Append_To_Log(PlayerDataClass* data)
 	ADD_HISTORY(("Powerups collected: %d\r\n",data->Get_Powerups_Collected()));
 	ADD_HISTORY(("Vehicles destroyed: %d\r\n",data->Get_Vehiclies_Destroyed()));
 	ADD_HISTORY(("Buildings destroyed: %d\r\n",data->Get_Building_Destroyed()));
-	ADD_HISTORY(("Time in vehicles: %d\r\n",data->Get_Vehicle_Time()));
+	ADD_HISTORY(("Time in vehicles: %2.2f\r\n",data->Get_Vehicle_Time()));
 	ADD_HISTORY(("Kills from vehicles: %d\r\n",data->Get_Kills_From_Vehicle()));
 	ADD_HISTORY(("Squishes: %d\r\n",data->Get_Squishes()));
-	ADD_HISTORY(("Credits granted: %d\r\n",data->Get_Credit_Grant()));
+	ADD_HISTORY(("Credits granted: %2.2f\r\n",data->Get_Credit_Grant()));
 	ADD_HISTORY(("Times reloaded: %d\r\n",CombatManager::Get_Reload_Count()));
 	ADD_HISTORY(("Cheats used: %s\r\n",CheatMgrClass::Get_Instance()->Was_Cheat_Used( CheatMgrClass::ALL_CHEATS ) ? "Yes" : "No"));
 	ADD_HISTORY(("Secondary objectives completed: %d\r\n",ObjectiveManager::Get_Num_Completed_Objectives( ObjectiveManager::TYPE_SECONDARY )));
@@ -316,7 +336,7 @@ void PlayerInfoLog::Get_Compact_Log(StringClass& string)
 		team1size=10*Team1TotalSizes/Team1SizeReported;
 	}
 
-	string.Format("%s\t%d.%d\t%d.%d\t",CurrentMapName,team0size/10,team0size%10,team1size/10,team1size%10);
+	string.Format("%s\t%d.%d\t%d.%d\t",CurrentMapName.Peek_Buffer(),team0size/10,team0size%10,team1size/10,team1size%10);
 
 	Team0SizeReported=0;
 	Team1SizeReported=0;

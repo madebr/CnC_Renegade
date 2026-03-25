@@ -46,10 +46,12 @@ cRegistryBool::cRegistryBool(const char *registry_location, const char *key_name
    strcpy(RegistryLocation, registry_location);
    strcpy(KeyName, key_name);
 
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass(RegistryLocation);
 	WWASSERT(registry != NULL && registry->Is_Valid());
    Value = registry->Get_Int(KeyName, default_value == 1);
    delete registry;
+#endif
 
    Set(Value == 1);
 }
@@ -67,10 +69,12 @@ bool cRegistryBool::Set(bool value)
 
 	WWASSERT(RegistryLocation != NULL);
    WWASSERT(KeyName != NULL);
+#if 0 // FIXME: Use INI
 	RegistryClass * registry = new RegistryClass(RegistryLocation);
 	WWASSERT(registry != NULL && registry->Is_Valid());
    registry->Set_Int(KeyName, Value);
    delete registry;
+#endif
 
    return Value == 1;
 }

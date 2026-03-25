@@ -96,6 +96,7 @@ static const char *REG_VALUE_ARE_SKINS_UNLOCKED	= "PrimeSocket";
 void
 MPSettingsMgrClass::Load_Settings (void)
 {
+#if 0 // FIXME Use INI
 	//
 	//	Attempt to open the MP settings sub-key
 	//
@@ -134,6 +135,7 @@ MPSettingsMgrClass::Load_Settings (void)
 	}
 
 	return ;
+#endif
 }
 
 
@@ -147,11 +149,13 @@ MPSettingsMgrClass::Set_Last_Login(const char *name)
 {
 	LastLogin = name;
 
+#if 0 // FIXME Use INI
 	RegistryClass registry(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 
 	if (registry.Is_Valid()) {
 		registry.Set_String(REG_VALUE_LAST_LOGIN, LastLogin);
 	}
+#endif
 }
 
 
@@ -177,11 +181,13 @@ MPSettingsMgrClass::Set_Auto_Login(const char* login)
 {
 	AutoLogin = login;
 
+#if 0 // FIXME Use INI
 	RegistryClass registry(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 
 	if (registry.Is_Valid()) {
 		registry.Set_String(REG_VALUE_AUTOLOGIN, AutoLogin);
 	}
+#endif
 }
 
 
@@ -208,11 +214,13 @@ MPSettingsMgrClass::Set_Auto_Password(const char* pass)
 {
 	AutoPassword = pass;
 
+#if 0 // FIXME Use INI
 	RegistryClass registry(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 
 	if (registry.Is_Valid()) {
 		registry.Set_String(REG_VALUE_AUTOPASSWORD, AutoPassword);
 	}
+#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -297,6 +305,7 @@ MPSettingsMgrClass::Set_Is_Sidebar_Help_Displayed (bool onoff)
 {
 	DisplaySidebarHelp = onoff;
 
+#if 0 // FIXME Use INI
 	//
 	//	Attempt to open the MP settings sub-key
 	//
@@ -304,6 +313,7 @@ MPSettingsMgrClass::Set_Is_Sidebar_Help_Displayed (bool onoff)
 	if (registry.Is_Valid ()) {
 		registry.Set_Bool (REG_VALUE_SIDEBAR_HELP, DisplaySidebarHelp);
 	}
+#endif
 
 	return ;
 }
@@ -322,10 +332,12 @@ MPSettingsMgrClass::Enable_Auto_Login_Prompt (bool onoff)
 	//
 	//	Attempt to open the MP settings sub-key
 	//
+#if 0 // FIXME Use INI
 	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 	if (registry.Is_Valid ()) {
 		registry.Set_Bool (REG_VALUE_AUTOLOGIN_PROMPT, IsAutoLoginPromptEnabled);
 	}
+#endif
 
 	return ;
 }
@@ -348,10 +360,12 @@ MPSettingsMgrClass::Set_Option_Flag (OPTION flag, bool onoff)
 	//
 	//	Save this setting in the registry
 	//
+#if 0 // FIMXME: Use INI
 	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 	if (registry.Is_Valid ()) {
 		registry.Set_Int (REG_VALUE_OPTIONS, OptionFlags);
 	}
+#endif
 
 	return ;
 }
@@ -404,10 +418,12 @@ MPSettingsMgrClass::Are_Alternate_Skins_Unlocked (void)
 				//
 				//	Save this setting in the registry
 				//
+#if 0 // FIMXME: Use INI
 				RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				if (registry.Is_Valid ()) {
 					registry.Set_Bool (REG_VALUE_ARE_SKINS_UNLOCKED, AreSkinsUnlocked);
 				}
+#endif
 			}
 
 		} else {

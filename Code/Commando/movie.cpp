@@ -67,12 +67,14 @@ void	MovieGameModeClass::Init()
 	IsPending = false;
 	IsPlaying = false;
 
+#if 0 // FIXME: use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	if ( registry.Is_Valid() ) {
 		IntroMovieSkipAllowed = registry.Get_Bool( "IntroMovieSkipAllowed", false );
 		SkipAllIntroMovies = registry.Get_Bool( "SkipAllIntroMovies", false );
 		registry.Set_Bool( "SkipAllIntroMovies", SkipAllIntroMovies );
 	}
+#endif
 
 }
 
@@ -138,12 +140,14 @@ void	MovieGameModeClass::Start_Movie( const char * filename )
 	//
 	bool force_cd = true;
 
+#if 0 // FIXME: use INI
 #ifdef WWDEBUG
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		force_cd = (registry.Get_Int( "DisableCDCheck", 0 ) == 0);
 	}
 #endif //WWDEBUG
+#endif
 
 #if defined(BETACLIENT) || defined(FREEDEDICATEDSERVER) || defined(MULTIPLAYERDEMO)
 	force_cd = false;
@@ -282,10 +286,12 @@ void	MovieGameModeClass::Movie_Done( void )
 
 		IntroMovieSkipAllowed = true;
 
+#if 0 // FIXME: use INI
 		RegistryClass registry( APPLICATION_SUB_KEY_NAME_OPTIONS );
 		if ( registry.Is_Valid() ) {
 			registry.Set_Bool( "IntroMovieSkipAllowed", true );
 		}
+#endif
 
 		Deactivate();
 	} else {

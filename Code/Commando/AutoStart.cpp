@@ -130,10 +130,12 @@ void AutoRestartClass::Restart_Game(void)
 	if (RestartState == STATE_DONE) {
 		RestartState = STATE_FIRST;
 		CancelRequest = false;
+#if 0 // FIXME: Use INI
 		RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 		if (registry.Is_Valid()) {
 			GameMode = registry.Get_Int(REG_VALUE_AUTO_RESTART_TYPE, GameMode);
 		}
+#endif
 		Set_Restart_Flag(false);
 	}
 }
@@ -511,9 +513,15 @@ void AutoRestartClass::Think(void)
 			** Load alternate server settings if required.
 			*/
 			if (SlaveMaster.Am_I_Slave()) {
+#if 0 // FIXME: use INI
 				RegistryClass reg(APPLICATION_SUB_KEY_NAME_OPTIONS);
+#endif
 				char file_name[MAX_PATH];
+#if 0 // FIXME: use INI
 				reg.Get_String("MultiplayerSettings", file_name, sizeof(file_name), "");
+#else
+				file_name[0] = '\0';
+#endif
 				if (strlen(file_name)) {
 					WWDEBUG_SAY(("Loading multiplayer settings from file %s\n", file_name));
 					The_Game()->Set_Ini_Filename(file_name);
@@ -888,6 +896,7 @@ void AutoRestartClass::ReceiveSignal(WolGameModeClass &game_mode)
  *=============================================================================================*/
 void AutoRestartClass::Set_Restart_Flag(bool enable)
 {
+#if 0 // FIXME: Use INI
 	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 	if (registry.Is_Valid ()) {
 		registry.Set_Int(REG_VALUE_AUTO_RESTART_FLAG, enable ? 1 : 0);
@@ -947,6 +956,7 @@ void AutoRestartClass::Set_Restart_Flag(bool enable)
 			}
 		}
 	}
+#endif
 }
 
 
@@ -970,10 +980,12 @@ bool AutoRestartClass::Get_Restart_Flag(void)
 {
 	bool flag = false;
 
+#if 0 // FIXME: Use INI
 	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 	if (registry.Is_Valid()) {
 		int restart = registry.Get_Int(REG_VALUE_AUTO_RESTART_FLAG, 0);
 		flag = restart ? true : false;
 	}
+#endif
 	return(flag);
 }

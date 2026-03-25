@@ -77,6 +77,7 @@ MovieOptionsMenuClass::On_Init_Dialog (void)
 		//
 		list_ctrl->Add_Column (TRANSLATE (IDS_MOVIE_COL_HEADER), 1.0F, Vector3 (1, 1, 1));
 
+#if 0 // FIXME: use INI
 		//
 		//	Add the movies to the list...
 		//
@@ -116,6 +117,7 @@ MovieOptionsMenuClass::On_Init_Dialog (void)
 				}
 			}
 		}
+#endif
 	}
 
 	MenuDialogClass::On_Init_Dialog ();

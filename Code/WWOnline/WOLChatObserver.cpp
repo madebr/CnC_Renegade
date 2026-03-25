@@ -264,9 +264,11 @@ STDMETHODIMP ChatObserver::OnServerList(HRESULT result, WOL::Server* servers)
 	// Process new server list.
 	mOuter->ClearServers();
 
+#if 0 // FIXME: store server list somewhere
 	// Clear out old server info from the registry.
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_SERVER_LIST);
 	reg.Deleta_All_Values();
+#endif
 
 	WOL::Server* curServer = servers;
 

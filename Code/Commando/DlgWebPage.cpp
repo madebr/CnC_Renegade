@@ -177,7 +177,7 @@ DlgWebPage::~DlgWebPage()
 bool DlgWebPage::FinalizeCreate(void)
 	{
 #if WEBBROWSER_ENABLED
-	mBrowser = WebBrowser::CreateInstance(MainWindow);
+	mBrowser = WebBrowser::CreateInstance(GetWin32Window());
 
 	if (mBrowser)
 		{
@@ -231,7 +231,13 @@ void DlgWebPage::End_Dialog(void)
 	{
 	DirectInput::Acquire();
 	DialogBaseClass::End_Dialog();
+#ifdef OPENW3D_WIN32
 	SetFocus(MainWindow);
+#elif defined(OPENW3D_SDL3)
+	SDL_RaiseWindow(MainWindow);
+#else
+	#error "Not implemented"
+#endif
 	}
 
 
@@ -258,12 +264,13 @@ void DlgWebPage::On_Frame_Update(void)
 	if (mBrowser)
 		{
 		bool usingEmbedded = mBrowser->UsingEmbeddedBrowser();
+		HWND hWnd = GetWin32Window();
 
 		if (!usingEmbedded)
 			{
 			bool externalRunning = mBrowser->IsExternalBrowserRunning();
-			bool gameActivated = (GameInFocus || (GetTopWindow(NULL) == MainWindow)
-					|| (GetForegroundWindow() == MainWindow));
+			bool gameActivated = (GameInFocus || (GetTopWindow(NULL) == hWnd)
+					|| (GetForegroundWindow() == hWnd));
 
 			if (!externalRunning || gameActivated)
 				{
@@ -271,10 +278,10 @@ void DlgWebPage::On_Frame_Update(void)
 
 				HWND topWindow = GetTopWindow(NULL);
 
-        if (topWindow != MainWindow)
+        if (topWindow != hWnd)
 					{
-          SetForegroundWindow(MainWindow);
-          ShowWindow(MainWindow, SW_RESTORE);
+          SetForegroundWindow(hWnd);
+          ShowWindow(hWnd, SW_RESTORE);
 					}
 
 				End_Dialog();

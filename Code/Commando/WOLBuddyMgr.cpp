@@ -266,6 +266,7 @@ void WOLBuddyMgr::SaveIgnoreList(void)
 	{
 	if (mWOLSession->IsStoreLoginAllowed())
 		{
+#if 0 // FIMXME: Use INI
 		RegistryClass reg(APPLICATION_SUB_KEY_NAME_IGNORE_LIST);
 
 		if (reg.Is_Valid())
@@ -284,6 +285,7 @@ void WOLBuddyMgr::SaveIgnoreList(void)
 				reg.Set_String(valueName, (char*)name);
 				}
 			}
+#endif
 		}
 	}
 

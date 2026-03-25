@@ -298,11 +298,13 @@ void Commando_Assert_Handler(const char * message)
 #ifdef WWDEBUG
 	Copy_Logs(DebugManager::Get_Version_Number());
 #endif // WWDEBUG
+#if 0 // FIXME: Use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
 
 	}
+#endif
 
 #ifdef WWDEBUG
 
@@ -546,10 +548,15 @@ public:
 		DWORD size = sizeof(computer_name);
 		::GetComputerNameA(computer_name, &size);
 
+#if 0 // FIX: use INI
 		RegistryClass reg(APPLICATION_SUB_KEY_NAME_DEBUG);
 		char path[MAX_PATH];
 		reg.Get_String("LogPath", path, sizeof(path), "\\\\tanya\\game\\projects\\renegade\\_error_logs");
 		strcat(path, "/");
+#else
+		char path[MAX_PATH];
+		strcpy(path, "./");
+#endif
 
 		StringClass folder_name(0,true);
 		folder_name.Format("%s%d.%d",path,Version>>16,Version&0xffff);
@@ -567,10 +574,12 @@ public:
 
 void Copy_Logs(unsigned version)
 {
+#if 0 // FIXME: Use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		if (registry.Get_Int( VALUE_NAME_DISABLE_LOG_COPYING,0 )) return;
 	}
+#endif
 
 	if (CopyThread.Is_Running()) return;
 	CopyThread.Version=version;
@@ -590,10 +599,12 @@ void Application_Exception_Callback(void)
 #ifdef WWDEBUG
 	Copy_Logs(DebugManager::Get_Version_Number());
 #endif // WWDEBUG
+#if 0 // FIXME: Use INI
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
 		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
 	}
+#endif
 }
 
 bool RestartNeeded = true;
@@ -720,6 +731,7 @@ bool Game_Init(void)
 {
 	WWMEMLOG(MEM_GAMEINIT);
 
+#if 0 // FIXME: Use INI
 	// Set registry key to 1 for the duration of the init. This way we know if the program crashed while the init.
 	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
 	if ( registry.Is_Valid() ) {
@@ -730,6 +742,7 @@ bool Game_Init(void)
 #endif // WWDEBUG
 		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
 	}
+#endif
 
 	//
 	//	Ensure our directory structure exists
@@ -872,11 +885,23 @@ bool Game_Init(void)
 	}
 	if (AutoRestart.Get_Restart_Flag() || ServerSettingsClass::Is_Command_Line_Mode() || ConsoleBox.Is_Exclusive()) {
 		if (!ConsoleBox.Is_Exclusive()) {
+#if defined(OPENW3D_WIN32)
 			::ShowWindow( MainWindow, SW_MINIMIZE );	// minimize if we are starting automatically.
+#elif defined(OPENW3D_SDL3)
+			SDL_HideWindow(MainWindow);
+#else
+#error "Not implemented"
+#endif
 		}
 		ConsoleBox.Init();
 	} else {
+#if defined(OPENW3D_WIN32)
 		::ShowWindow( MainWindow, SW_SHOW );	// show the (initially hidden) window
+#elif defined(OPENW3D_SDL3)
+		SDL_ShowWindow(MainWindow);
+#else
+#error "Not implemented"
+#endif
 	}
 
 	// Clear screen
@@ -1008,6 +1033,7 @@ bool Game_Init(void)
 	// After TextDisplay is created, install the Display Handler
 	DebugManager::Set_Display_Handler(&TextDisplayHandler);
 
+#if defined(OPENW3D_WIN32)
 	// Load the accelerator table and hand it off to WWLIB.
 	// Note:  Accelerator tables that are loaded from resources (like
 	// we are doing here) do not need to be manually freed.  Windows
@@ -1016,6 +1042,7 @@ bool Game_Init(void)
 	if (haccel) {
 		::Add_Accelerator (MainWindow, haccel);
 	}
+#endif
 
 	//WW3D::Set_Texture_Reduction( 1 );
 
@@ -1039,11 +1066,12 @@ bool Game_Init(void)
 	cNicEnum::Init();
 
 
-
+#if 0 // FIXME: use ini
 	if ( registry.Is_Valid() ) {
 		registry.Set_Int( VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 0 );
 		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, DebugManager::Get_Version_Number() );
 	}
+#endif
 
 
 #if (IMMEDIATE_LOAD==0)

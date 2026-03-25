@@ -42,6 +42,7 @@
 #ifdef _WIN32
 
 #include "win.h"
+#include <windows.h>
 /*
 ** Forward Declarations
 */

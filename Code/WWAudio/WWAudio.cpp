@@ -1580,6 +1580,7 @@ WWAudioClass::Is_Disabled (void) const
 	if (_firsttime) {
 		_firsttime = false;
 
+#if 0 // FIXME: use INI
 		//
 		//	Read the disabled key from the registry
 		//
@@ -1590,6 +1591,7 @@ WWAudioClass::Is_Disabled (void) const
 				WWDEBUG_SAY (("WWAudio: Audio system disabled in registry.\r\n"));
 			}
 		}
+#endif
 	}
 
 	return (_disabled | m_ForceDisable);

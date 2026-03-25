@@ -49,6 +49,7 @@ cRegistryFloat::cRegistryFloat(const char *registry_location, const char *key_na
       strcpy(RegistryLocation, registry_location);
       strcpy(KeyName, key_name);
 
+#if 0 // FIXME: use INI
 	   RegistryClass * registry = new RegistryClass(RegistryLocation);
 	   WWASSERT(registry != NULL && registry->Is_Valid());
 		int temp_1 = 0;
@@ -58,6 +59,7 @@ cRegistryFloat::cRegistryFloat(const char *registry_location, const char *key_na
 		WWASSERT(sizeof(temp_2) == sizeof(Value));
 		::memcpy(&Value, &temp_2, sizeof(temp_2));
    	delete registry;
+#endif
 
       Set(Value);
    }
@@ -69,6 +71,7 @@ void cRegistryFloat::Set(float value)
    Value = value;
 
    if (strcmp(RegistryLocation, "")) {
+#if 0 // FIXME: use INI
 	   RegistryClass * registry = new RegistryClass(RegistryLocation);
 	   WWASSERT(registry != NULL && registry->Is_Valid());
 		int temp = 0;
@@ -76,5 +79,6 @@ void cRegistryFloat::Set(float value)
 		::memcpy(&temp, &Value, sizeof(Value));
       registry->Set_Int(KeyName, temp);
    	delete registry;
+#endif
    }
 }

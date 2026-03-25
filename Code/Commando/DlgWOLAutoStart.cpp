@@ -83,6 +83,7 @@ AutoRestartProgressDialogClass::AutoRestartProgressDialogClass(void) :
  *=============================================================================================*/
 void AutoRestartProgressDialogClass::On_Init_Dialog (void)
 {
+#if 0 // FIXME: Use INI
 	/*
 	** Create the backdrop if necessary
 	*/
@@ -95,6 +96,7 @@ void AutoRestartProgressDialogClass::On_Init_Dialog (void)
 			}
 		}
 	}
+#endif
 
 	/*
 	** Set the columns up. Just one with nothing in it.

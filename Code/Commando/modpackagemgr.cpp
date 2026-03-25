@@ -171,6 +171,7 @@ ModPackageMgrClass::Set_Current_Package (const char *package_filename)
 	//
 	CurrentPackage.Set_Package_Filename (package_filename);
 
+#if 0 // FIXME: Use INI
 	//
 	//	Write the name of hte package to the registry
 	//
@@ -178,6 +179,7 @@ ModPackageMgrClass::Set_Current_Package (const char *package_filename)
 	if (registry.Is_Valid ()) {
 		registry.Set_String (CURR_MOD_REG_VALUE, package_filename);
 	}
+#endif
 
 	return ;
 }

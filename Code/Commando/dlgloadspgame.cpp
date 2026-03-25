@@ -305,13 +305,17 @@ LoadSPGameMenuClass::Get_Game_Rank
 	if ( name.Get_Length() > 4 ) {
 		name.Erase( name.Get_Length()-4, 4 );
 	}
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_MISSION_RANKS );
 	WWASSERT( registry );
+#endif
 	int rank = 0;
+#if 0 // FIXME: use INI
 	if ( registry->Is_Valid() ) {
 		rank = registry->Get_Int( name,   0 );
 	}
 	delete registry;
+#endif
 	return rank;
 }
 
@@ -333,6 +337,7 @@ LoadSPGameMenuClass::Set_Game_Rank
 	if ( name.Get_Length() > 4 ) {
 		name.Erase( name.Get_Length()-4, 4 );
 	}
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_MISSION_RANKS );
 	WWASSERT( registry );
 	if ( registry->Is_Valid() ) {
@@ -345,6 +350,7 @@ LoadSPGameMenuClass::Set_Game_Rank
 
 	}
 	delete registry;
+#endif
 }
 
 

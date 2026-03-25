@@ -149,6 +149,7 @@ void 	ConsoleGameModeClass::Shutdown()
 
 void ConsoleGameModeClass::Load_Registry_Keys(void)
 {
+#if 0 // FIXME: use INI
 //	Debug_Say(( "CombatGameModeClass::Load_Registry_Keys...\n" ));
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
@@ -159,10 +160,12 @@ void ConsoleGameModeClass::Load_Registry_Keys(void)
       Get_Console()->Set_FPS_Active( registry->Get_Int( "FPS", 1 ) != 0 );
 	}
 	delete registry;
+#endif
 }
 
 void ConsoleGameModeClass::Save_Registry_Keys(void)
 {
+#if 0 // FIXME: use INI
 //	Debug_Say(( "CombatGameModeClass::Save_Registry_Keys...\n"));
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
@@ -177,6 +180,7 @@ void ConsoleGameModeClass::Save_Registry_Keys(void)
       registry->Set_Int( "FPS", Get_Console()->Is_FPS_Active() );
 	}
 	delete registry;
+#endif
 }
 
 

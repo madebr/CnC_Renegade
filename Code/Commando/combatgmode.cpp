@@ -1205,6 +1205,7 @@ void CombatGameModeClass::Core_Restart(void)
 */
 void CombatGameModeClass::Load_Registry_Keys(void)
 {
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
 	if ( registry->Is_Valid() ) {
@@ -1216,10 +1217,12 @@ void CombatGameModeClass::Load_Registry_Keys(void)
 		CombatManager::Set_First_Person_Default(DefaultToFirstPerson != 0);
 	}
 	delete registry;
+#endif
 }
 
 void CombatGameModeClass::Save_Registry_Keys(void)
 {
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
 	if ( registry->Is_Valid() ) {
@@ -1231,6 +1234,7 @@ void CombatGameModeClass::Save_Registry_Keys(void)
 		registry->Set_Int( "DefaultToFirstPerson",	DefaultToFirstPerson );
 	}
 	delete registry;
+#endif
 }
 
 /*
@@ -1515,6 +1519,7 @@ void	CombatGameModeClass::Quick_Save( void )
 {
 	bool	saveA = true;
 
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
 	if ( registry->Is_Valid() ) {
@@ -1547,6 +1552,7 @@ void	CombatGameModeClass::Quick_Save( void )
 		registry->Set_Bool( "QuicksaveA",	saveA );
 	}
 	delete registry;
+#endif
 
 	// Display "Quick Saved"
 	HUDInfo::Set_HUD_Help_Text( TRANSLATE( IDS_M00DSGN_DSGN1017I1DSGN_TXT ), Vector3( 0,1,0 ) );

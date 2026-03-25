@@ -166,6 +166,7 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			char tempmod[512];
 			strcpy(tempmod, DefaultRegistryModifier);
 			strcpy(DefaultRegistryModifier, "");
+#if 0 // FIXME: Use INI
 			RegistryClass reg(APPLICATION_SUB_KEY_NAME);
 			if (reg.Is_Valid()) {
 				reg.Set_Int("ProcessId", GetCurrentProcessId());
@@ -173,6 +174,7 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			strcpy(DefaultRegistryModifier, tempmod);
 
 			RegistryClass::Set_Read_Only(true);
+#endif
 			continue;
 		}
 
@@ -201,11 +203,13 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			if (file.Is_Available()) {
 				ServerSettingsClass::Set_Settings_File_Name(server_config_file);
 
+#if 0 // FIXME: Use INI
 				RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				if (registry.Is_Valid ()) {
 					registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
 					registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 0);
 				}
+#endif
 				cGameSpyAdmin::Set_Is_Server_Gamespy_Listed(true);
 				GameSpyQnR.Enable_Reporting(true);
 			}
@@ -336,11 +340,13 @@ void cUserOptions::Set_Server_INI_File(const char *ini_file)
 	if (file.Is_Available()) {
 		ServerSettingsClass::Set_Settings_File_Name(server_config_file);
 
+#if 0 // FIXME: Use INI
 		RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 		if (registry.Is_Valid ()) {
 			registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
 			registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 1);
 		}
+#endif
 	}
 }
 
@@ -396,10 +402,12 @@ void cUserOptions::Set_Bandwidth_Bps(int bandwidth_bps)
 //-----------------------------------------------------------------------------
 void cUserOptions::Reread(void)
 {
+#if 0 // FIXME: Use INI
 	Sku.Set(RegistryClass(APPLICATION_SUB_KEY_NAME).Get_Int("SKU", Sku.Get()));
 	BandwidthType.Set(RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS).Get_Int("BandwidthType", BandwidthType.Get()));
 	BandwidthBps.Set(RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS).Get_Int("BandwidthBps", BandwidthBps.Get()));
 	GameSpyBandwidthType.Set(RegistryClass(APPLICATION_SUB_KEY_NAME_GAMESPY).Get_Int("GameSpyBandwidthType", GameSpyBandwidthType.Get()));
+#endif
 }
 
 

@@ -89,10 +89,12 @@ MainMenuDialogClass::MainMenuDialogClass (void)	:
 	TitleTransModel	= WW3DAssetManager::Get_Instance ()->Create_Render_Obj ("IF_TITLETRANS");
 	GizmoModel			= WW3DAssetManager::Get_Instance ()->Create_Render_Obj ("IF_EVAGIZMO");
 
+#if 0 // FIXME: use INI
 	RegistryClass reg(APPLICATION_SUB_KEY_NAME_OPTIONS);
 	if (reg.Get_Int("DisableMenuAnim", 0) != 0) {
 		Animated = false;
 	}
+#endif
 
 
 	if (TitleTransModel != NULL && GizmoModel != NULL && Animated) {

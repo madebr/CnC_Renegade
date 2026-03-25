@@ -40,7 +40,7 @@
 #ifndef REGISTRY_H
 #define REGISTRY_H
 
-#ifdef _WIN32
+#if defined(OPENW3D_WIN32)
 
 #ifndef ALWAYS_H
 #include "always.h"
@@ -126,6 +126,6 @@ private:
 	static bool IsLocked;
 };
 
-#endif // _WIN32
+#endif // OPENW3D_WIN32
 
 #endif // REGISTRY_H

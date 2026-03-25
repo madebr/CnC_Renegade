@@ -63,6 +63,7 @@ SkinPackageMgrClass::Initialize (void)
 {
 	Shutdown ();
 
+#if 0 // FIXME: Use INI
 	//
 	//	Get the currently selected package name from the registry
 	//
@@ -80,6 +81,7 @@ SkinPackageMgrClass::Initialize (void)
 		//
 		CurrentPackage.Set_Package_Filename (package_filename);
 	}
+#endif
 
 	return ;
 }
@@ -163,6 +165,7 @@ SkinPackageMgrClass::Set_Current_Package (const char *package_filename)
 	//
 	CurrentPackage.Set_Package_Filename (package_filename);
 
+#if 0 // FIXME: Use INI
 	//
 	//	Write the name of hte package to the registry
 	//
@@ -170,6 +173,7 @@ SkinPackageMgrClass::Set_Current_Package (const char *package_filename)
 	if (registry.Is_Valid ()) {
 		registry.Set_String (CURR_SKIN_REG_VALUE, package_filename);
 	}
+#endif
 
 	return ;
 }

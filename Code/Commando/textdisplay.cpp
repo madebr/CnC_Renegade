@@ -141,6 +141,7 @@ void 	TextDisplayGameModeClass::Shutdown()
 */
 void TextDisplayGameModeClass::Load_Registry_Keys(void)
 {
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
 	if ( registry->Is_Valid() ) {
@@ -148,10 +149,12 @@ void TextDisplayGameModeClass::Load_Registry_Keys(void)
 		ScrollLinesPersistTime = registry->Get_Float( "ScrollLinesPersistTime", ScrollLinesPersistTime );
 	}
 	delete registry;
+#endif
 }
 
 void TextDisplayGameModeClass::Save_Registry_Keys(void)
 {
+#if 0 // FIXME: use INI
 	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
 	WWASSERT( registry );
 	if ( registry->Is_Valid() ) {
@@ -159,6 +162,7 @@ void TextDisplayGameModeClass::Save_Registry_Keys(void)
 		registry->Set_Float( "ScrollLinesPersistTime", ScrollLinesPersistTime );
 	}
 	delete registry;
+#endif
 }
 
 /*

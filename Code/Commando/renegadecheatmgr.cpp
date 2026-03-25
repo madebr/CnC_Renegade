@@ -62,6 +62,7 @@ static const char *VALUE_NAME_CHEATS	= "Cheats";
 //////////////////////////////////////////////////////////////////////
 RenegadeCheatMgrClass::RenegadeCheatMgrClass (void)
 {
+#if 0 // FIXME: Use INI
 	//
 	//	Attempt to open the registry key
 	//
@@ -73,6 +74,7 @@ RenegadeCheatMgrClass::RenegadeCheatMgrClass (void)
 		//
 		//Flags = registry.Get_Int (VALUE_NAME_CHEATS, 0);
 	}
+#endif
 
 	return ;
 }
