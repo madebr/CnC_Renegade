@@ -68,15 +68,11 @@ void	MovieGameModeClass::Init()
 	IsPending = false;
 	IsPlaying = false;
 
-#if 0 // FIXME: use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	if ( registry.Is_Valid() ) {
-		IntroMovieSkipAllowed = registry.Get_Bool( "IntroMovieSkipAllowed", false );
-		SkipAllIntroMovies = registry.Get_Bool( "SkipAllIntroMovies", false );
-		registry.Set_Bool( "SkipAllIntroMovies", SkipAllIntroMovies );
-	}
-#endif
-
+	auto & ini = OpenW3D::Get_INIConfig();
+	IntroMovieSkipAllowed = ini.Get_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "IntroMovieSkipAllowed", false );
+	SkipAllIntroMovies = ini.Get_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "SkipAllIntroMovies", false );
+	ini.Put_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "SkipAllIntroMovies", SkipAllIntroMovies );
+	OpenW3D::Save_Config();
 }
 
 void 	MovieGameModeClass::Shutdown()
@@ -282,12 +278,9 @@ void	MovieGameModeClass::Movie_Done( void )
 
 		IntroMovieSkipAllowed = true;
 
-#if 0 // FIXME: use INI
-		RegistryClass registry( APPLICATION_SUB_KEY_NAME_OPTIONS );
-		if ( registry.Is_Valid() ) {
-			registry.Set_Bool( "IntroMovieSkipAllowed", true );
-		}
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		ini.Put_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "IntroMovieSkipAllowed", true );
+		OpenW3D::Save_Config();
 
 		Deactivate();
 	} else {

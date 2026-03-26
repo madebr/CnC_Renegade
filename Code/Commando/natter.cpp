@@ -542,47 +542,43 @@ void WOLNATInterfaceClass::Shutdown(void)
 	*/
 	SessionPtr.Release();
 
-#if 0 // FIXME: Use INI
 	/*
 	** Now we need to write out any registry values that might have changed.
 	*/
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
-	fw_assert(reg.Is_Valid());
+	auto & ini = OpenW3D::Get_INIConfig();
 
-	if (reg.Is_Valid()) {
+	/*
+	** Read the FirewallHelper values from the class.
+	*/
+	unsigned int last_behavior = 0;
+	int last_source_port_allocation_delta = 1;
+	unsigned short source_port_pool = PORT_POOL_MIN;
+	bool send_delay = false;
+	int confidence = 0;
 
-		/*
-		** Read the FirewallHelper values from the class.
-		*/
-		unsigned int last_behavior = 0;
-		int last_source_port_allocation_delta = 1;
-		unsigned short source_port_pool = PORT_POOL_MIN;
-		bool send_delay = false;
-		int confidence = 0;
+	FirewallHelper.Get_Firewall_Info(last_behavior, last_source_port_allocation_delta, source_port_pool, send_delay, confidence);
 
-		FirewallHelper.Get_Firewall_Info(last_behavior, last_source_port_allocation_delta, source_port_pool, send_delay, confidence);
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "Behavior", (int)last_behavior);
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "PortDelta", last_source_port_allocation_delta);
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "PortPool", (int)source_port_pool);
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "Confidence", confidence);
 
-		reg.Set_Int("Behavior", (int)last_behavior);
-		reg.Set_Int("PortDelta", last_source_port_allocation_delta);
-		reg.Set_Int("PortPool", (int)source_port_pool);
-		reg.Set_Int("Confidence", confidence);
+	//ini.Put_Bool(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "SendDelay", send_delay);
 
-		//reg.Set_Bool("SendDelay", send_delay);
+	/*
+	** Set the local class values into the registry.
+	*/
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "PortBase", PortBase);
+	//ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ForcePort", ForcePort);
 
-		/*
-		** Set the local class values into the registry.
-		*/
-		reg.Set_Int("PortBase", PortBase);
-		//reg.Set_Int("ForcePort", ForcePort);
-
-		Set_Config(&reg, ForcePort, send_delay);
-	}
-#endif
+	Set_Config(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, ForcePort, send_delay);
 
 	/*
 	** Shut down the firewall helper class.
 	*/
 	FirewallHelper.Shutdown();
+
+	OpenW3D::Save_Config();
 
 }
 

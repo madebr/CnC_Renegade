@@ -1580,18 +1580,10 @@ WWAudioClass::Is_Disabled (void) const
 	if (_firsttime) {
 		_firsttime = false;
 
-#if 0 // FIXME: use INI
-		//
-		//	Read the disabled key from the registry
-		//
-		RegistryClass registry ("SOFTWARE\\Westwood\\WWAudio");
-		if (registry.Is_Valid ()) {
-			if (registry.Get_Int ("Disabled", 0) == 1) {
-				_disabled = true;
-				WWDEBUG_SAY (("WWAudio: Audio system disabled in registry.\r\n"));
-			}
+		auto & ini = OpenW3D::Get_INIConfig();
+		if (ini.Get_Bool("WWAudio", "Disabled", false)) {
+			_disabled = true;
 		}
-#endif
 	}
 
 	return (_disabled | m_ForceDisable);

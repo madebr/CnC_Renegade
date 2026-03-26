@@ -39,7 +39,8 @@
 #include <windows.h>
 #include "slavemaster.h"
 #include "wwdebug.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "_globals.h"
 #include "AutoStart.h"
 #include "ini.h"
@@ -419,34 +420,31 @@ void SlaveMasterClass::Save(void)
  *=============================================================================================*/
 void SlaveMasterClass::Load(void)
 {
-#if 0 // FIXME: Use INI
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
-	if (reg.Is_Valid()) {
-		NumSlaveServers = reg.Get_Int(KEY_NUM_SLAVES, 0);
-	}
+	auto & ini = OpenW3D::Get_INIConfig();
+	NumSlaveServers = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_SLAVE, KEY_NUM_SLAVES, 0);
 
 	char entry[256];
 	for (int i=0 ; i<NumSlaveServers ; i++) {
 		sprintf(entry, "%s%d", KEY_SLAVE_NAME, i);
-		reg.Get_String(entry, SlaveServers[i].NickName, sizeof(SlaveServers[i].NickName), "");
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, "", SlaveServers[i].NickName, sizeof(SlaveServers[i].NickName));
 
 		sprintf(entry, "%s%d", KEY_SLAVE_PASSWORD, i);
-		reg.Get_String(entry, SlaveServers[i].Password, sizeof(SlaveServers[i].Password), "");
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, "", SlaveServers[i].Password, sizeof(SlaveServers[i].Password));
 
 		sprintf(entry, "%s%d", KEY_SLAVE_ENABLE, i);
-		SlaveServers[i].Enable = reg.Get_Bool(entry, false);
+		SlaveServers[i].Enable = ini.Get_Bool(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, false);
 
 		sprintf(entry, "%s%d", KEY_SLAVE_PORT, i);
-		SlaveServers[i].Port = reg.Get_Int(entry, false);
+		SlaveServers[i].Port = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, false);
 
 		sprintf(entry, "%s%d", KEY_SLAVE_BANDWIDTH, i);
-		SlaveServers[i].Bandwidth = reg.Get_Int(entry, false);
+		SlaveServers[i].Bandwidth = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, false);
 
 		sprintf(entry, "%s%d", KEY_SLAVE_SETTINGS, i);
-		reg.Get_String(entry, SlaveServers[i].SettingsFileName, sizeof(SlaveServers[i].SettingsFileName), "");
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, "", SlaveServers[i].SettingsFileName, sizeof(SlaveServers[i].SettingsFileName));
 
 		sprintf(entry, "%s%d", KEY_SLAVE_SERIAL, i);
-		reg.Get_String(entry, SlaveServers[i].Serial, sizeof(SlaveServers[i].Serial), "");
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, "", SlaveServers[i].Serial, sizeof(SlaveServers[i].Serial));
 		if (strlen(SlaveServers[i].Serial)) {
 			StringClass serial(SlaveServers[i].Serial, true);
 			StringClass decrypted_serial = serial;
@@ -463,7 +461,6 @@ void SlaveMasterClass::Load(void)
 			strcpy(SlaveServers[i].SettingsFileName, "svrcfg_cnc.ini");
 		}
 	}
-#endif
 }
 
 
@@ -651,10 +648,8 @@ void SlaveMasterClass::Shutdown_Slaves(void)
 {
 	if (!SlaveMode) {
 		char password[64] = DEFAULT_SERVER_CONTROL_PASSWORD;
-#if 0 // FIXME: Use INI
-		RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
-		reg.Get_String(SERVER_CONTROL_PASSWORD_KEY, password, sizeof(password), password);
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL, SERVER_CONTROL_PASSWORD_KEY, password, password, sizeof(password));
 
 		for (int i=0 ; i<NumSlaveServers ; i++) {
 			if (SlaveServers[i].IsRunning) {
@@ -665,11 +660,8 @@ void SlaveMasterClass::Shutdown_Slaves(void)
 				char slave_name[64];
 				sprintf(slave_name, "\\slave_%d", i);
 				strcpy(DefaultRegistryModifier, slave_name+1);
-#if 0 // FIXME: Use INI
-				RegistryClass slave_reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 				DefaultRegistryModifier[0] = 0;
-				slave_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 0);
-#endif
+				ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 0);
 
 				/*
 				** Send the password to the slave to authenticate the connection.
@@ -681,17 +673,13 @@ void SlaveMasterClass::Shutdown_Slaves(void)
 				/*
 				** Remember that we shut this guy down.
 				*/
-#if 0 // FIXME: Use INI
-				RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_SLAVE);
-				if (reg.Is_Valid()) {
-					char entry[128];
-					sprintf(entry, "%s%d", KEY_SLAVE_RUNNING_ID, i);
-					reg.Set_Int(entry, 0);
-				}
-#endif
+				char entry[128];
+				sprintf(entry, "%s%d", KEY_SLAVE_RUNNING_ID, i);
+				ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_SLAVE, entry, 0);
 			}
 		}
 	}
+	OpenW3D::Save_Config();
 }
 
 
