@@ -39,7 +39,8 @@
 #include "langmode.h"
 #include "cnetwork.h"
 #include "gamemode.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "gamechanlist.h"
 #include "playermanager.h"
 #include "gametype.h"
@@ -95,14 +96,11 @@ cLanChat::~cLanChat(void)
 void cLanChat::Load_Lan_Registry_Keys(void)
 {
 	WWDEBUG_SAY(("cLanChat::Load_Lan_Registry_Keys\n"));
-#if 0 // FIXME: Use INI
 
-	RegistryClass * registry = new RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS);
-	WWASSERT(registry);
-	WWASSERT(registry->Is_Valid());
+	auto & ini = OpenW3D::Get_INIConfig();
 
-   char name[200];
-	registry->Get_String("MyLanName", name, sizeof(name), "");
+	char name[200];
+	ini.Get_String(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "MyLanName", "", name, sizeof(name));
 
 	WideStringClass widename;
 	widename.Convert_From(name);
@@ -118,33 +116,24 @@ void cLanChat::Load_Lan_Registry_Keys(void)
 		}
 	}
 
-	int sidePref = registry->Get_Int("SidePref", -1);
+	int sidePref = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "SidePref", -1);
 	cNetInterface::Set_Side_Preference(sidePref);
-
-	delete registry;
-#endif
 }
 
 //-----------------------------------------------------------------------------
 void cLanChat::Save_Lan_Registry_Keys(void)
 {
-#if 0 // FIXME: Use INI
 	WWDEBUG_SAY(("cLanChat::Save_Lan_Registry_Keys...\n"));
 
-	RegistryClass * registry = new RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS);
-	WWASSERT(registry);
-	WWASSERT(registry->Is_Valid());
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	if (!cGameSpyAdmin::Is_Gamespy_Game()) {
 		StringClass string;
 		cNetInterface::Get_Nickname().Convert_To(string);
-		registry->Set_String("MyLanName", string);
+		ini.Put_String(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "MyLanName", string);
 	}
 
-	registry->Set_Int("SidePref", cNetInterface::Get_Side_Preference());
-
-	delete registry;]
-#endif
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "SidePref", cNetInterface::Get_Side_Preference());
 }
 
 //-----------------------------------------------------------------------------

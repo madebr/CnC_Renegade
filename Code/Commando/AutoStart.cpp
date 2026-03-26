@@ -132,12 +132,8 @@ void AutoRestartClass::Restart_Game(void)
 	if (RestartState == STATE_DONE) {
 		RestartState = STATE_FIRST;
 		CancelRequest = false;
-#if 0 // FIXME: Use INI
-		RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-		if (registry.Is_Valid()) {
-			GameMode = registry.Get_Int(REG_VALUE_AUTO_RESTART_TYPE, GameMode);
-		}
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		GameMode = ini.Get_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTO_RESTART_TYPE, GameMode);
 		Set_Restart_Flag(false);
 	}
 }

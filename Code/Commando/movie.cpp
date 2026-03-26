@@ -39,7 +39,8 @@
 #include "campaign.h"
 #include "input.h"
 #include "_globals.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "renegadedialogmgr.h"
 #include "wwmemlog.h"
 #include "gameinitmgr.h"
@@ -139,14 +140,9 @@ void	MovieGameModeClass::Start_Movie( const char * filename )
 	//	Check to see if we should enforce the CD or not...
 	//
 	bool force_cd = true;
-
-#if 0 // FIXME: use INI
 #ifdef WWDEBUG
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		force_cd = (registry.Get_Int( "DisableCDCheck", 0 ) == 0);
-	}
-#endif //WWDEBUG
+	auto & ini = OpenW3D::Get_INIConfig();
+	force_cd = !ini.Get_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, APPLICATION_SUB_KEY_NAME_DEBUG, false);
 #endif
 
 #if defined(BETACLIENT) || defined(FREEDEDICATEDSERVER) || defined(MULTIPLAYERDEMO)

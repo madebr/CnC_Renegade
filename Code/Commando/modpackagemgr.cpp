@@ -36,7 +36,8 @@
 
 #include "modpackagemgr.h"
 
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "_globals.h"
 #include "realcrc.h"
 #include "ffactorylist.h"
@@ -171,15 +172,8 @@ ModPackageMgrClass::Set_Current_Package (const char *package_filename)
 	//
 	CurrentPackage.Set_Package_Filename (package_filename);
 
-#if 0 // FIXME: Use INI
-	//
-	//	Write the name of hte package to the registry
-	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (registry.Is_Valid ()) {
-		registry.Set_String (CURR_MOD_REG_VALUE, package_filename);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_String(APPLICATION_SUB_KEY_NAME_OPTIONS, CURR_MOD_REG_VALUE, package_filename);
 
 	return ;
 }

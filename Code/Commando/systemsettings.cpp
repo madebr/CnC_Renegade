@@ -131,19 +131,6 @@ void	SystemSettingEntryBool::Apply( void )
 	State = Get_Bool();
 }
 
-#if 0 // FIXME: use INI
-void	SystemSettingEntryBool::Registry_Save( RegistryClass & registry )
-{
-	registry.Set_Bool( Get_Name(), Get_State() );
-}
-
-void	SystemSettingEntryBool::Registry_Load( RegistryClass & registry )
-{
-	State = Get_Bool();
-	Set_State( registry.Get_Bool( Get_Name(), Get_State() ) );
-}
-#endif
-
 void	SystemSettingEntryBool::INI_Save( INIClass & ini )
 {
 	ini.Put_Bool( W3D_SECTION_SYSTEM, Get_INI_Name(), Get_State() );

@@ -1055,12 +1055,8 @@ bool Game_Init(void)
 	cNicEnum::Init();
 
 
-#if 0 // FIXME: use ini
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 0 );
-		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, DebugManager::Get_Version_Number() );
-	}
-#endif
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 0);
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_APPLICATION_CRASH_VERSION, DebugManager::Get_Version_Number());
 
 
 #if (IMMEDIATE_LOAD==0)
