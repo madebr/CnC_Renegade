@@ -2212,6 +2212,15 @@ INIEntry * INISection::Find_Entry(char const * entry) const
 	return(NULL);
 }
 
+void INISection::Remove_Entry(char const * entry)
+{
+	auto * entryptr = INISection::Find_Entry(entry);
+	if (nullptr != entryptr) {
+		int crc = CRC::String(entry);
+		EntryIndex.Remove_Index(crc);
+		entryptr->Unlink();
+	}
+}
 
 /***********************************************************************************************
  * INIClass::Put_PKey -- Stores the key to the INI database.                                   *
@@ -2371,3 +2380,25 @@ void	INIClass::Keep_Blank_Entries (bool keep_blanks)
 	KeepBlankEntries = keep_blanks;
 }
 
+void INIClass::Remove_Entry(char const * section, char const * entry)
+{
+	if (section && entry) {
+		INISection * secptr = Find_Section(section);
+		if (secptr) {
+			secptr->Remove_Entry(entry);
+		}
+	}
+}
+
+void INIClass::Get_Value_List( char const * section, DynamicVectorClass<StringClass> &list )
+{
+	INISection * secptr = Find_Section(section);
+
+	if (secptr) {
+		for (auto entry = secptr->EntryList.First(); entry != nullptr; entry = entry->Next()) {
+			list.Add(entry->Value);
+		}
+	}
+
+	return ;
+}

@@ -42,7 +42,8 @@
 #include "listctrl.h"
 #include "DlgWOLAutoStart.h"
 #include "menubackdrop.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "_globals.h"
 
 /***********************************************************************************************
@@ -83,12 +84,11 @@ AutoRestartProgressDialogClass::AutoRestartProgressDialogClass(void) :
  *=============================================================================================*/
 void AutoRestartProgressDialogClass::On_Init_Dialog (void)
 {
-#if 0 // FIXME: Use INI
 	/*
 	** Create the backdrop if necessary
 	*/
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (reg.Get_Int("DisableMenuAnim", 0) == 0) {
+	auto & ini = OpenW3D::Get_INIConfig();
+	if (ini.Get_Int(APPLICATION_SUB_KEY_NAME_OPTIONS, "DisableMenuAnim", 0) == 0) {
 		if (MenuBackDropClass *backdrop = Get_BackDrop ()) {
 			if (backdrop->Peek_Model () == NULL) {
 				backdrop->Set_Model ("IF_BACK01");
@@ -96,7 +96,6 @@ void AutoRestartProgressDialogClass::On_Init_Dialog (void)
 			}
 		}
 	}
-#endif
 
 	/*
 	** Set the columns up. Just one with nothing in it.

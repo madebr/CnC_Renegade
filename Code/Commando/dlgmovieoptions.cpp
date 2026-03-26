@@ -39,7 +39,8 @@
 #include "listctrl.h"
 #include "pathutil.h"
 #include "BINKMovie.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "translatedb.h"
 #include "_globals.h"
 #include "string_ids.h"
@@ -77,47 +78,43 @@ MovieOptionsMenuClass::On_Init_Dialog (void)
 		//
 		list_ctrl->Add_Column (TRANSLATE (IDS_MOVIE_COL_HEADER), 1.0F, Vector3 (1, 1, 1));
 
-#if 0 // FIXME: use INI
 		//
 		//	Add the movies to the list...
 		//
-		RegistryClass registry (APPLICATION_SUB_KEY_NAME_MOVIES);
-		if (registry.Is_Valid ()) {
 
-			const char *INTRO_MOVIE	= "MOVIES/R_INTRO.BIK";
+		const char *INTRO_MOVIE	= "MOVIES/R_INTRO.BIK";
+
+		//
+		//	Insert the renegade intro movie by default...
+		//
+		int item_index = list_ctrl->Insert_Entry (0xFF, TRANSLATE (IDS_INTRO_MOVIE));
+		if (item_index != -1) {
+			list_ctrl->Set_Entry_Data (item_index, 0, (uintptr_t)new StringClass (INTRO_MOVIE));
+		}
+
+		//
+		//	Get the list of entries from the registry
+		//
+		auto & ini = OpenW3D::Get_INIConfig();
+		DynamicVectorClass<StringClass> list;
+		ini.Get_Value_List(APPLICATION_SUB_KEY_NAME_MOVIES, list);
+
+		//
+		//	Loop over all the movies in the registry
+		//
+		for (int index = 0; index < list.Count (); index ++) {
+			StringClass string_id_des;
+			ini.Get_String (string_id_des, APPLICATION_SUB_KEY_NAME_MOVIES, list[index]);
 
 			//
-			//	Insert the renegade intro movie by default...
+			//	Add an entry for this movie
 			//
-			int item_index = list_ctrl->Insert_Entry (0xFF, TRANSLATE (IDS_INTRO_MOVIE));
+			const unichar_t *wide_desc = TRANSLATE_BY_DESC(string_id_des);
+			int item_index = list_ctrl->Insert_Entry (0xFF, wide_desc);
 			if (item_index != -1) {
-				list_ctrl->Set_Entry_Data (item_index, 0, (uintptr_t)new StringClass (INTRO_MOVIE));
-			}
-
-			//
-			//	Get the list of entries from the registry
-			//
-			DynamicVectorClass<StringClass> list;
-			registry.Get_Value_List (list);
-
-			//
-			//	Loop over all the movies in the registry
-			//
-			for (int index = 0; index < list.Count (); index ++) {
-				StringClass string_id_des;
-				registry.Get_String (list[index], string_id_des);
-
-				//
-				//	Add an entry for this movie
-				//
-				const unichar_t *wide_desc = TRANSLATE_BY_DESC(string_id_des);
-				int item_index = list_ctrl->Insert_Entry (0xFF, wide_desc);
-				if (item_index != -1) {
-					list_ctrl->Set_Entry_Data (item_index, 0, (uintptr_t)new StringClass (list[index]));
-				}
+				list_ctrl->Set_Entry_Data (item_index, 0, (uintptr_t)new StringClass (list[index]));
 			}
 		}
-#endif
 	}
 
 	MenuDialogClass::On_Init_Dialog ();

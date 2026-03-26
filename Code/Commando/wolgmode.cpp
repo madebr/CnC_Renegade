@@ -61,7 +61,8 @@
 #include "cpudetect.h"
 #include "dx8wrapper.h"
 #include "systeminfolog.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "init.h"
 #include "debug.h"
 #include <WWOnline/WOLString.h>
@@ -1719,17 +1720,14 @@ void WolGameModeClass::HandleNotification(GameOptionsMessage& message)
 			if (cmd == request) {
 				static int sysinfo_log_disabled=-1;
 				if (sysinfo_log_disabled==-1) {	// Read from registry only once per run
-#if 0 // FIXME: use INI
-					RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-					if ( registry.Is_Valid() ) {
-						sysinfo_log_disabled=registry.Get_Int( VALUE_NAME_DISABLE_SERVER_SYSINFO_COLLECTING, -1 );
-						// Write to registry to create the key if it didn't exist
-						if (sysinfo_log_disabled==-1) {
-							sysinfo_log_disabled=0;
-							registry.Set_Int( VALUE_NAME_DISABLE_SERVER_SYSINFO_COLLECTING, sysinfo_log_disabled);
-						}
+					auto & ini = OpenW3D::Get_INIConfig();
+					sysinfo_log_disabled = ini.Get_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_DISABLE_SERVER_SYSINFO_COLLECTING, -1);
+					// Write to registry to create the key if it didn't exist
+					if (sysinfo_log_disabled == -1) {
+						sysinfo_log_disabled = 0;
+						ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_DISABLE_SERVER_SYSINFO_COLLECTING, sysinfo_log_disabled);
+						OpenW3D::Save_Config();
 					}
-#endif
 				}
 				// Only copy the sysinfo if it isn't disabled in registry
 				if (sysinfo_log_disabled==0) {

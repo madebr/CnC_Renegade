@@ -42,8 +42,10 @@ namespace
 	constexpr char CONFIG_APPLICATION[] = "OpenW3D";
 
 	std::string g_config_file_path;
+	bool g_read_only_config = false;
 	bool g_config_file_path_initialized = false;
 	bool g_config_file_path_override = false;
+	INIClass *g_ini_class;
 
 	std::vector<std::string> Tokenize_Command_Line(const char *command_line)
 	{
@@ -203,6 +205,7 @@ namespace
 
 	void Store_Config_File_Path(const std::filesystem::path &path, bool is_override)
 	{
+		WWASSERT(nullptr == g_ini_class);
 		const std::filesystem::path resolved_path = path.empty() ? std::filesystem::path(W3D_CONF_FILENAME) : path;
 		g_config_file_path = resolved_path.string();
 		g_config_file_path_initialized = true;
@@ -278,13 +281,41 @@ bool OpenW3D::Command_Line_Has_Arg(const char *command_line, const char *arg)
 	return false;
 }
 
-bool OpenW3D::Save_Config(const INIClass &ini)
+INIClass & OpenW3D::Get_INIConfig()
 {
-	const std::filesystem::path config_path = Get_Config_File_Path();
-	if (!Ensure_Config_Directory_Exists(config_path)) {
+	if (nullptr == g_ini_class) {
+		const char *config_path = Get_Config_File_Path();
+		if (!Ensure_Config_Directory_Exists(config_path)) {
+			WWDEBUG_ERROR(("Failed to access INI configuration path"));
+			g_ini_class = new INIClass;
+		} else {
+			g_ini_class = new INIClass(config_path);
+		}
+	}
+	return *g_ini_class;
+}
+
+void OpenW3D::Set_Read_Only_Config(bool set)
+{
+	g_read_only_config = set;
+}
+
+bool OpenW3D::Save_Config()
+{
+	if (g_read_only_config) {
 		return false;
 	}
-
+	auto & ini = Get_INIConfig();
+	const std::filesystem::path config_path = Get_Config_File_Path();
 	const std::string native_path = config_path.string();
-	return ini.Save(native_path.c_str()) != 0;
+	return Get_INIConfig().Save(native_path.c_str()) != 0;
 }
+
+static class StoreINIAtExit{
+public:
+	~StoreINIAtExit() {
+		OpenW3D::Save_Config();
+		delete g_ini_class;
+		g_ini_class = nullptr;
+	}
+} g_StoreINIAtExit;

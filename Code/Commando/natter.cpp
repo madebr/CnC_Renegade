@@ -47,7 +47,8 @@
 #include "nat.h"
 #include	"natsock.h"
 #include "crandom.h"
-#include	"registry.h"
+#include	"ini.h"
+#include	"openw3d.h"
 
 #include "WOLLogonMgr.h"
 #include	"packettype.h"
@@ -61,6 +62,8 @@
 #include "../WWOnline/WOLProduct.h"
 #include "../WWOnline/WOLServer.h"
 #include <cstdio>
+
+#include "openw3d.h"
 
 
 WOLNATInterfaceClass WOLNATInterface;
@@ -586,7 +589,6 @@ void WOLNATInterfaceClass::Shutdown(void)
 
 
 
-#if 0 // FIXME: Use INI
 /***********************************************************************************************
  * WOLNATInterfaceClass::Get_Config -- Get config settings from the registry.                  *
  *                                                                                             *
@@ -603,23 +605,16 @@ void WOLNATInterfaceClass::Shutdown(void)
  * HISTORY:                                                                                    *
  *   9/24/2001 12:38PM ST : Created                                                            *
  *=============================================================================================*/
-void WOLNATInterfaceClass::Get_Config(RegistryClass *reg, int &port_number, bool &send_delay)
+void WOLNATInterfaceClass::Get_Config(const char *section, int &port_number, bool &send_delay)
 {
-	RegistryClass *local_reg = reg;
+	section = section ? section : APPLICATION_SUB_KEY_NAME_NET_FIREWALL;
+	auto & ini = OpenW3D::Get_INIConfig();
 
-	if (!local_reg) {
-		local_reg = new RegistryClass(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
-	}
-
-	send_delay = local_reg->Get_Bool("SendDelay", FirewallHelper.Get_Send_Delay());
-	port_number = local_reg->Get_Int("ForcePort", ForcePort);
+	send_delay = ini.Get_Bool(section, "SendDelay", FirewallHelper.Get_Send_Delay());
+	port_number = ini.Get_Int(section, "ForcePort", ForcePort);
 
 	FirewallHelper.Set_Send_Delay(send_delay);
 	ForcePort = port_number;
-
-	if (!reg) {
-		delete local_reg;
-	}
 }
 
 
@@ -642,25 +637,19 @@ void WOLNATInterfaceClass::Get_Config(RegistryClass *reg, int &port_number, bool
  * HISTORY:                                                                                    *
  *   9/24/2001 12:39PM ST : Created                                                            *
  *=============================================================================================*/
-void WOLNATInterfaceClass::Set_Config(RegistryClass *reg, int port_number, bool send_delay)
+void WOLNATInterfaceClass::Set_Config(const char *section, int port_number, bool send_delay)
 {
-	RegistryClass *local_reg = reg;
-
-	if (!local_reg) {
-		local_reg = new RegistryClass(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
-	}
+	section = section ? section : APPLICATION_SUB_KEY_NAME_NET_FIREWALL;
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	FirewallHelper.Set_Send_Delay(send_delay);
 	ForcePort = port_number;
 
-	local_reg->Set_Bool("SendDelay", send_delay);
-	local_reg->Set_Int("ForcePort", ForcePort);
+	ini.Put_Bool(section, "SendDelay", send_delay);
+	ini.Put_Int(section, "ForcePort", ForcePort);
 
-	if (!reg) {
-		delete local_reg;
-	}
+	OpenW3D::Save_Config();
 }
-#endif
 
 
 

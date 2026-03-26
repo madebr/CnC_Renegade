@@ -29,7 +29,8 @@
 #include "wwdebug.h"
 #include "player.h"
 #include "cnetwork.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "player.h"
 #include "playertype.h"
 #include "bandwidth.h"
@@ -162,19 +163,19 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			SlaveMaster.Set_Slave_Mode(true);
 			DebugManager::Set_Is_Slave(true);
 
+			// FIXME: slave processes should not write to the main INI
+			//        and have their own INI
+
 			// Save out process ID so our master server can find us.
 			char tempmod[512];
 			strcpy(tempmod, DefaultRegistryModifier);
 			strcpy(DefaultRegistryModifier, "");
-#if 0 // FIXME: Use INI
-			RegistryClass reg(APPLICATION_SUB_KEY_NAME);
-			if (reg.Is_Valid()) {
-				reg.Set_Int("ProcessId", GetCurrentProcessId());
-			}
+			auto & ini = OpenW3D::Get_INIConfig();
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME, "ProcessId", GetCurrentProcessId());
 			strcpy(DefaultRegistryModifier, tempmod);
 
-			RegistryClass::Set_Read_Only(true);
-#endif
+			OpenW3D::Set_Read_Only_Config(true);
+
 			continue;
 		}
 
@@ -203,13 +204,11 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			if (file.Is_Available()) {
 				ServerSettingsClass::Set_Settings_File_Name(server_config_file);
 
-#if 0 // FIXME: Use INI
-				RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-				if (registry.Is_Valid ()) {
-					registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
-					registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 0);
-				}
-#endif
+				auto & ini = OpenW3D::Get_INIConfig();
+				ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
+				ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 0);
+				OpenW3D::Save_Config();
+
 				cGameSpyAdmin::Set_Is_Server_Gamespy_Listed(true);
 				GameSpyQnR.Enable_Reporting(true);
 			}
@@ -340,13 +339,10 @@ void cUserOptions::Set_Server_INI_File(const char *ini_file)
 	if (file.Is_Available()) {
 		ServerSettingsClass::Set_Settings_File_Name(server_config_file);
 
-#if 0 // FIXME: Use INI
-		RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-		if (registry.Is_Valid ()) {
-			registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
-			registry.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 1);
-		}
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
+		ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 1);
+		OpenW3D::Save_Config();
 	}
 }
 
@@ -402,116 +398,9 @@ void cUserOptions::Set_Bandwidth_Bps(int bandwidth_bps)
 //-----------------------------------------------------------------------------
 void cUserOptions::Reread(void)
 {
-#if 0 // FIXME: Use INI
-	Sku.Set(RegistryClass(APPLICATION_SUB_KEY_NAME).Get_Int("SKU", Sku.Get()));
-	BandwidthType.Set(RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS).Get_Int("BandwidthType", BandwidthType.Get()));
-	BandwidthBps.Set(RegistryClass(APPLICATION_SUB_KEY_NAME_NETOPTIONS).Get_Int("BandwidthBps", BandwidthBps.Get()));
-	GameSpyBandwidthType.Set(RegistryClass(APPLICATION_SUB_KEY_NAME_GAMESPY).Get_Int("GameSpyBandwidthType", GameSpyBandwidthType.Get()));
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	Sku.Set(ini.Get_Int(APPLICATION_SUB_KEY_NAME, "SKU", Sku.Get()));
+	BandwidthType.Set(ini.Get_Int(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "BandwidthType", BandwidthType.Get()));
+	BandwidthBps.Set(ini.Get_Int(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "BandwidthBps", BandwidthBps.Get()));
+	GameSpyBandwidthType.Set(ini.Get_Int(APPLICATION_SUB_KEY_NAME_GAMESPY, "GameSpyBandwidthType", GameSpyBandwidthType.Get()));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-cRegistryInt cUserOptions::GameListFilterMaxPing(				APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterMaxPing",								9999);
-cRegistryInt cUserOptions::GameListFilterMinPlayersPresent(	APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterMinPlayersPresent",					0);
-cRegistryInt cUserOptions::GameListFilterMaxPlayersPresent(	APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterMaxPlayersPresent",					99);
-cRegistryInt cUserOptions::GameListFilterMaxPlayersPermitted( APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterMaxPlayersPermitted",			99);
-cRegistryBool cUserOptions::GameListFilterShowPrivateGames(	APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterShowPrivateGames",					true);
-cRegistryBool cUserOptions::GameListFilterShowOnlyDedicatedGames(	APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterShowOnlyDedicatedGames",	false);
-cRegistryBool cUserOptions::GameListFilterShowOnlyGamesIRankFor(	APPLICATION_SUB_KEY_NAME_NETOPTIONS, "GameListFilterShowOnlyGamesIRankFor",	false);
-*/
-
-		/*
-		//
-		// Gamespy client launch params.
-		// All 3 must be specified.
-		// Example: Renegade.exe GAMESPY_IPADDR=192.168.10.100 GAMESPY_PORT=3333 GAMESPY_NICKNAME="Bob 1234"
-		//
-		LPCSTR param = NULL;
-		char * value = NULL;
-
-		param = "GAMESPY_IPADDR=";
-		value = ::strstr(cmd, param);
-		if (value != NULL) {
-			value += ::strlen(param);
-			ULONG ip = ::inet_addr(value);
-			cGameSpyAdmin::Set_Game_Host_Ip(ip);
-			cGameSpyAdmin::Set_Is_Launch_From_Gamespy_Requested(true);
-			continue;
-		}
-
-		param = "GAMESPY_PORT=";
-		value = ::strstr(cmd, param);
-		if (value != NULL) {
-			value += ::strlen(param);
-			USHORT port = (USHORT)::atol(value);
-			cGameSpyAdmin::Set_Game_Host_Port(port);
-			cGameSpyAdmin::Set_Is_Launch_From_Gamespy_Requested(true);
-			continue;
-		}
-
-		param = "GAMESPY_NICKNAME=";
-		value = ::strstr(cmd, param);
-		if (value != NULL) {
-			value += ::strlen(param);
-			WideStringClass nickname;
-			char temp[200] = "";
-			char seps[]   = "\"";
-			char * start_token = ::strtok(value, seps);
-			if (start_token != NULL) {
-				start_token++;
-			}
-			char * end_token = ::strtok(NULL, seps);
-			if (end_token != NULL && end_token > start_token) {
-				::strncpy(temp, start_token, end_token - start_token);
-				temp[end_token - start_token] = 0;
-			}
-
-			nickname.Convert_From(temp);
-			cGameSpyAdmin::Set_Player_Nickname(nickname);
-			cGameSpyAdmin::Set_Is_Launch_From_Gamespy_Requested(true);
-			continue;
-		}
-		*/
-
-		/*
-		char nickname[300] = "";
-		::sscanf(nickname_param, "%s", nickname);
-		nickname[::strlen(nickname) - 1] = ' ';
-		nickname[0] = ' ';
-
-		char nickname2[300] = "";
-		::sscanf(nickname, "%s", nickname2);
-		*/
-
-		/*
-		char seps[]   = "\"";
-		char * start_token = ::strtok(nickname_param, seps);
-		if (start_token != NULL) {
-			start_token++;
-		}
-		char * end_token = ::strtok(NULL, seps);
-		char nickname2[300] = "";
-		if (end_token != NULL && end_token > start_token) {
-			char nickname2[300] = "";
-			::strncpy(nickname2, start_token, end_token - start_token);
-			nickname2[end_token - start_token] = 0;
-		}
-		*/
-
-		/*
-		WideStringClass wide_nickname;
-		wide_nickname.Convert_From(nickname2);
-		cGameSpyAdmin::Set_Player_Nickname(wide_nickname);
-		*/

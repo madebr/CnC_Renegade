@@ -40,7 +40,8 @@
 #include "render2d.h"
 #include "timemgr.h"
 #include "_globals.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "wwprofile.h"
 #include "combat.h"
 #include "ccamera.h"
@@ -141,28 +142,18 @@ void 	TextDisplayGameModeClass::Shutdown()
 */
 void TextDisplayGameModeClass::Load_Registry_Keys(void)
 {
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		MaxScrollLines = registry->Get_Int( "MaxScrollLines", MaxScrollLines );
-		ScrollLinesPersistTime = registry->Get_Float( "ScrollLinesPersistTime", ScrollLinesPersistTime );
-	}
-	delete registry;
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	MaxScrollLines = ini.Get_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "MaxScrollLines", MaxScrollLines );
+	ScrollLinesPersistTime = ini.Get_Float( APPLICATION_SUB_KEY_NAME_OPTIONS, "ScrollLinesPersistTime", ScrollLinesPersistTime );
 }
 
 void TextDisplayGameModeClass::Save_Registry_Keys(void)
 {
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		registry->Set_Int( "MaxScrollLines", MaxScrollLines );
-		registry->Set_Float( "ScrollLinesPersistTime", ScrollLinesPersistTime );
-	}
-	delete registry;
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_OPTIONS, "MaxScrollLines", MaxScrollLines );
+	ini.Put_Float(APPLICATION_SUB_KEY_NAME_OPTIONS, "ScrollLinesPersistTime", ScrollLinesPersistTime );
+
+	OpenW3D::Save_Config();
 }
 
 /*

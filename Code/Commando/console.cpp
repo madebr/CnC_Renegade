@@ -60,7 +60,8 @@
 #include "smartgameobj.h"
 #include "playermanager.h"
 #include "_globals.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "phys3.h"
 #include "wolgmode.h"
 #include "devoptions.h"
@@ -149,38 +150,28 @@ void 	ConsoleGameModeClass::Shutdown()
 
 void ConsoleGameModeClass::Load_Registry_Keys(void)
 {
-#if 0 // FIXME: use INI
 //	Debug_Say(( "CombatGameModeClass::Load_Registry_Keys...\n" ));
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
+	auto & ini = OpenW3D::Get_INIConfig();
 
-      WW3D::Set_Screen_UV_Bias( registry->Get_Int( "ScreenUVBias", 1 ) != 0 );
+	WW3D::Set_Screen_UV_Bias( ini.Get_Bool( APPLICATION_SUB_KEY_NAME_OPTIONS, "ScreenUVBias", 1 ) != 0 );
 
-      Get_Console()->Set_FPS_Active( registry->Get_Int( "FPS", 1 ) != 0 );
-	}
-	delete registry;
-#endif
+	Get_Console()->Set_FPS_Active( ini.Get_Bool( APPLICATION_SUB_KEY_NAME_OPTIONS, "FPS", 1 ) != 0 );
 }
 
 void ConsoleGameModeClass::Save_Registry_Keys(void)
 {
-#if 0 // FIXME: use INI
 //	Debug_Say(( "CombatGameModeClass::Save_Registry_Keys...\n"));
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		registry->Set_Int( "ScreenUVBias", WW3D::Is_Screen_UV_Biased() );
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Bool( APPLICATION_SUB_KEY_NAME_OPTIONS, "ScreenUVBias", WW3D::Is_Screen_UV_Biased() );
 
-//      registry->Set_Int( "TextureReduction", WW3D::Get_Texture_Reduction() );
-//      registry->Set_Int( "TextureThumbnail", WW3D::Get_Texture_Thumbnail_Mode() );
-//      registry->Set_Int( "TextureCompression", WW3D::Get_Texture_Compression_Mode() );
-//      registry->Set_Int( "NPatchesLevel", WW3D::Get_NPatches_Level() );
+//      ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "TextureReduction", WW3D::Get_Texture_Reduction() );
+//      ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "TextureThumbnail", WW3D::Get_Texture_Thumbnail_Mode() );
+//      ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "TextureCompression", WW3D::Get_Texture_Compression_Mode() );
+//      ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "NPatchesLevel", WW3D::Get_NPatches_Level() );
 
-      registry->Set_Int( "FPS", Get_Console()->Is_FPS_Active() );
-	}
-	delete registry;
-#endif
+	ini.Put_Bool( APPLICATION_SUB_KEY_NAME_OPTIONS, "FPS", Get_Console()->Is_FPS_Active() );
+
+	OpenW3D::Save_Config();
 }
 
 

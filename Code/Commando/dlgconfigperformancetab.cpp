@@ -597,7 +597,7 @@ DlgConfigPerformanceTabClass::On_Apply (void)
 	//
 	//	Attempt to open the config file
 	//
-	INIClass ini(W3D_CONF_FILE);
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	//
 	//	Get the current settings from the dialog
@@ -657,6 +657,6 @@ DlgConfigPerformanceTabClass::On_Apply (void)
 	}
 	WW3D::Set_Texture_Reduction (std::max (2 - texture_red, 0));
 	SurfaceEffectsManager::Set_Mode ((SurfaceEffectsManager::MODE)surface_effect);
-	OpenW3D::Save_Config(ini);
+	OpenW3D::Save_Config();
 	return true;
 }

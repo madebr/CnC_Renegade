@@ -35,12 +35,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "debug.h"
+#include "ini.h"
 #include "input.h"
 #include "ww3dtrig.h"
 #include "wwphystrig.h"
-#include "timemgr.h"
+#include "openw3d.h"
 #include "ww3d.h"
-#include "registry.h"
 #include <stdio.h>
 #include "WWAudio.h"
 #include "combat.h"
@@ -160,40 +160,31 @@ void	DebugManager::Update( void )
 
 void	DebugManager::Load_Registry_Settings( const char * sub_key )
 {
-	// FIXME: use INI
-#if 0
-	RegistryClass registry( sub_key );
-	if ( registry.Is_Valid() ) {
-		EnabledDevices = registry.Get_Int( "EnabledDevices",	EnabledDevices );
-		EnabledTypes	= registry.Get_Int( "EnabledTypes",	EnabledTypes );
-		EnabledOptions	= registry.Get_Int( "EnabledOptions", EnabledOptions );
-		EnableFileLogging	= registry.Get_Bool( "EnableFileLogging",	EnableFileLogging );
-		EnableDiagLogging	= registry.Get_Bool( "EnableDiagLogging",	EnableDiagLogging );
-		LoadDebugScripts = registry.Get_Bool( "LoadDebugScripts",	LoadDebugScripts );
-		AllowCinematicKeys = registry.Get_Bool( "AllowCinematicKeys",	AllowCinematicKeys );
-	}
+	auto & ini = OpenW3D::Get_INIConfig();
+	EnabledDevices = ini.Get_Int( sub_key, "EnabledDevices",	EnabledDevices );
+	EnabledTypes	= ini.Get_Int( sub_key, "EnabledTypes",	EnabledTypes );
+	EnabledOptions	= ini.Get_Int( sub_key, "EnabledOptions", EnabledOptions );
+	EnableFileLogging	= ini.Get_Bool( sub_key, "EnableFileLogging",	EnableFileLogging );
+	EnableDiagLogging	= ini.Get_Bool( sub_key, "EnableDiagLogging",	EnableDiagLogging );
+	LoadDebugScripts = ini.Get_Bool( sub_key, "LoadDebugScripts",	LoadDebugScripts );
+	AllowCinematicKeys = ini.Get_Bool( sub_key, "AllowCinematicKeys",	AllowCinematicKeys );
 
 #ifdef LOG_MEMORY
 		Debug_Say(( "*** Memory Logging Enabled ***\n" ));
-#endif
 #endif
 }
 
 void	DebugManager::Save_Registry_Settings( const char * sub_key )
 {
-#if 0
-	// FIXME: use INI
-	RegistryClass registry( sub_key );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( "EnabledDevices",			EnabledDevices );
-		registry.Set_Int( "EnabledTypes",		EnabledTypes );
-		registry.Set_Int( "EnabledOptions",	EnabledOptions );
-		registry.Set_Bool( "EnableFileLogging",	EnableFileLogging );
-		registry.Set_Bool( "EnableDiagLogging",	EnableDiagLogging );
-		registry.Set_Bool( "LoadDebugScripts",	LoadDebugScripts );
-		registry.Set_Bool( "AllowCinematicKeys",	AllowCinematicKeys );
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int( sub_key, "EnabledDevices",			EnabledDevices );
+	ini.Put_Int( sub_key, "EnabledTypes",		EnabledTypes );
+	ini.Put_Int( sub_key, "EnabledOptions",	EnabledOptions );
+	ini.Put_Bool( sub_key, "EnableFileLogging",	EnableFileLogging );
+	ini.Put_Bool( sub_key, "EnableDiagLogging",	EnableDiagLogging );
+	ini.Put_Bool( sub_key, "LoadDebugScripts",	LoadDebugScripts );
+	ini.Put_Bool( sub_key, "AllowCinematicKeys",	AllowCinematicKeys );
+	OpenW3D::Save_Config();
 }
 
 /*

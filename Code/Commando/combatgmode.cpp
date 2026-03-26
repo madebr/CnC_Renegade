@@ -40,7 +40,8 @@
 #include "cnetwork.h"
 #include "AudibleSound.h"
 #include "debug.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "_globals.h"
 #include "console.h"
 #include "radar.h"
@@ -1205,36 +1206,29 @@ void CombatGameModeClass::Core_Restart(void)
 */
 void CombatGameModeClass::Load_Registry_Keys(void)
 {
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		IsHudShown = registry->Get_Int( "IsHudShown", IsHudShown );
-		ForceGod = registry->Get_Int( "ForceGod", ForceGod );
+	auto & ini = OpenW3D::Get_INIConfig();
+	if (ini.Section_Present(APPLICATION_SUB_KEY_NAME_OPTIONS)) {
+		IsHudShown = ini.Get_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "IsHudShown", IsHudShown );
+		ForceGod = ini.Get_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "ForceGod", ForceGod );
 
 		//TSS
-		DefaultToFirstPerson = registry->Get_Int( "DefaultToFirstPerson", DefaultToFirstPerson );
+		DefaultToFirstPerson = ini.Get_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "DefaultToFirstPerson", DefaultToFirstPerson );
 		CombatManager::Set_First_Person_Default(DefaultToFirstPerson != 0);
 	}
-	delete registry;
-#endif
 }
 
 void CombatGameModeClass::Save_Registry_Keys(void)
 {
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		registry->Set_Int( "IsHudShown",	IsHudShown );
-		registry->Set_Int( "ForceGod",	ForceGod );
+	auto & ini = OpenW3D::Get_INIConfig();
 
-		//TSS
-		DefaultToFirstPerson = CombatManager::Get_First_Person_Default();
-		registry->Set_Int( "DefaultToFirstPerson",	DefaultToFirstPerson );
-	}
-	delete registry;
-#endif
+	ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "IsHudShown",	IsHudShown );
+	ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "ForceGod",	ForceGod );
+
+	//TSS
+	DefaultToFirstPerson = CombatManager::Get_First_Person_Default();
+	ini.Put_Int( APPLICATION_SUB_KEY_NAME_OPTIONS, "DefaultToFirstPerson",	DefaultToFirstPerson );
+
+	OpenW3D::Save_Config();
 }
 
 /*
@@ -1519,12 +1513,8 @@ void	CombatGameModeClass::Quick_Save( void )
 {
 	bool	saveA = true;
 
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_OPTIONS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		saveA = registry->Get_Bool( "QuicksaveA", saveA );
-	}
+	auto & ini = OpenW3D::Get_INIConfig();
+	saveA = ini.Get_Bool( APPLICATION_SUB_KEY_NAME_OPTIONS, "QuicksaveA", saveA );
 
 #define	SAVEGAME_NAME_A	"save/quicksaveA.sav"
 #define	SAVEGAME_NAME_B	"save/quicksaveB.sav"
@@ -1548,11 +1538,7 @@ void	CombatGameModeClass::Quick_Save( void )
 	}
 	saveA = !saveA;
 
-	if ( registry->Is_Valid() ) {
-		registry->Set_Bool( "QuicksaveA",	saveA );
-	}
-	delete registry;
-#endif
+	ini.Put_Bool( APPLICATION_SUB_KEY_NAME_OPTIONS, "QuicksaveA", saveA );
 
 	// Display "Quick Saved"
 	HUDInfo::Set_HUD_Help_Text( TRANSLATE( IDS_M00DSGN_DSGN1017I1DSGN_TXT ), Vector3( 0,1,0 ) );

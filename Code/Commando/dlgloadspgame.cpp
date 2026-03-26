@@ -49,7 +49,8 @@
 #include "dialogmgr.h"
 #include "renegadedialogmgr.h"
 #include "god.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "_globals.h"
 #include "dialogtests.h"
 #include "specialbuilds.h"
@@ -305,17 +306,8 @@ LoadSPGameMenuClass::Get_Game_Rank
 	if ( name.Get_Length() > 4 ) {
 		name.Erase( name.Get_Length()-4, 4 );
 	}
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_MISSION_RANKS );
-	WWASSERT( registry );
-#endif
-	int rank = 0;
-#if 0 // FIXME: use INI
-	if ( registry->Is_Valid() ) {
-		rank = registry->Get_Int( name,   0 );
-	}
-	delete registry;
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	int rank = ini.Get_Int(APPLICATION_SUB_KEY_NAME_MISSION_RANKS, name, 0);
 	return rank;
 }
 
@@ -337,20 +329,14 @@ LoadSPGameMenuClass::Set_Game_Rank
 	if ( name.Get_Length() > 4 ) {
 		name.Erase( name.Get_Length()-4, 4 );
 	}
-#if 0 // FIXME: use INI
-	RegistryClass * registry = new RegistryClass( APPLICATION_SUB_KEY_NAME_MISSION_RANKS );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		int old_rank = registry->Get_Int( name, 0 );
-		// Set to the max of old and rank
-		if ( old_rank > rank ) {
-			rank = old_rank;
-		}
-		registry->Set_Int( name, rank );
-
+	auto & ini = OpenW3D::Get_INIConfig();
+	int old_rank = ini.Get_Int(APPLICATION_SUB_KEY_NAME_MISSION_RANKS, name, 0 );
+	// Set to the max of old and rank
+	if ( old_rank > rank ) {
+		rank = old_rank;
 	}
-	delete registry;
-#endif
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_MISSION_RANKS, name, rank );
+	OpenW3D::Save_Config();
 }
 
 

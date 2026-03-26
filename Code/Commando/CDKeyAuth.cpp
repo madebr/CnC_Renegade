@@ -45,7 +45,8 @@
 #include "wwdebug.h"
 #include "CDKeyAuth.h"
 #include "gamespyauthmgr.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "playermanager.h"
 #include "_globals.h"
 #include "GameSpy_QnR.h"
@@ -160,11 +161,8 @@ void CCDKeyAuth::AuthSerial(const char *challenge, StringClass &resp) {
 
 void CCDKeyAuth::GetSerialNum(StringClass &serial) {
 
-#if 0 // FIXME: Use INI
-	RegistryClass main_reg(APPLICATION_SUB_KEY_NAME);
+	auto & ini = OpenW3D::Get_INIConfig();
 	StringClass stringval;
-	StringClass serial_out;
-	main_reg.Get_String("Serial", stringval);
+	ini.Get_String(stringval, APPLICATION_SUB_KEY_NAME, "Serial");
 	ServerSettingsClass::Encrypt_Serial(stringval, serial, false);
-#endif
 }

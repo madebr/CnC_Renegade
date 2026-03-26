@@ -1521,7 +1521,7 @@ WWAudioClass::Save_To_Registry
 	//
 	//	Attempt to open the config file
 	//
-	INIClass ini(W3D_CONF_FILE);
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	ini.Put_String (W3D_SECTION_SOUND, VALUE_INI_DEVICE_NAME, device_name);
 	ini.Put_Bool (W3D_SECTION_SOUND, VALUE_INI_IS_STEREO, is_stereo);
@@ -1536,7 +1536,7 @@ WWAudioClass::Save_To_Registry
 	ini.Put_Float (W3D_SECTION_SOUND, VALUE_INI_DIALOG_VOL,			dialog_volume);
 	ini.Put_Float (W3D_SECTION_SOUND, VALUE_INI_CINEMATIC_VOL,		cinematic_volume);
 	ini.Put_Int (W3D_SECTION_SOUND, VALUE_INI_SPEAKER_TYPE,		speaker_type);
-	retval = OpenW3D::Save_Config(ini);
+	retval = OpenW3D::Save_Config();
 
 	return retval;
 }

@@ -38,7 +38,7 @@
 #include "AutoStart.h"
 //#include "dlgmplangametype.h"
 #include "gameinitmgr.h"
-#include "registry.h"
+#include "ini.h"
 #include "_globals.h"
 #include "gamedata.h"
 #include "gameinitmgr.h"
@@ -65,6 +65,8 @@
 #include "specialbuilds.h"
 #include <cstdio>
 #include <algorithm>
+
+#include "openw3d.h"
 
 /*
 ** Single instance of restart class.
@@ -513,15 +515,9 @@ void AutoRestartClass::Think(void)
 			** Load alternate server settings if required.
 			*/
 			if (SlaveMaster.Am_I_Slave()) {
-#if 0 // FIXME: use INI
-				RegistryClass reg(APPLICATION_SUB_KEY_NAME_OPTIONS);
-#endif
+				auto & ini = OpenW3D::Get_INIConfig();
 				char file_name[MAX_PATH];
-#if 0 // FIXME: use INI
-				reg.Get_String("MultiplayerSettings", file_name, sizeof(file_name), "");
-#else
-				file_name[0] = '\0';
-#endif
+				ini.Get_String(APPLICATION_SUB_KEY_NAME_OPTIONS, "MultiplayerSettings","", file_name, sizeof(file_name));
 				if (strlen(file_name)) {
 					WWDEBUG_SAY(("Loading multiplayer settings from file %s\n", file_name));
 					The_Game()->Set_Ini_Filename(file_name);
@@ -896,67 +892,60 @@ void AutoRestartClass::ReceiveSignal(WolGameModeClass &game_mode)
  *=============================================================================================*/
 void AutoRestartClass::Set_Restart_Flag(bool enable)
 {
-#if 0 // FIXME: Use INI
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-	if (registry.Is_Valid ()) {
-		registry.Set_Int(REG_VALUE_AUTO_RESTART_FLAG, enable ? 1 : 0);
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Bool(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTO_RESTART_FLAG, enable);
 
-		GameModeClass *game_mode = GameModeManager::Find("WOL");
+	GameModeClass *game_mode = GameModeManager::Find("WOL");
+	if (game_mode && game_mode->Is_Active()) {
+		GameMode = 1;
+	} else {
+		GameModeClass *game_mode = GameModeManager::Find("LAN");
 		if (game_mode && game_mode->Is_Active()) {
-			GameMode = 1;
-		} else {
-			GameModeClass *game_mode = GameModeManager::Find("LAN");
-			if (game_mode && game_mode->Is_Active()) {
-				GameMode = 0;
-			}
-		}
-
-		if (enable) {
-			registry.Set_Int(REG_VALUE_AUTO_RESTART_TYPE, GameMode);
-			Set_Exit_On_Exception(true);
-		} else {
-			Set_Exit_On_Exception(false);
-		}
-
-		RegistryClass registry_too(WINDOWS_SUB_KEY_RUN_ONCE);
-		if (registry_too.Is_Valid()) {
-
-			if (enable) {
-				/*
-				** The the current path and build a path/file combo that points to the launcher.
-				*/
-				char path_to_exe[256];
-				char drive[_MAX_DRIVE];
-				char dir[_MAX_DIR];
-				char path[_MAX_PATH];
-				GetModuleFileNameA(ProgramInstance, path_to_exe, sizeof(path_to_exe));
-				_splitpath(path_to_exe, drive, dir, NULL, NULL);
-#ifdef FREEDEDICATEDSERVER
-				_makepath(path, drive, dir, "renegadeserver", "exe");
-#else  //FREEDEDICATEDSERVER
-				_makepath(path, drive, dir, "renegade", "exe");
-
-				char options[256];
-				options[0] = 0;
-				if (ServerSettingsClass::Is_Active()) {
-					sprintf(options, " /startserver=%s", ServerSettingsClass::Get_Settings_File_Name());
-				}
-
-				if (ConsoleBox.Is_Exclusive()) {
-					strcat(options, " /nodx");
-				}
-
-				strcat(path, options);
-#endif //FREEDEDICATEDSERVER
-				WWDEBUG_SAY(("Writing %s to RunOnce key\n", path));
-				registry_too.Set_String(WINDOWS_SUB_KEY_RUN_ONCE_APP, path);
-			} else {
-				WWDEBUG_SAY(("Removing RunOnce key\n"));
-				registry_too.Delete_Value(WINDOWS_SUB_KEY_RUN_ONCE_APP);
-			}
+			GameMode = 0;
 		}
 	}
-#endif
+
+	if (enable) {
+		ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTO_RESTART_TYPE, GameMode);
+		Set_Exit_On_Exception(true);
+	} else {
+		Set_Exit_On_Exception(false);
+	}
+
+	if (enable) {
+		/*
+		** The the current path and build a path/file combo that points to the launcher.
+		*/
+		char path_to_exe[256];
+		char drive[_MAX_DRIVE];
+		char dir[_MAX_DIR];
+		char path[_MAX_PATH];
+		GetModuleFileNameA(ProgramInstance, path_to_exe, sizeof(path_to_exe));
+		_splitpath(path_to_exe, drive, dir, NULL, NULL);
+#ifdef FREEDEDICATEDSERVER
+		_makepath(path, drive, dir, "renegadeserver", "exe");
+#else  //FREEDEDICATEDSERVER
+		_makepath(path, drive, dir, "renegade", "exe");
+
+		char options[256];
+		options[0] = 0;
+		if (ServerSettingsClass::Is_Active()) {
+			sprintf(options, " --startserver %s", ServerSettingsClass::Get_Settings_File_Name());
+		}
+
+		if (ConsoleBox.Is_Exclusive()) {
+			strcat(options, " --nodx");
+		}
+
+		strcat(path, options);
+#endif //FREEDEDICATEDSERVER
+		WWDEBUG_SAY(("Writing %s to RunOnce key\n", path));
+		ini.Put_String(WINDOWS_SUB_KEY_RUN_ONCE, WINDOWS_SUB_KEY_RUN_ONCE_APP, path);
+	} else {
+		WWDEBUG_SAY(("Removing RunOnce key\n"));
+		ini.Remove_Entry(WINDOWS_SUB_KEY_RUN_ONCE, WINDOWS_SUB_KEY_RUN_ONCE_APP);
+	}
+	OpenW3D::Save_Config();
 }
 
 
@@ -978,14 +967,6 @@ void AutoRestartClass::Set_Restart_Flag(bool enable)
  *=============================================================================================*/
 bool AutoRestartClass::Get_Restart_Flag(void)
 {
-	bool flag = false;
-
-#if 0 // FIXME: Use INI
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-	if (registry.Is_Valid()) {
-		int restart = registry.Get_Int(REG_VALUE_AUTO_RESTART_FLAG, 0);
-		flag = restart ? true : false;
-	}
-#endif
-	return(flag);
+	auto & ini = OpenW3D::Get_INIConfig();
+	return ini.Get_Bool(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTO_RESTART_FLAG, false);
 }

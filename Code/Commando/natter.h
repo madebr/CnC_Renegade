@@ -200,10 +200,8 @@ class WOLNATInterfaceClass :	public Observer<WWOnline::UserEvent>,
 		/*
 		** Config.
 		*/
-#if 0 // FIXME: Use INI
-		void Get_Config(RegistryClass *reg, int &port_number, bool &send_delay);
-		void Set_Config(RegistryClass *reg, int port_number, bool send_delay);
-#endif
+		void Get_Config(const char *section, int &port_number, bool &send_delay);
+		void Set_Config(const char *section, int port_number, bool send_delay);
 		void Save_Firewall_Info_To_Registry(void);
 		unsigned int Get_Reg_External_IP(void) {return(RegExternalIP);}
 		unsigned int Get_Reg_External_Port(void) {return(RegExternalPort);}

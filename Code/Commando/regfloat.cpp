@@ -25,8 +25,9 @@
 
 #include "regfloat.h"
 
+#include "ini.h"
+#include "openw3d.h"
 #include "string.h"
-#include "registry.h"
 #include "wwdebug.h"
 #include "wwmemlog.h"
 
@@ -48,37 +49,29 @@ cRegistryFloat::cRegistryFloat(const char *registry_location, const char *key_na
       WWASSERT(strlen(key_name) < sizeof(KeyName));
       strcpy(RegistryLocation, registry_location);
       strcpy(KeyName, key_name);
-
-#if 0 // FIXME: use INI
-	   RegistryClass * registry = new RegistryClass(RegistryLocation);
-	   WWASSERT(registry != NULL && registry->Is_Valid());
-		int temp_1 = 0;
-		WWASSERT(sizeof(temp_1) == sizeof(default_value));
-		::memcpy(&temp_1, &default_value, sizeof(default_value));
-		int temp_2 = registry->Get_Int(KeyName, temp_1);
-		WWASSERT(sizeof(temp_2) == sizeof(Value));
-		::memcpy(&Value, &temp_2, sizeof(temp_2));
-   	delete registry;
-#endif
-
-      Set(Value);
    }
+	Value = default_value;
+	Initialized = false;
+}
+
+//-----------------------------------------------------------------------------
+void cRegistryFloat::Initialize() {
+	if (strcmp(RegistryLocation, "") != 0) {
+		auto & ini = OpenW3D::Get_INIConfig();
+		Value = ini.Get_Float(RegistryLocation, KeyName, Value);
+	}
+	Initialized = true;
 }
 
 //-----------------------------------------------------------------------------
 void cRegistryFloat::Set(float value)
 {
-   Value = value;
+	Value = value;
+	Initialized = true;
 
-   if (strcmp(RegistryLocation, "")) {
-#if 0 // FIXME: use INI
-	   RegistryClass * registry = new RegistryClass(RegistryLocation);
-	   WWASSERT(registry != NULL && registry->Is_Valid());
-		int temp = 0;
-		WWASSERT(sizeof(temp) == sizeof(Value));
-		::memcpy(&temp, &Value, sizeof(Value));
-      registry->Set_Int(KeyName, temp);
-   	delete registry;
-#endif
-   }
+	if (strcmp(RegistryLocation, "")) {
+		auto & ini = OpenW3D::Get_INIConfig();
+		Value = ini.Put_Float(RegistryLocation, KeyName, Value);
+		OpenW3D::Save_Config();
+	}
 }

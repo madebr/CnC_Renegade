@@ -210,8 +210,8 @@ class List : public GenericList {
 		void Delete(void) {while (First()->Is_Valid()) delete First();}
 
 	private:
-		List(List<T> const & rvalue);
-		List<T> operator = (List<T> const & rvalue);
+		List(List<T> const & rvalue) = delete;
+		List<T> operator = (List<T> const & rvalue) = delete;
 };
 
 

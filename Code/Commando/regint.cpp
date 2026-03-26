@@ -25,8 +25,9 @@
 
 #include "regint.h" // I WANNA BE FIRST!
 
+#include "ini.h"
+#include "openw3d.h"
 #include "string.h"
-#include "registry.h"
 #include "wwdebug.h"
 #include "wwmemlog.h"
 
@@ -41,36 +42,35 @@ cRegistryInt::cRegistryInt(const char *registry_location, const char *key_name, 
 	if (registry_location == NULL) {
       strcpy(RegistryLocation, "");
       strcpy(KeyName, "");
-      Set(default_value);
    } else {
       WWASSERT(key_name != NULL);
       WWASSERT(strlen(registry_location) < sizeof(RegistryLocation));
       WWASSERT(strlen(key_name) < sizeof(KeyName));
       strcpy(RegistryLocation, registry_location);
       strcpy(KeyName, key_name);
-
-#if 0 // FIXME: use INI
-	   RegistryClass * registry = new RegistryClass(RegistryLocation);
-	   WWASSERT(registry != NULL && registry->Is_Valid());
-      Value = registry->Get_Int(KeyName, default_value);
-   	delete registry;
-#endif
-
-      Set(Value);
    }
+   Value = default_value;
+   Initialized = false;
+}
+
+//-----------------------------------------------------------------------------
+void cRegistryInt::Initialize() {
+	if (strcmp(RegistryLocation, "") != 0) {
+		auto & ini = OpenW3D::Get_INIConfig();
+		Value = ini.Get_Int(RegistryLocation, KeyName, Value);
+	}
+	Initialized = true;
 }
 
 //-----------------------------------------------------------------------------
 void cRegistryInt::Set(int value)
 {
-   Value = value;
+	Value = value;
+	Initialized = true;
 
-   if (strcmp(RegistryLocation, "")) {
-#if 0 // FIXME: use INI
-	   RegistryClass * registry = new RegistryClass(RegistryLocation);
-	   WWASSERT(registry != NULL && registry->Is_Valid());
-      registry->Set_Int(KeyName, Value);
-   	delete registry;
-#endif
-   }
+	if (strcmp(RegistryLocation, "")) {
+		auto & ini = OpenW3D::Get_INIConfig();
+		Value = ini.Put_Int(RegistryLocation, KeyName, Value);
+		OpenW3D::Save_Config();
+	}
 }

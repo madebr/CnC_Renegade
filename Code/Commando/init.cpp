@@ -94,7 +94,8 @@
 #include "playermanager.h"
 #include "teammanager.h"
 #include "stackdump.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "bandwidthgraph.h"
 #include "buildnum.h"
 #include "dx8wrapper.h"
@@ -298,13 +299,8 @@ void Commando_Assert_Handler(const char * message)
 #ifdef WWDEBUG
 	Copy_Logs(DebugManager::Get_Version_Number());
 #endif // WWDEBUG
-#if 0 // FIXME: Use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
-
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_APPLICATION_CRASH_VERSION, 0);
 
 #ifdef WWDEBUG
 
@@ -574,12 +570,10 @@ public:
 
 void Copy_Logs(unsigned version)
 {
-#if 0 // FIXME: Use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		if (registry.Get_Int( VALUE_NAME_DISABLE_LOG_COPYING,0 )) return;
+	auto & ini = OpenW3D::Get_INIConfig();
+	if (ini.Get_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_DISABLE_LOG_COPYING, false)) {
+		return;
 	}
-#endif
 
 	if (CopyThread.Is_Running()) return;
 	CopyThread.Version=version;
@@ -599,12 +593,9 @@ void Application_Exception_Callback(void)
 #ifdef WWDEBUG
 	Copy_Logs(DebugManager::Get_Version_Number());
 #endif // WWDEBUG
-#if 0 // FIXME: Use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
+	OpenW3D::Save_Config();
 }
 
 bool RestartNeeded = true;
@@ -731,18 +722,16 @@ bool Game_Init(void)
 {
 	WWMEMLOG(MEM_GAMEINIT);
 
-#if 0 // FIXME: Use INI
-	// Set registry key to 1 for the duration of the init. This way we know if the program crashed while the init.
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 1 );
-		[[maybe_unused]] unsigned crash_version=registry.Get_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 1);
 #ifdef WWDEBUG
-		if (crash_version) Copy_Logs(crash_version);
-#endif // WWDEBUG
-		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
+	unsigned crash_version = ini.Get_Int( APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_APPLICATION_CRASH_VERSION, 0);
+	if (crash_version) {
+		Copy_Logs(crash_version);
 	}
-#endif
+#endif // WWDEBUG
+	ini.Put_Int( APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
+	OpenW3D::Save_Config();
 
 	//
 	//	Ensure our directory structure exists
@@ -1120,51 +1109,3 @@ bool Game_Init(void)
 	return true;
 }
 
-
-
-
-
-
-
-
-/***********************************************************************************************
- * Build_Registry_Location_String -- Get a complete path to a registry location                *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Game base path                                                                    *
- *           Base modifier path                                                                *
- *           Sub path                                                                          *
- *                                                                                             *
- * OUTPUT:   Ptr to complete path                                                              *
- *                                                                                             *
- * WARNINGS: None                                                                              *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   11/9/2001 3:39PM ST : Created                                                             *
- *=============================================================================================*/
-char *Build_Registry_Location_String(const char *base, const char *modifier, const char *sub)
-{
-	static char _whole_registry_string[1024];
-
-	WWASSERT(base != NULL);
-	WWASSERT(sub != NULL);
-
-
-	if (modifier == NULL) {
-		modifier = DefaultRegistryModifier;
-	}
-
-	if (base && *base != 0) {
-		strcpy(_whole_registry_string, base);
-	}
-	if (modifier && *modifier != 0) {
-		strcat(_whole_registry_string, "\\");
-		strcat(_whole_registry_string, modifier);
-	}
-	if (sub && *sub != 0) {
-		strcat(_whole_registry_string, "\\");
-		strcat(_whole_registry_string, sub);
-	}
-	return(_whole_registry_string);
-}

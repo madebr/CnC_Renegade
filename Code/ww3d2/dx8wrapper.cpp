@@ -1078,7 +1078,7 @@ bool DX8Wrapper::Registry_Save_Render_Device( const char * sub_key )
 
 bool DX8Wrapper::Registry_Save_Render_Device( const char */*sub_key*/, int device, int width, int height, int depth, bool windowed, int texture_depth)
 {
-	INIClass ini(W3D_CONF_FILE);
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	ini.Put_String(W3D_SECTION_RENDER, VALUE_INI_RENDER_DEVICE_NAME, _RenderDeviceShortNameTable[device]);
 	ini.Put_Int(W3D_SECTION_RENDER, VALUE_INI_RENDER_DEVICE_WIDTH, width);
@@ -1087,7 +1087,7 @@ bool DX8Wrapper::Registry_Save_Render_Device( const char */*sub_key*/, int devic
 	ini.Put_Bool(W3D_SECTION_RENDER, VALUE_INI_RENDER_DEVICE_WINDOWED, windowed != 0);
 	ini.Put_Int(W3D_SECTION_RENDER, VALUE_INI_RENDER_DEVICE_TEXTURE_DEPTH, texture_depth);
 
-	return OpenW3D::Save_Config(ini);
+	return OpenW3D::Save_Config();
 }
 
 bool DX8Wrapper::Registry_Load_Render_Device( const char * sub_key, bool resize_window )

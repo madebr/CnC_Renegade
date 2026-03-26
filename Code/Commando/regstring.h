@@ -39,13 +39,15 @@ class cRegistryString
       cRegistryString(const char *registry_location, const char *key_name, const char *initial_value);
 
       void Set(const char *value);
-      const char *Get(void) const {return Value;}
+      const char *Get(void) {if (!Initialized) { Initialize(); } return Value;}
 
 	private:
+	  void Initialize();
 
       char Value[200];
       char RegistryLocation[400];
       char KeyName[100];
+      bool Initialized;
 };
 
 //-----------------------------------------------------------------------------

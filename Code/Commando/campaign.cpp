@@ -56,6 +56,8 @@
 #include "ccamera.h"
 #include <cstdio>
 
+#include "openw3d.h"
+
 /*
 **
 */
@@ -336,12 +338,9 @@ void	CampaignManager::Continue( bool /* success */ )
 			// can watch it later)
 			//
 
-#if 0 // FIXME: use INI
-			RegistryClass registry( APPLICATION_SUB_KEY_NAME_MOVIES );
-			if ( registry.Is_Valid() ) {
-				registry.Set_String( filename, description );
-			}
-#endif
+			auto & ini = OpenW3D::Get_INIConfig();
+			ini.Put_String( APPLICATION_SUB_KEY_NAME_MOVIES, filename, description );
+			OpenW3D::Save_Config();
 		}
 
 	} else {

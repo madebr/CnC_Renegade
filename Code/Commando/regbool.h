@@ -30,8 +30,6 @@
 #ifndef REGBOOL_H
 #define REGBOOL_H
 
-#include "bittype.h"
-
 //-----------------------------------------------------------------------------
 class cRegistryBool
 {
@@ -41,15 +39,17 @@ class cRegistryBool
 
       bool Toggle(void);
       bool Set(bool value);
-      bool Get(void) const          {return Value == 1;}
-      bool Is_True(void) const      {return Value == 1;}
-      bool Is_False(void) const     {return Value == 0;}
+      bool Get(void) {if (!Initialized) { Initialize(); } return Value != 0;}
+      bool Is_True(void)       {return Get() == true;}
+      bool Is_False(void)      {return Get() == false;}
 
 	private:
+	  void Initialize();
 
       int Value;
       char RegistryLocation[400];
       char KeyName[100];
+      bool Initialized;
 };
 
 //-----------------------------------------------------------------------------

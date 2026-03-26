@@ -51,6 +51,7 @@
 //#include	"wwfile.h"
 
 #include "unichar.h"
+#include "vector.h"
 
 class PKey;
 class FileClass;
@@ -184,6 +185,10 @@ class INIClass {
 		bool Put_Point(char const * section, char const * entry, TPoint2D<int> const & value);
 		bool Put_Wide_String(char const * section, char const * entry, const unichar_t * string);
 
+		void Remove_Entry(char const * section, char const *entry);
+
+		void Get_Value_List( char const * section, DynamicVectorClass<StringClass> &list );
+
 //	protected:
 		enum {MAX_LINE_LENGTH=512};
 
@@ -229,8 +234,8 @@ class INIClass {
 		/*
 		**	Ensure that the copy constructor and assignment operator never exist.
 		*/
-		INIClass(INIClass const & rvalue);
-		INIClass operator = (INIClass const & rvalue);
+		INIClass(INIClass const & rvalue) = delete;
+		INIClass operator = (INIClass const & rvalue) = delete;
 
 		/*
 		** The name of the file we were loaded from (if applicable).

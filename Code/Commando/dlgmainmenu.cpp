@@ -57,7 +57,8 @@
 #include "gamedata.h"
 #include "imagectrl.h"
 #include "init.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "_globals.h"
 #include "dialogtests.h"
 #include "DlgWOLWait.h"
@@ -89,12 +90,8 @@ MainMenuDialogClass::MainMenuDialogClass (void)	:
 	TitleTransModel	= WW3DAssetManager::Get_Instance ()->Create_Render_Obj ("IF_TITLETRANS");
 	GizmoModel			= WW3DAssetManager::Get_Instance ()->Create_Render_Obj ("IF_EVAGIZMO");
 
-#if 0 // FIXME: use INI
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (reg.Get_Int("DisableMenuAnim", 0) != 0) {
-		Animated = false;
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	Animated = ini.Get_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "DisableMenuAnim", false);
 
 
 	if (TitleTransModel != NULL && GizmoModel != NULL && Animated) {

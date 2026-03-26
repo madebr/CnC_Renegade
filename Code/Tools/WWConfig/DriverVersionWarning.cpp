@@ -303,10 +303,10 @@ void DriverVersionWarning::OnDisableDriverVersionDialogCheckbox()
 	// TODO: Add your control notification handler code here
 
 	int is_disabled = SendDlgItemMessage (IDC_DISABLE_DRIVER_VERSION_DIALOG_CHECKBOX, BM_GETCHECK);
-	INIClass ini(W3D_CONF_FILE);
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	ini.Put_Int(W3D_SECTION_RENDER, "DriverVersionCheckDisabled", is_disabled ? 87 : 0);
-	OpenW3D::Save_Config(ini);
+	OpenW3D::Save_Config();
 
 }
 

@@ -39,65 +39,36 @@
 
 #include "specialbuilds.h"
 
-/*
-#ifdef FREEDEDICATEDSERVER
-#define APP_SUB_KEY "Software\\Westwood\\RenegadeFDS"
-#else  //FREEDEDICATEDSERVER
+#define	APPLICATION_SUB_KEY_NAME							""
 
-#ifdef MULTIPLAYERDEMO
-#define APP_SUB_KEY "Software\\Westwood\\RenegadeMPDemo"
-#else // MULTIPLAYERDEMO
-#define APP_SUB_KEY "Software\\Westwood\\Renegade"
-#endif //MULTIPLAYERDEMO
+#define	APPLICATION_SUB_KEY_NAME_RENDER					"Render"
+#define	APPLICATION_SUB_KEY_NAME_OPTIONS					"Options"
+#define	APPLICATION_SUB_KEY_NAME_DEBUG					"Debug"
+#define	APPLICATION_SUB_KEY_NAME_SYSTEM_SETTINGS		"System Settings"
+#define	APPLICATION_SUB_KEY_NAME_CONTROLS				"Controls"
+#define	APPLICATION_SUB_KEY_NAME_SOUND					"Sound"
+#define	APPLICATION_SUB_KEY_NAME_MOVIES					"Movies"
+#define	APPLICATION_SUB_KEY_NAME_WOLSETTINGS			"WOLSettings"
+#define	APPLICATION_SUB_KEY_NAME_MISSION_RANKS			"Ranks"
+#define	APPLICATION_SUB_KEY_NAME_INPUT					"Input"
+#define	APPLICATION_SUB_KEY_NAME_GAMESPY					"GameSpy"
+#define	APPLICATION_SUB_KEY_NAME_WOLSETTINGS			"WOLSettings"
+#define	APPLICATION_SUB_KEY_NAME_URL						"WOLSettings/URL"
+#define	APPLICATION_SUB_KEY_NAME_LOGINS					"WOLSettings/Logins"
+#define	APPLICATION_SUB_KEY_NAME_QUICKMATCH				"WOLSettings/QuickMatch"
+#define	APPLICATION_SUB_KEY_NAME_IGNORE_LIST			"WOLSettings/Ignore List"
+#define	APPLICATION_SUB_KEY_NAME_SERVER_LIST			"WOLSettings/Servers"
+#define	APPLICATION_SUB_KEY_NAME_SKIN_LIST				"MP Settings/Skins"
 
-#endif //FREEDEDICATEDSERVER
-*/
+#define	APPLICATION_SUB_KEY_NAME_NETOPTIONS				"Networking/Options"
+#define	APPLICATION_SUB_KEY_NAME_NETDEBUG				"Networking/Debug"
+#define	APPLICATION_SUB_KEY_NAME_NET_FIREWALL			"Networking/Firewall"
+#define	APPLICATION_SUB_KEY_NAME_NET_SLAVE				"Networking/Slave"
+#define	APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL	"Networking/ServerControl"
 
-#if	defined(FREEDEDICATEDSERVER)
-#define APP_SUB_KEY "Software\\Westwood\\RenegadeFDS"
-#elif defined(MULTIPLAYERDEMO)
-#define APP_SUB_KEY "Software\\Westwood\\RenegadeMPDemo"
-#elif defined(BETACLIENT)
-#define APP_SUB_KEY "Software\\Westwood\\RenegadeBeta"
-#elif defined(BETASERVER)
-#define APP_SUB_KEY "Software\\Westwood\\RenegadeBeta"
-#else
-#define APP_SUB_KEY "Software\\Westwood\\Renegade"
-#endif
+#define	COMBAT_SUB_KEY_NAME_DEBUG							"Debug"
 
-
-extern char *Build_Registry_Location_String(const char *base, const char *modifier, const char *sub);
-
-#define	APPLICATION_SUB_KEY_NAME							Build_Registry_Location_String(APP_SUB_KEY, NULL, "")
-
-#define	APPLICATION_SUB_KEY_NAME_RENDER					Build_Registry_Location_String(APP_SUB_KEY, NULL, "Render")
-#define	APPLICATION_SUB_KEY_NAME_OPTIONS					Build_Registry_Location_String(APP_SUB_KEY, NULL, "Options")
-#define	APPLICATION_SUB_KEY_NAME_DEBUG					Build_Registry_Location_String(APP_SUB_KEY, NULL, "Debug")
-#define	APPLICATION_SUB_KEY_NAME_SYSTEM_SETTINGS		Build_Registry_Location_String(APP_SUB_KEY, NULL, "System Settings")
-#define	APPLICATION_SUB_KEY_NAME_CONTROLS				Build_Registry_Location_String(APP_SUB_KEY, NULL, "Controls")
-#define	APPLICATION_SUB_KEY_NAME_SOUND					Build_Registry_Location_String(APP_SUB_KEY, NULL, "Sound")
-#define	APPLICATION_SUB_KEY_NAME_MOVIES					Build_Registry_Location_String(APP_SUB_KEY, NULL, "Movies")
-#define	APPLICATION_SUB_KEY_NAME_WOLSETTINGS			Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings")
-#define	APPLICATION_SUB_KEY_NAME_MISSION_RANKS			Build_Registry_Location_String(APP_SUB_KEY, NULL, "Ranks")
-#define	APPLICATION_SUB_KEY_NAME_INPUT					Build_Registry_Location_String(APP_SUB_KEY, NULL, "Input")
-#define	APPLICATION_SUB_KEY_NAME_GAMESPY					Build_Registry_Location_String(APP_SUB_KEY, NULL, "GameSpy")
-#define	APPLICATION_SUB_KEY_NAME_WOLSETTINGS			Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings")
-#define	APPLICATION_SUB_KEY_NAME_URL						Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings\\URL")
-#define	APPLICATION_SUB_KEY_NAME_LOGINS					Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings\\Logins")
-#define	APPLICATION_SUB_KEY_NAME_QUICKMATCH				Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings\\QuickMatch")
-#define	APPLICATION_SUB_KEY_NAME_IGNORE_LIST			Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings\\Ignore List")
-#define	APPLICATION_SUB_KEY_NAME_SERVER_LIST			Build_Registry_Location_String(APP_SUB_KEY, NULL, "WOLSettings\\Servers")
-#define	APPLICATION_SUB_KEY_NAME_SKIN_LIST				Build_Registry_Location_String(APP_SUB_KEY, NULL, "MP Settings\\Skins")
-
-#define	APPLICATION_SUB_KEY_NAME_NETOPTIONS				Build_Registry_Location_String(APP_SUB_KEY, NULL, "Networking\\Options")
-#define	APPLICATION_SUB_KEY_NAME_NETDEBUG				Build_Registry_Location_String(APP_SUB_KEY, NULL, "Networking\\Debug")
-#define	APPLICATION_SUB_KEY_NAME_NET_FIREWALL			Build_Registry_Location_String(APP_SUB_KEY, NULL, "Networking\\Firewall")
-#define	APPLICATION_SUB_KEY_NAME_NET_SLAVE				Build_Registry_Location_String(APP_SUB_KEY, NULL, "Networking\\Slave")
-#define	APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL	Build_Registry_Location_String(APP_SUB_KEY, NULL, "Networking\\ServerControl")
-
-#define	COMBAT_SUB_KEY_NAME_DEBUG							Build_Registry_Location_String(APP_SUB_KEY, NULL, "Debug")
-
-#define	APPLICATION_SUB_KEY_NAME_BANDTEST				Build_Registry_Location_String(APP_SUB_KEY, NULL, "Bandtest")
+#define	APPLICATION_SUB_KEY_NAME_BANDTEST				"Bandtest"
 
 #define  RENEGADE_BASE_SKU										3072
 #define	RENEGADE_FDS_SKU										12288

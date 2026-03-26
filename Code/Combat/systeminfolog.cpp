@@ -17,7 +17,7 @@
 */
 
 #include "systeminfolog.h"
-#include "registry.h"
+#include "ini.h"
 #include "timemgr.h"
 #include "debug.h"
 #include "playerdata.h"
@@ -25,10 +25,11 @@
 #include "cheatmgr.h"
 #include "objectives.h"
 #include "ffactory.h"
+#include "openw3d.h"
 #include "savegame.h"
 #include "systimer.h"
 #include "specialbuilds.h"
-const unsigned NUM_GAMES_LOGGED=10;
+static const unsigned NUM_GAMES_LOGGED=10;
 
 //#define	COMBAT_SUB_KEY_NAME_DEBUG				"Software\\Westwood\\Renegade\\Debug"
 
@@ -74,21 +75,19 @@ static unsigned TotalPlayingTime;
 static StringClass CurrentLevel;
 static StringClass CurrentString;
 
-#if 0  // FIXME: LOG TO LOG FILE
-static void Get_Latest_Game_String(RegistryClass& reg, int i, StringClass& string)
+static void Get_Latest_Game_String(INIClass& ini, int i, StringClass& string)
 {
 	StringClass keyname(0,true);
 	keyname.Format("%s%d",SYSTEM_INFO_LOG_LATEST_GAME,i+1);
-	reg.Get_String(keyname, string);
+	ini.Get_String(string, COMBAT_SUB_KEY_NAME_DEBUG, keyname, "");
 }
 
-static void Set_Latest_Game_String(RegistryClass& reg, int i, const StringClass& string)
+static void Set_Latest_Game_String(INIClass& ini, int i, const StringClass& string)
 {
 	StringClass keyname(0,true);
 	keyname.Format("%s%d",SYSTEM_INFO_LOG_LATEST_GAME,i+1);
-	reg.Set_String(keyname, string);
+	ini.Put_String(COMBAT_SUB_KEY_NAME_DEBUG, keyname, string);
 }
-#endif
 
 void SystemInfoLog::Set_State_Loading()
 {
@@ -100,49 +99,40 @@ void SystemInfoLog::Set_State_Loading()
 	CurrentFPSCount=0;
 	CurrentLoadingTime=0;
 
-#if 0 // FIXME: Use INI
-	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_LOADING );
-		StringClass string(0,true);
-		for (int i=NUM_GAMES_LOGGED-1;i>0;--i) {
-			Get_Latest_Game_String(registry,i-1,string);
-			Set_Latest_Game_String(registry,i,string);
-		}
-
-		Get_Final_String(CurrentString);
-		CurrentString+="Crashed while loading";
-
-		Set_Latest_Game_String(registry, 0, CurrentString );
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(COMBAT_SUB_KEY_NAME_DEBUG, SYSTEM_INFO_LOG_CURRENT_STATE, STATE_LOADING);
+	StringClass string(0, true);
+	for (int i=NUM_GAMES_LOGGED-1;i>0;--i) {
+		Get_Latest_Game_String(ini,i-1,string);
+		Set_Latest_Game_String(ini,i,string);
 	}
-#endif
+
+	Get_Final_String(CurrentString);
+	CurrentString+="Crashed while loading";
+
+	Set_Latest_Game_String(ini, 0, CurrentString );
+	OpenW3D::Save_Config();
 }
 
 void SystemInfoLog::Set_Current_Level(const char* level_name)
 {
-#if 0 // FIXME: Use INI
 	CurrentLevel=level_name;
-	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		Get_Final_String(CurrentString);
-		CurrentString+="Crashed while loading";
-		Set_Latest_Game_String(registry,0,CurrentString );
-
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	Get_Final_String(CurrentString);
+	CurrentString += "Crashed while loading";
+	Set_Latest_Game_String(ini, 0, CurrentString );
+	OpenW3D::Save_Config();
 }
 
 void SystemInfoLog::Set_State_Playing()
 {
-#if 0 // FIXME: Use INI
-	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_PLAYING );
-		Get_Final_String(CurrentString);
-		CurrentString+="Crashed while playing";
-		Set_Latest_Game_String(registry,0,CurrentString );
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int( COMBAT_SUB_KEY_NAME_DEBUG, SYSTEM_INFO_LOG_CURRENT_STATE, STATE_PLAYING );
+	Get_Final_String(CurrentString);
+	CurrentString+="Crashed while playing";
+	Set_Latest_Game_String(ini,0,CurrentString );
+	OpenW3D::Save_Config();
+
 	PlayingStartTime=TIMEGETTIME();
 }
 
@@ -174,33 +164,28 @@ void SystemInfoLog::Set_State_Exiting()
 		AvgFPS=CurrentTotalFPS*10/CurrentFPSCount;
 	}
 
-#if 0 // FIXME: Use INI
-	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_EXITING );
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(COMBAT_SUB_KEY_NAME_DEBUG, SYSTEM_INFO_LOG_CURRENT_STATE, STATE_EXITING);
 
-		Get_Final_String(CurrentString);
-		CurrentString+="Crashed while exiting.";
-		Set_Latest_Game_String(registry,0,CurrentString);
-	}
-#endif
+	Get_Final_String(CurrentString);
+	CurrentString+="Crashed while exiting.";
+	Set_Latest_Game_String(ini,0,CurrentString);
+	OpenW3D::Save_Config();
 }
 
 void SystemInfoLog::Reset_State()
 {
-#if 0 // FIXME: Use INI
-	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		int old_state=registry.Get_Int( SYSTEM_INFO_LOG_CURRENT_STATE);
-		registry.Set_Int( SYSTEM_INFO_LOG_CURRENT_STATE, STATE_INIT );
-		// If was exiting...
-		if (old_state==STATE_EXITING) {
-			Get_Final_String(CurrentString);
-			CurrentString+="OK";
-			Set_Latest_Game_String(registry,0,CurrentString);
-		}
+	auto & ini = OpenW3D::Get_INIConfig();
+	int old_state=ini.Get_Int( COMBAT_SUB_KEY_NAME_DEBUG, SYSTEM_INFO_LOG_CURRENT_STATE);
+	ini.Put_Int(COMBAT_SUB_KEY_NAME_DEBUG, SYSTEM_INFO_LOG_CURRENT_STATE, STATE_INIT );
+	// If was exiting...
+	if (old_state==STATE_EXITING) {
+		Get_Final_String(CurrentString);
+		CurrentString+="OK";
+		Set_Latest_Game_String(ini, 0, CurrentString);
 	}
-#endif
+	OpenW3D::Save_Config();
+
 	CurrentLevel="";
 }
 
@@ -231,34 +216,30 @@ void SystemInfoLog::Record_Frame()
 
 void SystemInfoLog::Get_Log(StringClass& string)
 {
-#if 0 // FIXME: Use INI
-	RegistryClass registry( COMBAT_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		string.Format(
-			"Ten latest levels played:\r\n"
-			"%3s %5s %16s %6s %6s %6s %6s %8s %s\r\n",
-			"#",
-			"Build",
-			"Level",
-			"Length",
-			"MinFPS",
-			"MaxFPS",
-			"AvgFPS",
-			"LoadTime",
-			"Status");
+	auto & ini = OpenW3D::Get_INIConfig();
+	string.Format(
+		"Ten latest levels played:\r\n"
+		"%3s %5s %16s %6s %6s %6s %6s %8s %s\r\n",
+		"#",
+		"Build",
+		"Level",
+		"Length",
+		"MinFPS",
+		"MaxFPS",
+		"AvgFPS",
+		"LoadTime",
+		"Status");
 
-		StringClass tmp_string(0,true);
+	StringClass tmp_string(0,true);
 
-		for (int i=0;i<NUM_GAMES_LOGGED;++i) {
-			Get_Latest_Game_String(registry,i,tmp_string);
-			StringClass tmp_string2(0,true);
-			tmp_string2.Format("%2d. ",i+1);
-			string+=tmp_string2;
-			string+=tmp_string;
-			string+="\r\n";
-		}
+	for (int i=0;i<NUM_GAMES_LOGGED;++i) {
+		Get_Latest_Game_String(ini, i,tmp_string);
+		StringClass tmp_string2(0,true);
+		tmp_string2.Format("%2d. ",i+1);
+		string+=tmp_string2;
+		string+=tmp_string;
+		string+="\r\n";
 	}
-#endif
 }
 
 void SystemInfoLog::Get_Compact_Log(StringClass& string)

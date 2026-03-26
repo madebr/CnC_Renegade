@@ -73,6 +73,7 @@ struct INISection : public Node<INISection *> {
 		~INISection(void);
 //		~INISection(void) {free(Section);Section = 0;EntryList.Delete();}
 		INIEntry * Find_Entry(char const * entry) const;
+		void Remove_Entry(char const * entry);
 //		int Index_ID(void) const {return(CRCEngine()(Section, strlen(Section)));};
 		int Index_ID(void) const { return CRC::String(Section); };
 
@@ -81,8 +82,8 @@ struct INISection : public Node<INISection *> {
 		IndexClass<int, INIEntry *> EntryIndex;
 
 	private:
-		INISection(INISection const & rvalue);
-		INISection operator = (INISection const & rvalue);
+		INISection(INISection const & rvalue) = delete;
+		INISection operator = (INISection const & rvalue) = delete;
 };
 
 

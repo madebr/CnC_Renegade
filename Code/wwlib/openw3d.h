@@ -28,7 +28,9 @@ namespace OpenW3D
 	const char *Get_Config_File_Path();
 	bool Has_Config_File_Path_Override();
 	bool Command_Line_Has_Arg(const char *command_line, const char *arg);
-	bool Save_Config(const INIClass &ini);
+	INIClass &Get_INIConfig();
+	bool Save_Config();
+	void Set_Read_Only_Config(bool set);
 }
 
 // Some defines for moving game config to ini files rather than registry.

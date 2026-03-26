@@ -47,6 +47,9 @@
 #include <stdio.h>
 #include <algorithm>
 
+#include "ini.h"
+#include "openw3d.h"
+
 using namespace WWOnline;
 
 #define MAX_STRING_LEN 64;
@@ -156,13 +159,10 @@ LoginProfile* LoginProfile::Get(const unichar_t* loginName, bool createOK)
 			}
 
 		StringClass regKey(255, true);
-		regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, loginName);
+		regKey.Format("%s/%S", APPLICATION_SUB_KEY_NAME_LOGINS, loginName);
 
-#if 0 // FIXME: Use INI
-		if (RegistryClass::Exists(regKey) || createOK)
-#else
-		if (TRUE)
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		if (ini.Section_Present(regKey) || createOK)
 			{
 			return Create(loginName);
 			}
@@ -230,16 +230,10 @@ void LoginProfile::Delete(const unichar_t* loginName)
 	{
 	if (loginName && u_strlen(loginName))
 		{
-#if 0 // FIXME: Use INI
-		RegistryClass registry(APPLICATION_SUB_KEY_NAME_LOGINS, false);
-
-		if (registry.Is_Valid())
-			{
-			char valueName[64];
-			u_wstomb(valueName, loginName, sizeof(valueName));
-			registry.Delete_Value(valueName);
-			}
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		char valueName[64];
+		u_wstomb(valueName, loginName, sizeof(valueName));
+		ini.Remove_Entry(APPLICATION_SUB_KEY_NAME_LOGINS, valueName);
 		}
 	}
 
@@ -518,18 +512,13 @@ void LoginProfile::LoadSettings(void)
 
 	// Get login preferences
 	StringClass regKey(255, true);
-	regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
+	regKey.Format("%s/%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
-#if 0 // FIXME: Use INI
-	RegistryClass registry(regKey, false);
+	auto & ini = OpenW3D::Get_INIConfig();
 
-	if (registry.Is_Valid())
-		{
-		registry.Get_String(REG_VALUE_SERVER, mServer, "");
-		mSidePref = registry.Get_Int(REG_VALUE_SIDEPREF, -1);
-		mGamesPlayed = registry.Get_Int(REG_VALUE_GAMESPLAYED, 0);
-		}
-#endif
+	ini.Get_String(regKey, REG_VALUE_SERVER, mServer, "");
+	mSidePref = ini.Get_Int(regKey, REG_VALUE_SIDEPREF, -1);
+	mGamesPlayed = ini.Get_Int(regKey, REG_VALUE_GAMESPLAYED, 0);
 
 	LoadRank(REG_VALUE_TEAMRANK, mTeamRank);
 	LoadRank(REG_VALUE_CLANRANK, mClanRank);
@@ -570,18 +559,15 @@ void LoginProfile::SaveSettings(void)
 		{
 		// Save login preferences
 		StringClass regKey(255, true);
-		regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
+		regKey.Format("%s/%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
-#if 0 // FIXME: Use INI
-		RegistryClass registry(regKey);
+		auto & ini = OpenW3D::Get_INIConfig();
 
-		if (registry.Is_Valid())
-			{
-			registry.Set_String(REG_VALUE_SERVER, mServer);
-			registry.Set_Int(REG_VALUE_SIDEPREF, mSidePref);
-			registry.Set_Int(REG_VALUE_GAMESPLAYED, mGamesPlayed);
-			}
-#endif
+		ini.Put_String(regKey, REG_VALUE_SERVER, mServer);
+		ini.Put_Int(regKey, REG_VALUE_SIDEPREF, mSidePref);
+		ini.Put_Int(regKey, REG_VALUE_GAMESPLAYED, mGamesPlayed);
+
+		OpenW3D::Save_Config();
 
 		SaveRank(REG_VALUE_TEAMRANK, mTeamRank);
 		SaveRank(REG_VALUE_CLANRANK, mClanRank);
@@ -611,29 +597,26 @@ void LoginProfile::LoadRank(const char* valueName, LoginProfile::Ranking& rank)
 	WWASSERT(valueName);
 
 	StringClass regKey(255, true);
-	regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
+	regKey.Format("%s/%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
-#if 0 // FIXME: Use INI
-	RegistryClass registry(regKey, false);
-
-	if (registry.Is_Valid())
+	auto & ini = OpenW3D::Get_INIConfig();
+	if (ini.Section_Present(regKey))
 		{
  		char rankData[255];
-		registry.Get_String(valueName, rankData, sizeof(rankData), "");
+		ini.Get_String(regKey, valueName, "", rankData, sizeof(rankData));
 
 		sscanf(rankData, "%d,%d,%d,%d,%d,%d", &rank.Wins, &rank.Losses,
 			&rank.Deaths, &rank.Kills, &rank.Points, &rank.Rank);
 		}
 	else
 		{
-		rank.Wins = (unsigned)-1;
-		rank.Losses = (unsigned)-1;
-		rank.Deaths = (unsigned)-1;
-		rank.Kills = (unsigned)-1;
-		rank.Points = (unsigned)-1;
-		rank.Rank = (unsigned)-1;
+		rank.Wins = std::numeric_limits<unsigned>::max();
+		rank.Losses = std::numeric_limits<unsigned>::max();
+		rank.Deaths = std::numeric_limits<unsigned>::max();
+		rank.Kills = std::numeric_limits<unsigned>::max();
+		rank.Points = std::numeric_limits<unsigned>::max();
+		rank.Rank = std::numeric_limits<unsigned>::max();
 		}
-#endif
 	}
 
 
@@ -659,20 +642,18 @@ void LoginProfile::SaveRank(const char* valueName, const LoginProfile::Ranking& 
 	WWASSERT(valueName);
 
 	StringClass regKey(255, true);
-	regKey.Format("%s\\%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
+	regKey.Format("%s/%S", APPLICATION_SUB_KEY_NAME_LOGINS, GetName());
 
-#if 0 // FIXME: Use INI
-	RegistryClass registry(regKey);
-
-	if (registry.Is_Valid())
+	auto & ini = OpenW3D::Get_INIConfig();
+	if (ini.Section_Present(regKey))
 		{
  		char rankData[255];
 		sprintf(rankData, "%d,%d,%d,%d,%d,%d", rank.Wins, rank.Losses, rank.Deaths,
 			rank.Kills, rank.Points, rank.Rank);
 
-		registry.Set_String(valueName, rankData);
+		ini.Put_String(regKey, valueName, rankData);
+		OpenW3D::Save_Config();
 		}
-#endif
 	}
 
 

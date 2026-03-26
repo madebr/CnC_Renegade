@@ -276,7 +276,7 @@ static SharedObject *D3D9Lib = nullptr;
 
 static bool Video_Card_Driver_Check()
 {
-	INIClass ini(W3D_CONF_FILE);
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	int disabled=ini.Get_Int(W3D_SECTION_RENDER, "DriverVersionCheckDisabled", 0);
 	if (disabled>=87) return true;
@@ -369,7 +369,7 @@ static bool Video_Card_Driver_Check()
 	case DX8Caps::DRIVER_STATUS_OK:
 	case DX8Caps::DRIVER_STATUS_UNKNOWN:
 		ini.Put_Int(W3D_SECTION_RENDER, "DriverVersionCheckDisabled", 87);
-		OpenW3D::Save_Config(ini);
+		OpenW3D::Save_Config();
 		return true;
 	case DX8Caps::DRIVER_STATUS_BAD:
 		break;

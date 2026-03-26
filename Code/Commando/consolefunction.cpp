@@ -142,7 +142,8 @@
 #include "BWBalance.h"
 #include "sbbomanager.h"
 #include "_globals.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "vipmodeevent.h"
 #include "dx8rendererdebugger.h"
 #include "changeteamevent.h"
@@ -1042,7 +1043,7 @@ public:
 	virtual	const char * Get_Help( void ) override	{ return "TOM - Annoyance-reduction registry tweaks customized by Tom."; }
 	virtual	void Activate( const char * /* input */ ) override {
 
-		INIClass ini(W3D_CONF_FILE);
+		auto & ini = OpenW3D::Get_INIConfig();
 		//
 		// Enable a good level of diagnostics - all devices and types except
 		// screen and netprolific
@@ -1101,34 +1102,20 @@ public:
 		}
 		*/
 
-#if 0 // FIXME: Use INI
 		//
 		// Default to third person
 		//
-		{
-		RegistryClass registry(APPLICATION_SUB_KEY_NAME_OPTIONS);
-		WWASSERT(registry.Is_Valid());
-		registry.Set_Int("DefaultToFirstPerson", false);
-		}
+		ini.Put_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "DefaultToFirstPerson", false);
 
 		//
 		// Skip intro movies
 		//
-		{
-		RegistryClass registry(APPLICATION_SUB_KEY_NAME_OPTIONS);
-		WWASSERT(registry.Is_Valid());
-		registry.Set_Int("SkipAllIntroMovies", true);
-		}
+		ini.Put_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "SkipAllIntroMovies", true);
 
 		//
 		// Do not require CD for movies
 		//
-		{
-		RegistryClass registry(APPLICATION_SUB_KEY_NAME_DEBUG);
-		WWASSERT(registry.Is_Valid());
-		registry.Set_Int("DisableCDCheck", true);
-		}
-#endif
+		ini.Put_Bool(APPLICATION_SUB_KEY_NAME_OPTIONS, "DisableCDCheck", true);
 
 		//
 		// Set gamma etc so that they don't screw up debugging
@@ -1137,7 +1124,7 @@ public:
 		ini.Put_Int(W3D_SECTION_SYSTEM, "Brightness", 0);
 		ini.Put_Int(W3D_SECTION_SYSTEM, "Contrast", 1);
 
-		OpenW3D::Save_Config(ini);
+		OpenW3D::Save_Config();
 	}
 };
 
@@ -4423,23 +4410,19 @@ public:
 
 		if (!::stricmp(input, "on")) {
 
-#if 0 // FIXME: use INI
-			RegistryClass registry(APPLICATION_SUB_KEY_NAME_DEBUG);
-			WWASSERT(registry.Is_Valid());
-			registry.Set_Int("SystemInfoLogDisable", false);
-			registry.Set_Int("DisableLogCopying", false);
-#endif
+			auto & ini = OpenW3D::Get_INIConfig();
+			ini.Put_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, "SystemInfoLogDisable", false);
+			ini.Put_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, "DisableLogCopying", false);
+			OpenW3D::Save_Config();
 
 			Print("Log copying is ON.");
 
 		} else if (!::stricmp(input, "off")) {
 
-#if 0 // FIXME: use INI
-			RegistryClass registry(APPLICATION_SUB_KEY_NAME_DEBUG);
-			WWASSERT(registry.Is_Valid());
-			registry.Set_Int("SystemInfoLogDisable", true);
-			registry.Set_Int("DisableLogCopying", true);
-#endif
+			auto & ini = OpenW3D::Get_INIConfig();
+			ini.Put_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, "SystemInfoLogDisable", true);
+			ini.Put_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, "DisableLogCopying", true);
+			OpenW3D::Save_Config();
 
 			Print("Log copying is OFF.");
 
