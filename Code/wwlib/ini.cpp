@@ -2402,3 +2402,14 @@ void INIClass::Get_Value_List( char const * section, DynamicVectorClass<StringCl
 
 	return ;
 }
+
+void INIClass::Remove_Section(char const * section)
+{
+	INISection * secptr = Find_Section(section);
+	if (secptr) {
+		int crc = CRC::String(section);
+		SectionIndex->Remove_Index(crc);
+		secptr->Unlink();
+		delete secptr;
+	}
+}

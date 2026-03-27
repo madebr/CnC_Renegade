@@ -186,6 +186,7 @@ class INIClass {
 		bool Put_Wide_String(char const * section, char const * entry, const unichar_t * string);
 
 		void Remove_Entry(char const * section, char const *entry);
+		void Remove_Section(char const * section);
 
 		void Get_Value_List( char const * section, DynamicVectorClass<StringClass> &list );
 

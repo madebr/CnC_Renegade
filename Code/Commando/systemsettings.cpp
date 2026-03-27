@@ -189,18 +189,6 @@ void	SystemSettingEntrySlider::Apply( void )
 	Value = Get_Slider();
 }
 
-#if 0 // FIXME: use INI
-void	SystemSettingEntrySlider::Registry_Save( RegistryClass & registry )
-{
-	registry.Set_Int( Get_Name(), Get_Value() );
-}
-
-void	SystemSettingEntrySlider::Registry_Load( RegistryClass & registry )
-{
-	Set_Value( registry.Get_Int( Get_Name(), Get_Value() ) );
-}
-#endif
-
 void	SystemSettingEntrySlider::INI_Save( INIClass & ini )
 {
 	ini.Put_Int( W3D_SECTION_SYSTEM, Get_INI_Name(), Get_Value() );
@@ -252,18 +240,6 @@ void	SystemSettingEntryEnum::Apply( void )
 {
 	Selection = Get_Enum();
 }
-
-#if 0 // FIXME: use INI
-void	SystemSettingEntryEnum::Registry_Save( RegistryClass & registry )
-{
-	registry.Set_Int( Get_Name(), Get_Selection() );
-}
-
-void	SystemSettingEntryEnum::Registry_Load( RegistryClass & registry )
-{
-	Set_Selection( registry.Get_Int( Get_Name(), Get_Selection() ) );
-}
-#endif
 
 void	SystemSettingEntryEnum::INI_Save( INIClass & ini )
 {
@@ -366,9 +342,6 @@ public:
 
 	int	Get_Slider( void ) override		{ Value = DlgConfigVideoTabClass::Get_Gamma (); return Value; }
 	void	Set_Slider( int value ) override	{ DlgConfigVideoTabClass::Set_Gamma (value); }
-#if 0 // FIXME: use INI
-	void	Registry_Save				( RegistryClass & registry ) override { registry.Set_Int (Get_Name (), Get_Slider ()); }
-#endif
 
 protected:
 	StringClass formatstring;
@@ -390,9 +363,6 @@ public:
 
 	int	Get_Slider( void ) override		{ Value = DlgConfigVideoTabClass::Get_Brightness (); return Value; }
 	void	Set_Slider( int value ) override	{ DlgConfigVideoTabClass::Set_Brightness (value); }
-#if 0 // FIXME: use INI
-	void	Registry_Save				( RegistryClass & registry ) override { registry.Set_Int (Get_Name (), Get_Slider ()); }
-#endif
 
 protected:
 	StringClass formatstring;
@@ -413,9 +383,6 @@ public:
 
 	int	Get_Slider( void ) override		{ Value = DlgConfigVideoTabClass::Get_Contrast (); return Value; }
 	void	Set_Slider( int value ) override	{ DlgConfigVideoTabClass::Set_Contrast (value); }
-#if 0 // FIXME: use INI
-	void	Registry_Save				( RegistryClass & registry ) override { registry.Set_Int (Get_Name (), Get_Slider ()); }
-#endif
 
 protected:
 	StringClass formatstring;
