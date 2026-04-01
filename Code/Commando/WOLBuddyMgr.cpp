@@ -48,7 +48,8 @@
 #include "ConsoleMode.h"
 #include <WWOnline/WOLChannel.h>
 #include <WWOnline/WOLProduct.h>
-#include <wwlib/registry.h>
+#include "ini.h"
+#include "openw3d.h"
 
 #include "string_ids.h"
 #include <wwtranslatedb/translatedb.h>
@@ -266,12 +267,10 @@ void WOLBuddyMgr::SaveIgnoreList(void)
 	{
 	if (mWOLSession->IsStoreLoginAllowed())
 		{
-#if 0 // FIMXME: Use INI
-		RegistryClass reg(APPLICATION_SUB_KEY_NAME_IGNORE_LIST);
-
-		if (reg.Is_Valid())
+		auto & ini = OpenW3D::Get_INIConfig();
+		if (ini.Is_Present(APPLICATION_SUB_KEY_NAME_IGNORE_LIST))
 			{
-			reg.Deleta_All_Values();
+			ini.Remove_Section(APPLICATION_SUB_KEY_NAME_IGNORE_LIST);
 
 			for (unsigned int index = 0; index < mIgnoreList.size(); ++index)
 				{
@@ -282,10 +281,9 @@ void WOLBuddyMgr::SaveIgnoreList(void)
 				char name[MAX_USERNAME_LEN];
 				u_wstomb(name, buddy, sizeof(name));
 
-				reg.Set_String(valueName, (char*)name);
+				ini.Put_String(APPLICATION_SUB_KEY_NAME_IGNORE_LIST, valueName, name);
 				}
 			}
-#endif
 		}
 	}
 

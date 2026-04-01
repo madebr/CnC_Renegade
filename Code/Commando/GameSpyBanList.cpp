@@ -48,7 +48,6 @@
 #include "listnode.h"
 #include "GameSpyBanList.h"
 #include "ini.h"
-#include "registry.h"
 #include "rawfile.h"
 #include "gamespyauthmgr.h"
 #include "sctextobj.h"

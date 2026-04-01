@@ -41,7 +41,6 @@
 #include <WWOnline/WOLLoginInfo.h>
 #include <wwui/dialogbase.h>
 #include <wwui/listctrl.h>
-#include <wwlib/registry.h>
 #include "string_ids.h"
 #include <wwtranslatedb/translatedb.h>
 #include <stdio.h>

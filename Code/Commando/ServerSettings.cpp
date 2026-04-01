@@ -42,7 +42,7 @@
 #include "gamedata.h"
 #include "gdcnc.h"
 #include "ini.h"
-#include "registry.h"
+#include "openw3d.h"
 #include "rawfile.h"
 #include "ConsoleMode.h"
 #include "specialbuilds.h"
@@ -242,21 +242,19 @@ bool ServerSettingsClass::Parse(bool apply)
 		** Restart Flag
 		*/
 
-#if 0 // FIXME: INI
-		RegistryClass restart_reg(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-		if (restart_reg.Is_Valid ()) {
-			restart_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
+		if (ini.Section_Present(APPLICATION_SUB_KEY_NAME_WOLSETTINGS)) {
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_FLAG, 1);
 			switch (GameMode) {
 				case MODE_WOL:
-					restart_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 1);
+					ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 1);
 					break;
 				case MODE_LAN:
 				case MODE_GAMESPY:
-					restart_reg.Set_Int(AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 0);
+					ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, AutoRestartClass::REG_VALUE_AUTO_RESTART_TYPE, 0);
 					break;
 			}
+			OpenW3D::Save_Config();
 		}
-#endif
 
 		/*
 		** Nickname.
@@ -393,8 +391,7 @@ bool ServerSettingsClass::Parse(bool apply)
 		** Get the remote admin settings.
 		*/
 		bool allow_remote = ini.Get_Bool(MasterServerSection, "AllowRemoteAdmin", false);
-#if 0 // FIXME: INI
-		RegistryClass reg_remote(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL);
+
 		if (allow_remote) {
 			ini.Get_String(MasterServerSection, "RemoteAdminPassword", "", remote_admin_pass, sizeof(remote_admin_pass));
 			const size_t len = ::strlen(remote_admin_pass);
@@ -424,34 +421,34 @@ bool ServerSettingsClass::Parse(bool apply)
 			if (admin_port == 0) {
 				admin_port = DEFAULT_SERVER_CONTROL_PORT;
 			}
-			reg_remote.Set_Int(SERVER_CONTROL_PORT_KEY, admin_port);
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL, SERVER_CONTROL_PORT_KEY, admin_port);
 
 			/*
 			** Set the password into the registry.
 			*/
-			reg_remote.Set_String(SERVER_CONTROL_PASSWORD_KEY, remote_admin_pass);
+			ini.Put_String(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL, SERVER_CONTROL_PASSWORD_KEY, remote_admin_pass);
 
 			/*
 			** We need to bind to more than just the loopback address when listening for control messages.
 			*/
-			reg_remote.Set_Int(SERVER_CONTROL_LOOPBACK_KEY, 0);
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL, SERVER_CONTROL_LOOPBACK_KEY, 0);
 
 			/*
 			** There may be an IP override specified.
 			*/
 			ini.Get_String(MasterServerSection, "RemoteAdminIP", "0.0.0.0", remote_admin_ip, sizeof(remote_admin_ip));
 			unsigned int admin_ip_long = ntohl(inet_addr(remote_admin_ip));
-			reg_remote.Set_Int(SERVER_CONTROL_IP_KEY, admin_ip_long);
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL, SERVER_CONTROL_IP_KEY, admin_ip_long);
 
 		} else {
 
 			/*
 			** Only listen to control messages on the loopback address.
 			*/
-			reg_remote.Set_Int(SERVER_CONTROL_LOOPBACK_KEY, 1);
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_SERVER_CONTROL, SERVER_CONTROL_LOOPBACK_KEY, 1);
 			ServerControl.Allow_Remote_Admin(false);
 		}
-#endif
+		OpenW3D::Save_Config();
 
 
 		/*
@@ -467,27 +464,23 @@ bool ServerSettingsClass::Parse(bool apply)
 					StringClass serial(master_serial, true);
 					StringClass encrypted_serial;
 					Encrypt_Serial(serial, encrypted_serial);
-#if 0 // FIXME: INI
-					RegistryClass reg_base(APPLICATION_SUB_KEY_NAME);
-					if (reg_base.Is_Valid()) {
-						reg_base.Set_String(KEY_SLAVE_SERIAL, encrypted_serial.Peek_Buffer());
+					if (ini.Section_Present(APPLICATION_SUB_KEY_NAME)) {
+						ini.Put_String(APPLICATION_SUB_KEY_NAME, KEY_SLAVE_SERIAL, encrypted_serial.Peek_Buffer());
+						OpenW3D::Save_Config();
 					}
-#endif
 				}
 
 				/*
 				** Nickname.
 				*/
 				if (strlen(master_nick)) {
-#if 0 // FIXME: INI
-					RegistryClass reg_wol(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-					if (reg_wol.Is_Valid()) {
-						reg_wol.Set_String("AutoLogin", master_nick);
-						reg_wol.Set_String("LastLogin", master_nick);
-						reg_wol.Set_Int("AutoLoginPrompt", 0);
+					if (ini.Section_Present(APPLICATION_SUB_KEY_NAME_WOLSETTINGS)) {
+						ini.Put_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, "AutoLogin", master_nick);
+						ini.Put_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, "LastLogin", master_nick);
+						ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, "AutoLoginPrompt", 0);
 						MPSettingsMgrClass::Set_Auto_Login(master_nick);
+						OpenW3D::Save_Config();
 					}
-#endif
 				}
 
 				/*
@@ -499,10 +492,7 @@ bool ServerSettingsClass::Parse(bool apply)
 				** Port number.
 				*/
 				if (master_port != 0xffffffff) {
-#if 0 // FIXME: INI
-					RegistryClass reg_fw(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
-					reg_fw.Set_Int("ForcePort", master_port);
-#endif
+					ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ForcePort", master_port);
 				}
 			}
 
@@ -510,32 +500,25 @@ bool ServerSettingsClass::Parse(bool apply)
 			** Bandwidth.
 			*/
 			if (master_bw != 0xffffffff) {
-#if 0 // FIXME: INI
-				RegistryClass reg_netopt(APPLICATION_SUB_KEY_NAME_NETOPTIONS);
-				if (reg_netopt.Is_Valid()) {
-					if (cGameSpyAdmin::Is_Gamespy_Game()) {
-						if (master_bw == 0) master_bw = 1000000;
-						cUserOptions::Set_Bandwidth_Bps(master_bw);
-					} else {
-						if (wol) {
-							reg_netopt.Set_Int("BandwidthType", BANDWIDTH_AUTO);
+				if (cGameSpyAdmin::Is_Gamespy_Game()) {
+					if (master_bw == 0) master_bw = 1000000;
+					cUserOptions::Set_Bandwidth_Bps(master_bw);
+				} else {
+					if (wol) {
+						ini.Put_Int(APPLICATION_SUB_KEY_NAME_NETOPTIONS, "BandwidthType", BANDWIDTH_AUTO);
 
-							/*
-							** We want this to be set always on the first time through, but not neccessarily on the second, apply, pass.
-							*/
-							if (master_bw != 0 || !apply) {
-								RegistryClass reg_bw(APPLICATION_SUB_KEY_NAME_BANDTEST);
-								if (reg_bw.Is_Valid()) {
-									reg_bw.Set_Int("Up", master_bw);
-									reg_bw.Set_Int("Down", master_bw);
-								}
-							}
-						} else {
-							cUserOptions::Set_Bandwidth_Type(BANDWIDTH_LANT1);
+						/*
+						** We want this to be set always on the first time through, but not neccessarily on the second, apply, pass.
+						*/
+						if (master_bw != 0 || !apply) {
+							ini.Put_Int(APPLICATION_SUB_KEY_NAME_BANDTEST, "Up", master_bw);
+							ini.Put_Int(APPLICATION_SUB_KEY_NAME_BANDTEST, "Down", master_bw);
 						}
+						OpenW3D::Save_Config();
+					} else {
+						cUserOptions::Set_Bandwidth_Type(BANDWIDTH_LANT1);
 					}
 				}
-#endif
 			}
 		//}
 

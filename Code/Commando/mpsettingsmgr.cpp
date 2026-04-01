@@ -36,7 +36,8 @@
 
 
 #include "mpsettingsmgr.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "bittype.h"
 #include "_globals.h"
 #include "WWOnline/WOLSession.h"
@@ -96,31 +97,29 @@ static const char *REG_VALUE_ARE_SKINS_UNLOCKED	= "PrimeSocket";
 void
 MPSettingsMgrClass::Load_Settings (void)
 {
-#if 0 // FIXME Use INI
+	auto & ini = OpenW3D::Get_INIConfig();
+
 	//
 	//	Attempt to open the MP settings sub-key
 	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS, false);
-	if (registry.Is_Valid ()) {
+	if (ini.Is_Present(APPLICATION_SUB_KEY_NAME_WOLSETTINGS)) {
 
 		//
 		//	Read the simple data from the registry
 		//
-		registry.Get_String(REG_VALUE_LAST_LOGIN, LastLogin.Get_Buffer(MAX_PERSONA_LEN), MAX_PERSONA_LEN, "");
-		registry.Get_String(REG_VALUE_AUTOLOGIN, AutoLogin.Get_Buffer(MAX_PERSONA_LEN), MAX_PERSONA_LEN, "");
-		registry.Get_String(REG_VALUE_AUTOPASSWORD, AutoPassword.Get_Buffer(MAX_PERSONA_LEN), MAX_PERSONA_LEN, "");
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_LAST_LOGIN, "", LastLogin.Get_Buffer(MAX_PERSONA_LEN), MAX_PERSONA_LEN);
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTOLOGIN, "", AutoLogin.Get_Buffer(MAX_PERSONA_LEN), MAX_PERSONA_LEN);
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTOPASSWORD, "", AutoPassword.Get_Buffer(MAX_PERSONA_LEN), MAX_PERSONA_LEN);
 
-		DisplaySidebarHelp			= registry.Get_Bool (REG_VALUE_SIDEBAR_HELP, true);
-		IsAutoLoginPromptEnabled	= registry.Get_Bool (REG_VALUE_AUTOLOGIN_PROMPT, true);
-		AreSkinsUnlocked				= registry.Get_Bool (REG_VALUE_ARE_SKINS_UNLOCKED, false);
+		DisplaySidebarHelp			= ini.Get_Bool (APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_SIDEBAR_HELP, true);
+		IsAutoLoginPromptEnabled	= ini.Get_Bool (APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTOLOGIN_PROMPT, true);
+		AreSkinsUnlocked				= ini.Get_Bool (APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_ARE_SKINS_UNLOCKED, false);
 
 		// The default options are language specific
 		int defaultOptions = OPTION_DEFAULTS;
 
-		RegistryClass skuReg(APPLICATION_SUB_KEY_NAME, false);
-
-		if (skuReg.Is_Valid()) {
-			unsigned int sku = skuReg.Get_Int("SKU", RENEGADE_BASE_SKU);
+		if (ini.Is_Present(APPLICATION_SUB_KEY_NAME)) {
+			unsigned int sku = ini.Get_Int(APPLICATION_SUB_KEY_NAME, "SKU", RENEGADE_BASE_SKU);
 			unsigned int lang = (sku & 0xFF);
 
 			// If this is not an Asian language region then use the Western defaults
@@ -131,11 +130,10 @@ MPSettingsMgrClass::Load_Settings (void)
 			}
 		}
 
-		OptionFlags = registry.Get_Int (REG_VALUE_OPTIONS, defaultOptions);
+		OptionFlags = ini.Get_Int (APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_OPTIONS, defaultOptions);
 	}
 
 	return ;
-#endif
 }
 
 

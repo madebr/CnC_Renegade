@@ -36,7 +36,6 @@
 
 #include "renegadedialog.h"
 #include "dlgconfigperformancetab.h"
-#include "registry.h"
 #include "comboboxctrl.h"
 #include "sliderctrl.h"
 #include "rendobj.h"

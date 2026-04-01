@@ -48,7 +48,7 @@
 #include "movie.h"
 #include "consolefunction.h"
 #include "renegadedialogmgr.h"
-#include "registry.h"
+#include "ini.h"
 #include "_globals.h"
 #include "crandom.h"
 #include "god.h"

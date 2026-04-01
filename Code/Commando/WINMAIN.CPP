@@ -81,7 +81,6 @@
 #include "datasafe.h"
 
 #include "combatgmode.h"
-#include "registry.h"
 #include "init.h"
 #include "_globals.h"
 #include "buildnum.h"

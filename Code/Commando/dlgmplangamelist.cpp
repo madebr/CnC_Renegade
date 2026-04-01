@@ -53,7 +53,6 @@
 #include "specialbuilds.h"
 #include "editctrl.h"
 #include "DlgPasswordPrompt.h"
-#include "registry.h"
 #include "_globals.h"
 #include "dlgmplanhostoptions.h"
 
@@ -219,10 +218,8 @@ MPLanGameListMenuClass::On_Command (int ctrl_id, int message_id, unsigned int pa
 			//
 			//	Cache this value, don't know if we need to or not anymore...
 			//
-			RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-			if (registry.Is_Valid ()) {
-				registry.Set_Int (REG_VALUE_LAST_GAME_TYPE, 0);
-			}
+			auto & ini = OpenW3D::Get_INIConfig();
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_LAST_GAME_TYPE, 0);
 			*/
 
 			//

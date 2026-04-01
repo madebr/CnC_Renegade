@@ -45,7 +45,6 @@
 #include "gamemode.h"
 #include "netinterface.h"
 #include "mpsettingsmgr.h"
-#include "registry.h"
 #include "_globals.h"
 #include "natter.h"
 #include "WOLLogonMgr.h"

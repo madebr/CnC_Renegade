@@ -41,7 +41,7 @@
 #include "directinput.h"
 #include "debug.h"
 #include "timemgr.h"
-#include "registry.h"
+#include "ini.h"
 #include "ffactory.h"
 #include "win.h"
 #include "translatedb.h"

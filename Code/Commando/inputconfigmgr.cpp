@@ -39,7 +39,6 @@
 #include "input.h"
 #include "rawfile.h"
 #include "ffactory.h"
-#include "registry.h"
 #include "chunkio.h"
 #include "debug.h"
 #include "pathutil.h"

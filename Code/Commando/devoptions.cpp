@@ -28,7 +28,6 @@
 #include "_globals.h"
 #include "wwdebug.h"
 #include "player.h"
-#include "registry.h"
 
 //
 // Class statics

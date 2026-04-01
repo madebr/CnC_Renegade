@@ -77,7 +77,6 @@
 #include "systeminfolog.h"
 #include "cpudetect.h"
 #include "dx8caps.h"
-#include "registry.h"
 #include "specialbuilds.h"
 #include "openw3d.h"
 #include <windows.h>
@@ -113,7 +112,7 @@ const char *VALUE_INI_TEXTURE_FILTER_MODE="TextureFilterMode";
 static void Get_Detail_String(StringClass& str)
 {
 	str="";
-	INIClass ini(W3D_CONF_FILE);
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	int dynamic_lod		= 3000;
 	int static_lod			= 3000;

@@ -37,7 +37,6 @@
 #include "AudibleSound.h"
 #include "ini.h"
 #include "LogicalSound.h"
-#include "registry.h"
 #include "Sound3D.h"
 #include "SoundChunkIDs.h"
 #include "SoundPseudo3D.h"
@@ -45,7 +44,6 @@
 #include "ww3d.h"
 #include "wwprofile.h"
 #include "wwmemlog.h"
-#include "ini.h"
 #include "openw3d.h"
 #include <algorithm>
 

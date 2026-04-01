@@ -46,8 +46,9 @@
 
 #include "bandwidthcheck.h"
 #include "AutoStart.h"
-#include "registry.h"
 #include "_globals.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "useroptions.h"
 #include "translatedb.h"
 #include "string_ids.h"
@@ -58,6 +59,7 @@
 #include <WWOnline/WOLSession.h>
 #include <cstdio>
 #include <winsock2.h>
+
 
 
 /*
@@ -220,14 +222,12 @@ const char *BandwidthCheckerClass::Get_Ping_Server_Name(void)
 	DynamicVectorClass<StringClass> list;
 	const char *server_name = DefaultServerName;
 
-#if 0 // FIXME Use INI
 	/*
 	** See if there are ping servers in the registry from a previous run.
 	*/
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_SERVER_LIST);
+	auto & ini = OpenW3D::Get_INIConfig();
 	WWASSERT(list.Count() == 0);
-	reg.Get_Value_List(list);
-#endif
+	ini.Get_Value_List(APPLICATION_SUB_KEY_NAME_SERVER_LIST, list);
 	if (list.Count() > 0) {
 
 		/*
@@ -239,11 +239,7 @@ const char *BandwidthCheckerClass::Get_Ping_Server_Name(void)
 		int lowest_index = -1;
 		int i;
 		for (i=0 ; i<list.Count() ; i++) {
-#if 0 // FIXME Use INI
-			int time = reg.Get_Int(list[i].Peek_Buffer(), 0);
-#else
-			int time = 0;
-#endif
+			int time = ini.Get_Int(APPLICATION_SUB_KEY_NAME_SERVER_LIST, list[i].Peek_Buffer(), 0);
 			if (time > 0 && time < 0xffff) {
 				total += (unsigned int) time;
 				num_times++;
@@ -270,11 +266,7 @@ const char *BandwidthCheckerClass::Get_Ping_Server_Name(void)
 			int closest_diff = 0x7fffffff;
 
 			for (i=0 ; i<list.Count() ; i++) {
-#if 0 // FIXME Use INI
-				int time = reg.Get_Int(list[i].Peek_Buffer(), 0);
-#else
-				int time = 0;
-#endif
+				int time = ini.Get_Int(APPLICATION_SUB_KEY_NAME_SERVER_LIST, list[i].Peek_Buffer(), 0);;
 				if (time > 0 && time < 0xffff) {
 					int diff = abs(time - average_time);
 					if (diff < closest_diff) {
@@ -332,14 +324,9 @@ void BandwidthCheckerClass::Check(void)
 	** If we are auto starting then just use the previous settings from the registry.
 	*/
 	if (AutoRestart.Is_Active()) {
-#if 0 // FIXME Use INI
-		RegistryClass reg(APPLICATION_SUB_KEY_NAME_BANDTEST);
-		int up = reg.Get_Int("Up", 0);
-		int down = reg.Get_Int("Down", up);
-#else
-		int up = 0;
-		int down = 0;
-#endif
+		auto & ini = OpenW3D::Get_INIConfig();
+		int up = ini.Get_Int(APPLICATION_SUB_KEY_NAME_BANDTEST, "Up", 0);
+		int down = ini.Get_Int(APPLICATION_SUB_KEY_NAME_BANDTEST, "Down", up);
 		UpstreamBandwidth = up;
 		DownstreamBandwidth = down;
 		if (up) {

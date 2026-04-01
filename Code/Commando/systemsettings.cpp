@@ -35,7 +35,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "systemsettings.h"
-#include "registry.h"
 //#include "menuentry.h"
 #include "_globals.h"
 
