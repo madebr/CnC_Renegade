@@ -157,38 +157,32 @@ void WOLNATInterfaceClass::Init(void)
 	/*
 	** Read default values from the registry.
 	*/
-#if defined(OPENW3D_WIN32)
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
-	fw_assert(reg.Is_Valid());
+	auto & ini = OpenW3D::Get_INIConfig();
 
-	if (reg.Is_Valid()) {
+	/*
+	** Read the FirewallHelper values from the registry.
+	*/
+	int last_behavior = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "Behavior", 0);
+	int last_source_port_allocation_delta = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "PortDelta", 1);
+	int source_port_pool = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "PortPool", 0);
+	int confidence = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "Confidence", 0);
+	bool send_delay;	// = ini.Get_Bool(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, , "SendDelay", 0);
+	int force_port;
+	Get_Config(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, force_port, send_delay);
+	ForcePort = (unsigned short) force_port;
+	RegExternalIP = (unsigned int) ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ExternalIP", RegExternalIP);
+	RegExternalPort = (unsigned short) ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ExternalPort", RegExternalPort);
 
-		/*
-		** Read the FirewallHelper values from the registry.
-		*/
-		int last_behavior = reg.Get_Int("Behavior", 0);
-		int last_source_port_allocation_delta = reg.Get_Int("PortDelta", 1);
-		int source_port_pool = reg.Get_Int("PortPool", 0);
-		int confidence = reg.Get_Int("Confidence", 0);
-		bool send_delay;	// = reg.Get_Bool("SendDelay", 0);
-		int force_port;
-		Get_Config(&reg, force_port, send_delay);
-		ForcePort = (unsigned short) force_port;
-		RegExternalIP = (unsigned int) reg.Get_Int("ExternalIP", RegExternalIP);
-		RegExternalPort = (unsigned short) reg.Get_Int("ExternalPort", RegExternalPort);
+	/*
+	** Set the values into the firewall helper.
+	*/
+	FirewallHelper.Set_Firewall_Info((unsigned int)last_behavior, last_source_port_allocation_delta, (unsigned short)source_port_pool, send_delay, confidence);
 
-		/*
-		** Set the values into the firewall helper.
-		*/
-		FirewallHelper.Set_Firewall_Info((unsigned int)last_behavior, last_source_port_allocation_delta, (unsigned short)source_port_pool, send_delay, confidence);
-
-		/*
-		** Read the local class values from the registry.
-		*/
-		PortBase = reg.Get_Int("PortBase", PortBase);
-		//ForcePort = reg.Get_Int("ForcePort", ForcePort);
-	}
-#endif
+	/*
+	** Read the local class values from the registry.
+	*/
+	PortBase = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "PortBase", PortBase);
+	//ForcePort = ini.Get_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ForcePort", ForcePort);
 
 	/*
 	** Make sure the base port is reasonable.

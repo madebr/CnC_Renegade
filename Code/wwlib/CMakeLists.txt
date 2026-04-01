@@ -41,7 +41,6 @@ set(WWLIB_SRC
     readline.cpp
     realcrc.cpp
     refcount.cpp
-    registry.cpp
     rndstrng.cpp
     slnode.cpp
     straw.cpp
@@ -117,7 +116,6 @@ set(WWLIB_SRC
     realcrc.h
     ref_ptr.h
     refcount.h
-    registry.h
     rndstraw.h
     rndstrng.h
     rng.h
