@@ -74,14 +74,14 @@ ModPackageMgrClass::Initialize (void)
 	//
 	//	Get the currently selected package name from the registry
 	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_OPTIONS);
+	auto & ini = OpenW3D::Get_INIConfig();
 	if (registry.Is_Valid ()) {
 
 		//
 		//	Get the current package name from the registry
 		//
 		StringClass package_filename;
-		registry.Get_String (CURR_MOD_REG_VALUE, package_filename, "");
+		ini.Get_String (package_filename, APPLICATION_SUB_KEY_NAME_OPTIONS, CURR_MOD_REG_VALUE, "");
 
 		//
 		//	Initialize the current package

@@ -700,15 +700,11 @@ void	Input::Free_Mappings( void )
 
 void	Input::Load_Registry( const char * /* key */ )
 {
-	/*RegistryClass * registry = new RegistryClass( key );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		MouseSensitivity	= registry->Get_Float( "MouseSensitivity",	MouseSensitivity );
-		MouseScale			= registry->Get_Float( "MouseScale",	MouseScale );
-		MouseInvert			= registry->Get_Bool( "MouseInvert",	MouseInvert );
-		Mouse2DInvert		= registry->Get_Bool( "Mouse2DInvert",	Mouse2DInvert );
-	}
-	delete registry;*/
+	/*auto & ini = OpenW3D::Get_INIConfig();
+	MouseSensitivity	= ini.Get_Float( key, "MouseSensitivity",	MouseSensitivity );
+	MouseScale			= ini.Get_Float( key, "MouseScale",	MouseScale );
+	MouseInvert			= ini.Get_Bool( key, "MouseInvert",	MouseInvert );
+	Mouse2DInvert		= ini.Get_Bool( key, "Mouse2DInvert",	Mouse2DInvert );*/
 
 	//Input::Set_Mouse_Sensitivity( MouseSensitivity );
 
@@ -716,15 +712,12 @@ void	Input::Load_Registry( const char * /* key */ )
 
 void	Input::Save_Registry( const char * /* key */ )
 {
-	/*RegistryClass * registry = new RegistryClass( key );
-	WWASSERT( registry );
-	if ( registry->Is_Valid() ) {
-		registry->Set_Float( "MouseSensitivity",	MouseSensitivity );
-		registry->Set_Float( "MouseScale",	MouseScale );
-		registry->Set_Bool( "MouseInvert",	MouseInvert );
-		registry->Set_Bool( "Mouse2DInvert",	Mouse2DInvert );
-	}
-	delete registry;*/
+	/*auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Float( key, "MouseSensitivity",	MouseSensitivity );
+	ini.Put_Float( key, "MouseScale",	MouseScale );
+	ini.Put_Bool( key, "MouseInvert",	MouseInvert );
+	ini.Put_Bool( key, "Mouse2DInvert",	Mouse2DInvert );
+	OpenW3D::Save_Config();*/
 }
 
 

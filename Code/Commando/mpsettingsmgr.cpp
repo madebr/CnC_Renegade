@@ -147,13 +147,9 @@ MPSettingsMgrClass::Set_Last_Login(const char *name)
 {
 	LastLogin = name;
 
-#if 0 // FIXME Use INI
-	RegistryClass registry(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-
-	if (registry.Is_Valid()) {
-		registry.Set_String(REG_VALUE_LAST_LOGIN, LastLogin);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_LAST_LOGIN, LastLogin);
+	OpenW3D::Save_Config();
 }
 
 
@@ -179,13 +175,8 @@ MPSettingsMgrClass::Set_Auto_Login(const char* login)
 {
 	AutoLogin = login;
 
-#if 0 // FIXME Use INI
-	RegistryClass registry(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-
-	if (registry.Is_Valid()) {
-		registry.Set_String(REG_VALUE_AUTOLOGIN, AutoLogin);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTOLOGIN, AutoLogin);
 }
 
 
@@ -212,13 +203,9 @@ MPSettingsMgrClass::Set_Auto_Password(const char* pass)
 {
 	AutoPassword = pass;
 
-#if 0 // FIXME Use INI
-	RegistryClass registry(APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-
-	if (registry.Is_Valid()) {
-		registry.Set_String(REG_VALUE_AUTOPASSWORD, AutoPassword);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_String(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTOPASSWORD, AutoPassword);
+	OpenW3D::Save_Config();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -246,13 +233,11 @@ MPSettingsMgrClass::Get_QuickMatch_Mode_Preference (const char *mode)
 	GameModeMap::iterator modePref = _mModePrefs.find(mode);
 
 	if (modePref == _mModePrefs.end()) {
-		RegistryClass registry(APPLICATION_SUB_KEY_NAME_QUICKMATCH);
+		auto & ini = OpenW3D::Get_INIConfig();
 
-		if (registry.Is_Valid()) {
-			int pref = registry.Get_Int(mode, 10);
-			_mModePrefs[mode] = pref;
-			return pref;
-		}
+		int pref = ini.Get_Int(APPLICATION_SUB_KEY_NAME_QUICKMATCH, mode, 10);
+		_mModePrefs[mode] = pref;
+		return pref;
 	}
 
 	return (*modePref).second;
@@ -280,15 +265,13 @@ MPSettingsMgrClass::Set_QuickMatch_Mode_Preference (const char *mode, int prefer
 void
 MPSettingsMgrClass::Save_QuickMatch_Mode_Preferences (void)
 {
-	RegistryClass registry(APPLICATION_SUB_KEY_NAME_QUICKMATCH);
+	auto & ini = OpenW3D::Get_INIConfig();
 
-	if (registry.Is_Valid()) {
-		GameModeMap::iterator iter = _mModePrefs.begin();
+	GameModeMap::iterator iter = _mModePrefs.begin();
 
-		while (iter != _mModePrefs.end()) {
-			registry.Set_Int((*iter).first, (*iter).second);
-			iter++;
-		}
+	while (iter != _mModePrefs.end()) {
+		ini.Put_Int(APPLICATION_SUB_KEY_NAME_QUICKMATCH, (*iter).first, (*iter).second);
+		iter++;
 	}
 }
 #endif // OBSOLETE
@@ -303,15 +286,12 @@ MPSettingsMgrClass::Set_Is_Sidebar_Help_Displayed (bool onoff)
 {
 	DisplaySidebarHelp = onoff;
 
-#if 0 // FIXME Use INI
 	//
 	//	Attempt to open the MP settings sub-key
 	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-	if (registry.Is_Valid ()) {
-		registry.Set_Bool (REG_VALUE_SIDEBAR_HELP, DisplaySidebarHelp);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Bool(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_SIDEBAR_HELP, DisplaySidebarHelp);
+	OpenW3D::Save_Config();
 
 	return ;
 }
@@ -330,12 +310,9 @@ MPSettingsMgrClass::Enable_Auto_Login_Prompt (bool onoff)
 	//
 	//	Attempt to open the MP settings sub-key
 	//
-#if 0 // FIXME Use INI
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-	if (registry.Is_Valid ()) {
-		registry.Set_Bool (REG_VALUE_AUTOLOGIN_PROMPT, IsAutoLoginPromptEnabled);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Bool(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_AUTOLOGIN_PROMPT, IsAutoLoginPromptEnabled);
+	OpenW3D::Save_Config();
 
 	return ;
 }
@@ -358,12 +335,9 @@ MPSettingsMgrClass::Set_Option_Flag (OPTION flag, bool onoff)
 	//
 	//	Save this setting in the registry
 	//
-#if 0 // FIMXME: Use INI
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-	if (registry.Is_Valid ()) {
-		registry.Set_Int (REG_VALUE_OPTIONS, OptionFlags);
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_OPTIONS, OptionFlags);
+	OpenW3D::Save_Config();
 
 	return ;
 }
@@ -416,12 +390,9 @@ MPSettingsMgrClass::Are_Alternate_Skins_Unlocked (void)
 				//
 				//	Save this setting in the registry
 				//
-#if 0 // FIMXME: Use INI
-				RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-				if (registry.Is_Valid ()) {
-					registry.Set_Bool (REG_VALUE_ARE_SKINS_UNLOCKED, AreSkinsUnlocked);
-				}
-#endif
+				auto & ini = OpenW3D::Get_INIConfig();
+				ini.Put_Bool(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_ARE_SKINS_UNLOCKED, AreSkinsUnlocked);
+				OpenW3D::Save_Config();
 			}
 
 		} else {

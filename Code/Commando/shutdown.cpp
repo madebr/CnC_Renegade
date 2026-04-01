@@ -361,27 +361,23 @@ static void Log_System_Information()
 	HANDLE file;
 
 #ifdef WWDEBUG
-#if 0 // FIXME Use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		int disable=registry.Get_Int( SYSTEM_INFO_LOG_DISABLE );
-		if (!disable) {
-			if (!SysInfoCopyThread.Is_Running()) {
-				StringClass filename(0,true);
-	//			filename="\\\\havoc\\rock\\projects\\renegade\\logs\\";
-				filename="\\\\tanya\\game\\Projects\\Renegade\\_sysinfo_logs\\";
-				tmp.Format("%d_%d_",DX8Wrapper::Get_Current_Caps()->Get_Vendor(),DX8Wrapper::Get_Current_Caps()->Get_Device());
-				filename+=tmp;
-				filename+=name;
-				filename+=".txt";
+	auto & ini = OpenW3D::Get_INIConfig();
+	bool disable=ini.Get_Bool( APPLICATION_SUB_KEY_NAME_DEBUG, SYSTEM_INFO_LOG_DISABLE );
+	if (!disable) {
+		if (!SysInfoCopyThread.Is_Running()) {
+			StringClass filename(0,true);
+//			filename="\\\\havoc\\rock\\projects\\renegade\\logs\\";
+			filename="/tanya/game/Projects/Renegade/_sysinfo_logs/";
+			tmp.Format("%d_%d_",DX8Wrapper::Get_Current_Caps()->Get_Vendor(),DX8Wrapper::Get_Current_Caps()->Get_Device());
+			filename+=tmp;
+			filename+=name;
+			filename+=".txt";
 
-				SysInfoCopyThread.String=string;
-				SysInfoCopyThread.Filename=filename;
-				SysInfoCopyThread.Execute();
-			}
+			SysInfoCopyThread.String=string;
+			SysInfoCopyThread.Filename=filename;
+			SysInfoCopyThread.Execute();
 		}
 	}
-#endif
 #endif
 
 	// Write log to local work folder
@@ -498,12 +494,9 @@ void Game_Shutdown(void)
 	}
 
 
-#if 0 // FIXME Use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if ( registry.Is_Valid() ) {
-		registry.Set_Int( VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
-	}
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_DEBUG, VALUE_NAME_APPLICATION_CRASH_VERSION, 0 );
+	OpenW3D::Save_Config();
 
 #ifdef FREEDEDICATEDSERVER
 	Copy_Logs(DebugManager::Get_Version_Number());

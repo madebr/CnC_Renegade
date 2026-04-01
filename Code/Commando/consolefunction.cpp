@@ -1095,10 +1095,10 @@ public:
 		// Stop Jani from spying on us (avoid delay on exit)
 		//
 		{
-		RegistryClass registry(APPLICATION_SUB_KEY_NAME_DEBUG);
-		WWASSERT(registry.Is_Valid());
-		registry.Set_Int("SystemInfoLogDisable", true);
-		registry.Set_Int("DisableLogCopying", true);
+		auto & ini = OpenW3D::Get_INIConfig();
+		ini.Put_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, "SystemInfoLogDisable", true);
+		ini.Put_Bool(APPLICATION_SUB_KEY_NAME_DEBUG, "DisableLogCopying", true);
+		OpenW3D::Save_Config();
 		}
 		*/
 

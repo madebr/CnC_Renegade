@@ -843,17 +843,14 @@ bool InstallerClass::WW3D_Initialize (int cardselection)
 			// Configure video for the user.
 			Auto_Configure();
 
+			auto & ini = OpenW3D::Get_INIConfig();
+
 			// Set UV bias according to registry.
-			RegistryClass optionsregistry (APPLICATION_SUB_KEY_NAME_OPTIONS);
-			if (optionsregistry.Is_Valid()) {
-				WW3D::Set_Screen_UV_Bias (optionsregistry.Get_Int ("ScreenUVBias", 1) != 0);
-			}
+			WW3D::Set_Screen_UV_Bias (ini.Get_Int (APPLICATION_SUB_KEY_NAME_OPTIONS, "ScreenUVBias", 1) != 0);
 
 			// Override the windowed mode.
-			RegistryClass renderregistry (APPLICATION_SUB_KEY_NAME_RENDER);
-			if (optionsregistry.Is_Valid()) {
-				renderregistry.Set_Int ("RenderDeviceWindowed", windowedmode ? 1 : 0);
-			}
+			ini.Put_Int(APPLICATION_SUB_KEY_NAME_RENDER, "RenderDeviceWindowed", windowedmode ? 1 : 0);
+			OpenW3d::Save_Config();
 
 			// Attempt to initialize the device.
 			if (WW3D::Registry_Load_Render_Device (APPLICATION_SUB_KEY_NAME_RENDER, true) == WW3D_ERROR_OK) {

@@ -539,15 +539,9 @@ public:
 		DWORD size = sizeof(computer_name);
 		::GetComputerNameA(computer_name, &size);
 
-#if 0 // FIX: use INI
-		RegistryClass reg(APPLICATION_SUB_KEY_NAME_DEBUG);
+		auto & ini = OpenW3D::Get_INIConfig();
 		char path[MAX_PATH];
-		reg.Get_String("LogPath", path, sizeof(path), "\\\\tanya\\game\\projects\\renegade\\_error_logs");
-		strcat(path, "/");
-#else
-		char path[MAX_PATH];
-		strcpy(path, "./");
-#endif
+		ini.Get_String(APPLICATION_SUB_KEY_NAME_DEBUG, "LogPath", "//tanya/game/projects/renegade/_error_logs", path, sizeof(path));
 
 		StringClass folder_name(0,true);
 		folder_name.Format("%s%d.%d",path,Version>>16,Version&0xffff);

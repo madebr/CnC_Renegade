@@ -52,6 +52,8 @@
 #include "systimer.h"
 #include "specialbuilds.h"
 #include "simplevec.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "../Commando/cnetwork.h"
 namespace WOL
 {
@@ -263,11 +265,9 @@ STDMETHODIMP ChatObserver::OnServerList(HRESULT result, WOL::Server* servers)
 	// Process new server list.
 	mOuter->ClearServers();
 
-#if 0 // FIXME: store server list somewhere
-	// Clear out old server info from the registry.
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_SERVER_LIST);
-	reg.Deleta_All_Values();
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Remove_Section(APPLICATION_SUB_KEY_NAME_SERVER_LIST);
+	OpenW3D::Save_Config();
 
 	WOL::Server* curServer = servers;
 

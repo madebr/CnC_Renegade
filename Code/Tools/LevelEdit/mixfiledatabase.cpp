@@ -36,7 +36,8 @@
 
 #include "StdAfx.h"
 #include "mixfiledatabase.h"
-#include "registry.h"
+#include "ini.h"
+#include "openw3d.h"
 #include "Utils.h"
 #include "mixfile.h"
 #include "rawfile.h"
@@ -61,24 +62,22 @@ MixFileDatabaseClass::MixFileDatabaseClass (void)
 	//	Open Renegade's registry
 	//
 	const char * const RENEGADE_REG_KEY	= "Software\\Westwood\\Renegade";
-	RegistryClass registry (RENEGADE_REG_KEY);
-	if (registry.Is_Valid ()) {
+	auto & ini = OpenW3D::Get_INIConfig();
+
+	//
+	//	Read the installation path from the registry
+	//
+	StringClass install_path;
+	const char * const RENEGADE_INSTALL_VALUE	= "InstallPath";
+	ini.Get_String (install_path, RENEGADE_REG_KEY, RENEGADE_INSTALL_VALUE);
+
+	if (install_path.Get_Length () > 0) {
 
 		//
-		//	Read the installation path from the registry
+		//	The mix files are contained in the data sub-directory
 		//
-		StringClass install_path;
-		const char * const RENEGADE_INSTALL_VALUE	= "InstallPath";
-		registry.Get_String (RENEGADE_INSTALL_VALUE, install_path);
-
-		if (install_path.Get_Length () > 0) {
-
-			//
-			//	The mix files are contained in the data sub-directory
-			//
-			install_path	= ::Strip_Filename_From_Path (install_path);
-			MixFilePath		= ::Make_Path (install_path, "DATA");
-		}
+		install_path	= ::Strip_Filename_From_Path (install_path);
+		MixFilePath		= ::Make_Path (install_path, "DATA");
 	}
 
 	_TheInstance = this;

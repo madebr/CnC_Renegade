@@ -464,10 +464,8 @@ void AutoRestartClass::Think(void)
 
 			/*
 			int last_game_type = 0;
-			RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
-			if (registry.Is_Valid ()) {
-				last_game_type = registry.Get_Int(REG_VALUE_LAST_GAME_TYPE, last_game_type);
-			}
+			auto & ini = OpenW3D::Get_INIConfig();
+			last_game_type = ini.Get_Int(APPLICATION_SUB_KEY_NAME_WOLSETTINGS, REG_VALUE_LAST_GAME_TYPE, last_game_type);
 
 			last_game_type = std::min(last_game_type, NUM_GAME_TYPE_MENU_ENTRIES-1);
 			last_game_type = std::max(last_game_type, 0);

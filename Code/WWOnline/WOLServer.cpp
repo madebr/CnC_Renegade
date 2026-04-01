@@ -41,6 +41,8 @@
 #include <stdlib.h>
 #include "WOLServer.h"
 #include "WOLProduct.h"
+#include "ini.h"
+#include "openw3d.h"
 #include <Commando/_globals.h>
 #include <string.h>
 #include <wwdebug/wwdebug.h>
@@ -411,11 +413,8 @@ void PingServerData::SetPingTime(int time)
 	{
 	mPingTime = time;
 
-#if 0 // FIXME: sav ping time somewhere
-	// Save the ping time in the registry.
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_SERVER_LIST);
-	reg.Set_Int(GetHostAddress(), time);
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_SERVER_LIST, GetHostAddress(), time);
 	}
 
 }

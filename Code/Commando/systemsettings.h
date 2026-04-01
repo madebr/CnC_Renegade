@@ -44,7 +44,6 @@
 #include "vector.h"
 
 class	SystemSettingEntry;
-class	RegistryClass;
 class INIClass;
 class	ConsoleFunctionClass;
 

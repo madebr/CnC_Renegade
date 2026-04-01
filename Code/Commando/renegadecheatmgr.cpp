@@ -97,10 +97,9 @@ RenegadeCheatMgrClass::Enable_Cheat (int /* cheat */, bool /* onoff */)
 	//
 	//	Save the values to the registry
 	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (registry.Is_Valid ()) {
-		registry.Set_Int (VALUE_NAME_CHEATS, Flags);
-	}
+	auto & ini = OpenW3D::Get_INIConfig();
+	ini.Put_Int(APPLICATION_SUB_KEY_NAME_OPTIONS, VALUE_NAME_CHEATS, Flags);
+	OpenW3d::Save_Config():
 
 	if (cheat == CHEAT_INVULNERABILITY) {
 

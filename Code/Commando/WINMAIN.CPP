@@ -237,14 +237,9 @@ int main(int argc, char *argv[])
 
 static bool Graphics_Settings_Trouble_Shooting()
 {
-#if 0 // FIMXME: Use INI
-	RegistryClass registry( APPLICATION_SUB_KEY_NAME_DEBUG );
-	if (!registry.Is_Valid()) return true;
-
-	int progress=registry.Get_Int( VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 0 );
-#else
-	int progress = 0;
-#endif
+	auto & ini = OpenW3D::Get_INIConfig();
+	int progress = ini.Get_Int(APPLICATION_SUB_KEY_NAME_DEBUG,  VALUE_NAME_GAME_INITIALIZATION_IN_PROGRESS, 0 );
+	OpenW3D::Save_Config();
 	if (progress) {
 		const char * args[] = {
 			"wwconfig.exe",

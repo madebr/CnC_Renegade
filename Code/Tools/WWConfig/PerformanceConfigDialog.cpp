@@ -397,8 +397,6 @@ PerformanceConfigDialogClass::Load_Values (void)
 	//
 	//	Attempt to open the registry key
 	//
-	RegistryClass registry (KEY_NAME_SETTINGS);
-	INIClass ini(W3D_CONF_FILE);
 	int dynamic_lod = 3000;
 	int static_lod = 3000;
 	int dynamic_shadows = 1;
@@ -409,6 +407,8 @@ PerformanceConfigDialogClass::Load_Values (void)
 	int texture_red = 0;
 	int surface_effect = 1;
 	int particle_detail = 1;
+
+	auto & ini = OpenW3D::Get_INIConfig();
 
 	if(ini.Is_Present(W3D_SECTION_SYSTEM))
 	{
@@ -427,23 +427,6 @@ PerformanceConfigDialogClass::Load_Values (void)
 		texture_red		= ini.Get_Int (W3D_SECTION_SYSTEM, VALUE_INI_TEXTURE_RES, 0);
 		surface_effect	= ini.Get_Int (W3D_SECTION_SYSTEM, VALUE_INI_SURFACE_EFFECT, 1);
 		particle_detail	= ini.Get_Int (W3D_SECTION_SYSTEM, VALUE_INI_PARTICLE_DETAIL, 1);
-	} else if (registry.Is_Valid ()) {
-
-		//
-		//	Read the values from the registry
-		//
-		dynamic_lod		= registry.Get_Int (VALUE_NAME_DYN_LOD, 3000);
-		static_lod			= registry.Get_Int (VALUE_NAME_STATIC_LOD, 3000);
-
-		dynamic_shadows	= registry.Get_Int (VALUE_NAME_DYN_SHADOWS, 1);
-		static_shadows	= registry.Get_Int (VALUE_NAME_STATIC_SHADOWS, 1);
-
-		prelit_mode		= registry.Get_Int (VALUE_NAME_PRELIT_MODE, WW3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE);
-		texture_filter	= registry.Get_Int (VALUE_NAME_TEXTURE_FILTER, TextureClass::TEXTURE_FILTER_BILINEAR);
-		shadow_mode		= registry.Get_Int (VALUE_NAME_SHADOW_MODE, PhysicsSceneClass::SHADOW_MODE_BLOBS_PLUS);
-		texture_red		= registry.Get_Int (VALUE_NAME_TEXTURE_RES, 0);
-		surface_effect	= registry.Get_Int (VALUE_NAME_SURFACE_EFFECT, 1);
-		particle_detail	= registry.Get_Int (VALUE_NAME_PARTICLE_DETAIL, 1);
 	}
 
 	//
@@ -710,29 +693,6 @@ PerformanceConfigDialogClass::Apply_Changes (void)
 		lod_budget = 5000;
 	} else if (geometry_detail == 2) {
 		lod_budget = 10000;
-	}
-
-	//
-	//	Attempt to open the registry key
-	//
-	RegistryClass registry (KEY_NAME_SETTINGS);
-	if (registry.Is_Valid ()) {
-
-		//
-		//	Store the values in the registry
-		//
-		registry.Set_Int (VALUE_NAME_DYN_LOD, lod_budget);
-		registry.Set_Int (VALUE_NAME_STATIC_LOD, lod_budget);
-
-		registry.Set_Int (VALUE_NAME_DYN_SHADOWS, (shadow_mode != PhysicsSceneClass::SHADOW_MODE_NONE));
-		registry.Set_Int (VALUE_NAME_STATIC_SHADOWS, static_shadows);
-
-		registry.Set_Int (VALUE_NAME_PRELIT_MODE, prelit_mode);
-		registry.Set_Int (VALUE_NAME_TEXTURE_FILTER, texture_filter);
-		registry.Set_Int (VALUE_NAME_SHADOW_MODE, shadow_mode);
-		registry.Set_Int (VALUE_NAME_TEXTURE_RES, std::max (2 - texture_red, 0));
-		registry.Set_Int (VALUE_NAME_SURFACE_EFFECT, surface_effect);
-		registry.Set_Int (VALUE_NAME_PARTICLE_DETAIL, particle_detail);
 	}
 
 	auto & ini = OpenW3D::Get_INIConfig();
@@ -1058,12 +1018,9 @@ void AutoConfigSettings()
 		}
 	}
 
-	RegistryClass registry_options (KEY_NAME_OPTIONS);
-	if (!registry_options.Is_Valid()) return;
-
 	// The uv bias setting for most of the cards
 	// (PowerVR Kyro and Kyro II and ATI Rage Pro need different UV bias and the rest of the cards.)
-	registry_options.Set_Int( "ScreenUVBias", 1 );
+	ini.Put_Int(KEY_NAME_OPTIONS, "ScreenUVBias", 1 );
 
 	switch (caps.Get_Vendor()) {
 	default:
@@ -1112,7 +1069,7 @@ void AutoConfigSettings()
 				caps.Get_Device()==DX8Caps::DEVICE_ATI_RAGE_128_MOBILITY_M3 ||
 				caps.Get_Device()==DX8Caps::DEVICE_ATI_RAGE_128_MOBILITY_M4 ||
 				caps.Get_Device()==DX8Caps::DEVICE_ATI_RAGE_128_PRO_ULTRA) {
-				registry_options.Set_Int( "ScreenUVBias", 0 );
+				ini.Put_Int( KEY_NAME_OPTIONS, "ScreenUVBias", 0 );
 			}
 			break;
 		default:
@@ -1123,10 +1080,10 @@ void AutoConfigSettings()
 	case DX8Caps::VENDOR_POWERVR:
 		// not sure how this goes. Kyro at the office requires 1, but some other powervr
 		// card seems to require 0...
-		registry_options.Set_Int( "ScreenUVBias", 0 );
+		ini.Put_Int( KEY_NAME_OPTIONS, "ScreenUVBias", 0 );
 		switch (caps.Get_Device()) {
 		case DX8Caps::DEVICE_POWERVR_KYRO:
-			registry_options.Set_Int( "ScreenUVBias", 1 );
+			ini.Put_Int( KEY_NAME_OPTIONS, "ScreenUVBias", 1 );
 			break;
 		}
 		break;
