@@ -35,7 +35,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "skinpackagemgr.h"
-#include "registry.h"
+
+#include "openw3d.h"
+#include "ini.h"
 #include "_globals.h"
 
 
@@ -63,25 +65,18 @@ SkinPackageMgrClass::Initialize (void)
 {
 	Shutdown ();
 
-#if 0 // FIXME: Use INI
-	//
-	//	Get the currently selected package name from the registry
-	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (registry.Is_Valid ()) {
+	auto & ini = OpenW3D::Get_INIConfig();
 
-		//
-		//	Get the current package name from the registry
-		//
-		StringClass package_filename;
-		registry.Get_String (CURR_SKIN_REG_VALUE, package_filename, "default.pkg");
+	//
+	//	Get the current package name from the ini config
+	//
+	StringClass package_filename;
+	ini.Get_String (package_filename, APPLICATION_SUB_KEY_NAME_OPTIONS, CURR_SKIN_REG_VALUE, "default.pkg");
 
-		//
-		//	Initialize the current package
-		//
-		CurrentPackage.Set_Package_Filename (package_filename);
-	}
-#endif
+	//
+	//	Initialize the current package
+	//
+	CurrentPackage.Set_Package_Filename (package_filename);
 
 	return ;
 }
@@ -165,15 +160,12 @@ SkinPackageMgrClass::Set_Current_Package (const char *package_filename)
 	//
 	CurrentPackage.Set_Package_Filename (package_filename);
 
-#if 0 // FIXME: Use INI
+	auto & ini = OpenW3D::Get_INIConfig();
+
 	//
 	//	Write the name of hte package to the registry
 	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (registry.Is_Valid ()) {
-		registry.Set_String (CURR_SKIN_REG_VALUE, package_filename);
-	}
-#endif
+	ini.Put_String(APPLICATION_SUB_KEY_NAME_OPTIONS, CURR_SKIN_REG_VALUE, package_filename);
 
 	return ;
 }

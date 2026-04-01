@@ -190,6 +190,8 @@ class INIClass {
 
 		void Get_Value_List( char const * section, DynamicVectorClass<StringClass> &list );
 
+		void Copy_Into(INIClass & config) const;
+
 //	protected:
 		enum {MAX_LINE_LENGTH=512};
 

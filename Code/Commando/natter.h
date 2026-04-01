@@ -91,9 +91,6 @@
 ** Forward declarations.
 */
 class SocketHandlerClass;
-#if 0 // FIXME: Use INI
-class RegistryClass;
-#endif
 
 
 /*

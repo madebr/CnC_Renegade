@@ -36,10 +36,12 @@
 
 #pragma once
 
-#include "ProcessManager.h"
+#include "ini.h"
+#include "wwstring.h"
 
 #define MAX_SLAVES	7
 
+class Process;
 class SlaveMasterClass;
 
 /*
@@ -61,6 +63,8 @@ class SlaveServerClass
 
 
 	private:
+		StringClass ConfigPath;
+		INIClass Config;
 
 		char	NickName[32];
 		char	Serial[64];
@@ -116,7 +120,6 @@ class SlaveMasterClass
 
 	private:
 
-		void Delete_Registry_Copies(void);
 		void Create_Registry_Copies(void);
 		void Wait_For_Slave_Shutdown(void);
 

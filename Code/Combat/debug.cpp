@@ -80,8 +80,6 @@ bool wwdebug_trigger_handler(int trigger_num);
 void wwdebug_profile_start_handler( const char * title );
 void wwdebug_profile_stop_handler( const char * title );
 
-char DefaultRegistryModifier[1024] = {""};
-
 /*
 **
 */
@@ -394,7 +392,7 @@ void	DebugManager::Display_Text( const WideStringClass & string, const Vector3 &
 void DebugManager::Init_Logfile(void)
 {
 	if (IsSlave) {
-		sprintf(LogfileNameBuffer, "%s%s", DefaultRegistryModifier, DEFAULT_LOGFILE_NAME);
+		sprintf(LogfileNameBuffer, "%s", DEFAULT_LOGFILE_NAME);
 		LOGFILE = LogfileNameBuffer;
 	}
 

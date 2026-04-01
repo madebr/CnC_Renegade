@@ -153,11 +153,6 @@ const char *	MOVIES_SUBDIRECTORY		= "DATA/MOVIES/";
 TextDebugDisplayHandlerClass				TextDisplayHandler;
 
 /*
-** Used to modify where game entries are kept in the registry.
-*/
-extern char DefaultRegistryModifier[1024];
-
-/*
 ** Static global lod settings for particles
 */
 static const float _ParticleLODScreenSizes[17] =

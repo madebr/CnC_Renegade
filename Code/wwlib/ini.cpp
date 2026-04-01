@@ -2413,3 +2413,12 @@ void INIClass::Remove_Section(char const * section)
 		delete secptr;
 	}
 }
+
+void INIClass::Copy_Into(INIClass & config) const
+{
+	for (const INISection * section = SectionList->First(); section != SectionList->Last(); section = section->Next()) {
+		for (const INIEntry *entry = section->EntryList.First(); entry != section->EntryList.Last(); entry = entry->Next()) {
+			config.Put_String(section->Section, entry->Entry, entry->Value);
+		}
+	}
+}

@@ -1562,18 +1562,13 @@ void WOLNATInterfaceClass::Set_Server_Negotiated_Address(IPAddressClass *server_
  *=============================================================================================*/
 void WOLNATInterfaceClass::Save_Firewall_Info_To_Registry(void)
 {
-#if 0 // FIXME: Use INI
-	RegistryClass reg(APPLICATION_SUB_KEY_NAME_NET_FIREWALL);
-	fw_assert(reg.Is_Valid());
+	auto & ini = OpenW3D::Get_INIConfig();
 
-	if (reg.Is_Valid()) {
-		IPAddressClass addr = FirewallHelper.Get_External_Address();
-		if (addr.Is_Valid()) {
-			reg.Set_Int("ExternalIP", addr.Get_Address());
-			reg.Set_Int("ExternalPort", addr.Get_Port());
-		}
+	IPAddressClass addr = FirewallHelper.Get_External_Address();
+	if (addr.Is_Valid()) {
+		ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ExternalIP", addr.Get_Address());
+		ini.Put_Int(APPLICATION_SUB_KEY_NAME_NET_FIREWALL, "ExternalPort", addr.Get_Port());
 	}
-#endif
 }
 
 

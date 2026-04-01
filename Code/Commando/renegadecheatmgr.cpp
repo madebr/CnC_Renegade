@@ -39,7 +39,8 @@
 #include "playermanager.h"
 #include "combat.h"
 #include "cnetwork.h"
-#include "registry.h"
+#include "openw3d.h"
+#include "ini.h"
 #include "_globals.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -62,19 +63,9 @@ static const char *VALUE_NAME_CHEATS	= "Cheats";
 //////////////////////////////////////////////////////////////////////
 RenegadeCheatMgrClass::RenegadeCheatMgrClass (void)
 {
-#if 0 // FIXME: Use INI
-	//
-	//	Attempt to open the registry key
-	//
-	RegistryClass registry (APPLICATION_SUB_KEY_NAME_OPTIONS);
-	if (registry.Is_Valid ()) {
+	auto & ini = OpenW3D::Get_INIConfig();
 
-		//
-		//	Read the values from the registry
-		//
-		//Flags = registry.Get_Int (VALUE_NAME_CHEATS, 0);
-	}
-#endif
+	Flags = ini.Get_Int(APPLICATION_SUB_KEY_NAME_OPTIONS, VALUE_NAME_CHEATS, 0);
 
 	return ;
 }

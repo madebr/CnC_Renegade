@@ -51,8 +51,6 @@
 #include "openw3d.h"
 #include "useroptions.h"
 
-extern char DefaultRegistryModifier[1024];
-
 //
 // Class statics
 //
@@ -144,21 +142,6 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			continue;
 		}
 
-		if (strcmp(cmd, "--regmod") == 0) {
-            const char *argval = argv[i + 1];
-			i++;
-			if (i >= argc) {
-				retcode = FAILURE;
-				break;
-			}
-			strcpy(DefaultRegistryModifier, argval);
-			#ifdef WWDEBUG
-			OutputDebugStringA("Registry modifier on command line\n");
-			#endif //WWDEBUG
-			Reread();
-			continue;
-		}
-
 		if (strcmp(cmd, "--slave") == 0) {
 			SlaveMaster.Set_Slave_Mode(true);
 			DebugManager::Set_Is_Slave(true);
@@ -167,12 +150,8 @@ cUserOptions::ParseResult cUserOptions::Parse_Command_Line(int argc, char *argv[
 			//        and have their own INI
 
 			// Save out process ID so our master server can find us.
-			char tempmod[512];
-			strcpy(tempmod, DefaultRegistryModifier);
-			strcpy(DefaultRegistryModifier, "");
 			auto & ini = OpenW3D::Get_INIConfig();
 			ini.Put_Int(APPLICATION_SUB_KEY_NAME, "ProcessId", GetCurrentProcessId());
-			strcpy(DefaultRegistryModifier, tempmod);
 
 			OpenW3D::Set_Read_Only_Config(true);
 
@@ -309,7 +288,7 @@ void cUserOptions::Print_Command_Line_Help(bool error)
 	_splitpath(path, NULL, NULL, filename, filesuffix);
 	_makepath(path, NULL, NULL, filename, filesuffix);
 
-	fprintf(file, "usage: %s [--ip IP] [--multi] [--regmod MOD] [--slave] [--startserver INI]\n", path);
+	fprintf(file, "usage: %s [--ip IP] [--multi] [--slave] [--startserver INI]\n", path);
 	fprintf(file, "    [--gamedir PATH]\n");
 	fprintf(file, "    [--ini PATH]\n");
 	fprintf(file, "    [--gamespyserver ADDRESS] [--nodx]\n");
