@@ -89,7 +89,6 @@ class ConsoleModeClass
 		*/
 		void Set_Exclusive(bool set) {IsExclusive = set;}
 		bool Is_Exclusive(void) {return(IsExclusive);}
-		HWND Get_Slave_Window_By_Title(char *name, char *settings);
 		StringClass Compose_Window_Title(char *name, char *settings, bool slave);
 		void cprintf(char const * string, ...) OPENW3D_PRINTF_VARARG_FUNC(2);
 

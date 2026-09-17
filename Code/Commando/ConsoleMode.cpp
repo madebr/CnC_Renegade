@@ -208,32 +208,6 @@ void ConsoleModeClass::Init(void)
 }
 
 
-
-
-
-/***********************************************************************************************
- * ConsoleModeClass::Get_Slave_Window_By_Title -- Look for a slave window                      *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Login name of slave                                                               *
- *           Settings file name of slave                                                       *
- *                                                                                             *
- * OUTPUT:   HWND of slave window                                                              *
- *                                                                                             *
- * WARNINGS: None                                                                              *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   2/4/2002 1:21PM ST : Created                                                              *
- *=============================================================================================*/
-HWND ConsoleModeClass::Get_Slave_Window_By_Title(char *name, char *settings)
-{
-	StringClass title = Compose_Window_Title(name, settings, true);
-	HWND window = FindWindowA("ConsoleWindowClass", title.Peek_Buffer());
-	return(window);
-}
-
-
 /***********************************************************************************************
  * ConsoleModeClass::Compose_Window_Title -- Build a window title string from name and settings*
  *                                                                                             *
