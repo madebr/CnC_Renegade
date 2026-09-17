@@ -181,7 +181,7 @@ void ConsoleModeClass::Init(void)
 			/*
 			** Get an HWND for the console window.
 			*/
-			ConsoleWindow = FindWindowA("ConsoleWindowClass", Title);
+			ConsoleWindow = GetConsoleWindow();
 
 			/*
 			** Bring up the console window to the foreground.
