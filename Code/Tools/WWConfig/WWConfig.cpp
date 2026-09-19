@@ -92,6 +92,7 @@ BOOL CWWConfigApp::InitInstance()
 		return false;
 	}
 
+	// Resolve the config file path before later arguments can change the working directory.
 	OpenW3D::Get_Config_File_Path();
 
 	//=========================================================================
