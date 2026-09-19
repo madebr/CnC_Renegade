@@ -1929,7 +1929,6 @@ void WolGameModeClass::Handle_Disconnect(void)
 				//if (!The_Game()->Get_Time_Limit_Minutes() || SlaveMaster.Am_I_Slave()) {
 					if (cPlayerManager::Count() == 0) {
 						if (SlaveMaster.Am_I_Slave()) {
-							AutoRestart.Set_Restart_Flag(false);
 							Set_Exit_On_Exception(true);
          				cGameData::Set_Manual_Exit(true);
 						} else {
@@ -2036,7 +2035,6 @@ void WolGameModeClass::Quit_And_Restart(void)
 			/*
 			** If we lost connection then drop out of the game and try to re-establish connection.
 			*/
-			AutoRestart.Set_Restart_Flag(true);
 			Set_Exit_On_Exception(true);
 			cGameData::Set_Manual_Exit(true);
 			Stop_Main_Loop(EXIT_SUCCESS);
@@ -2120,7 +2118,6 @@ void WolGameModeClass::Game_Start_Timed_Out(void)
 		if (The_Game() && The_Game()->IsDedicated.Is_True() && AutoRestart.Get_Restart_Flag()) {
 			mConnected = false;
 			if (SlaveMaster.Am_I_Slave()) {
-				AutoRestart.Set_Restart_Flag(false);
 				Set_Exit_On_Exception(true);
          	cGameData::Set_Manual_Exit(true);
 			} else {

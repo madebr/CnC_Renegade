@@ -253,11 +253,6 @@ GameInitMgrClass::Start_Game (const char *map_name, int teamChoice, unsigned int
 	Transmit_Player_Data (teamChoice, clanID);
 
 	//
-	// Set the auto restart flag if required.
-	//
-	AutoRestart.Set_Restart_Flag((The_Game()->IsAutoRestart.Is_True()) ? true : false);
-
-	//
 	// Listen for server control messages.
 	//
 	GameSideServerControlClass::Init();
@@ -352,15 +347,6 @@ GameInitMgrClass::End_Game (void)
 
 	if (theGame) {
 		theGame->On_Game_End();
-	}
-
-	//
-	// Disable auto restart mode.
-	//
-	// For forced exits the mode will already be correct.
-	//
-	if (!cGameData::Is_Manual_Exit()) {
-		AutoRestart.Set_Restart_Flag(false);
 	}
 
 	//

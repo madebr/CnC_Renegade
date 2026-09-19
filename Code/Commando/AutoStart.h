@@ -71,7 +71,6 @@ class AutoRestartClass : public Observer<WOLLogonAction>, public Observer<WWOnli
 		void Restart_Game(void);
 		void Think(void);
 		bool Is_Active(void) {return((bool)(RestartState != STATE_DONE));}
-		void Set_Restart_Flag(bool enable);
 		bool Get_Restart_Flag(void);
 		void Cancel(void);
 
