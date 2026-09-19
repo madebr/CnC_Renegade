@@ -1029,6 +1029,7 @@ void SlaveMasterClass::Delete_Registry_Copies(void)
 				}
 				SlaveServers[index].IniPath[0] = '\0';
 			}
+			++index;
 		}
 	}
 }
