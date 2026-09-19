@@ -44,6 +44,7 @@
 #include "wwmath.h"
 #include "wwphys.h"
 #include "translatedb.h"
+#include "openw3d.h"
 #include "presetmgr.h"
 #include "phys.h"
 #include "Utils.h"
