@@ -1013,24 +1013,18 @@ bool SlaveMasterClass::Create_Registry_Copies(void)
  *=============================================================================================*/
 void SlaveMasterClass::Delete_Registry_Copies(void)
 {
-	HKEY base_key;
-	LSTATUS result = RegOpenKeyExA(HKEY_CURRENT_USER, APPLICATION_SUB_KEY_NAME, 0, KEY_ALL_ACCESS, &base_key);
-	WWASSERT(result == ERROR_SUCCESS);
+	int index = 0;
 
-	if (result == ERROR_SUCCESS) {
-		int index = 0;
-
-		while (index < MAX_SLAVES) {
-			if (SlaveServers[index].IniPath[0] != '\0') {
-				std::error_code ec;
-				std::filesystem::remove(SlaveServers[index].IniPath, ec);
-				if (ec) {
-					WWDEBUG_SAY(("Failed to remove ini of slave %d", index));
-				}
-				SlaveServers[index].IniPath[0] = '\0';
+	while (index < MAX_SLAVES) {
+		if (SlaveServers[index].IniPath[0] != '\0') {
+			std::error_code ec;
+			std::filesystem::remove(SlaveServers[index].IniPath, ec);
+			if (ec) {
+				WWDEBUG_SAY(("Failed to remove ini of slave %d", index));
 			}
-			++index;
+			SlaveServers[index].IniPath[0] = '\0';
 		}
+		++index;
 	}
 }
 
