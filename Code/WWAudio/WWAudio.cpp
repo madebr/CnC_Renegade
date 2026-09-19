@@ -1463,10 +1463,10 @@ WWAudioClass::Load_From_Registry
 		//
 		//	Read the sound/music enabled settings
 		//
-		music_enabled		= (registry.Get_Int (VALUE_NAME_MUSIC_ENABLED, 1) == 1);
-		sound_enabled		= (registry.Get_Int (VALUE_NAME_SOUND_ENABLED, 1) == 1);
-		dialog_enabled		= (registry.Get_Int (VALUE_NAME_DIALOG_ENABLED, 1) == 1);
-		cinematic_enabled = (registry.Get_Int (VALUE_NAME_CINEMATIC_ENABLED, 1) == 1);
+		music_enabled		= registry.Get_Bool (VALUE_NAME_MUSIC_ENABLED, true);
+		sound_enabled		= registry.Get_Bool (VALUE_NAME_SOUND_ENABLED, true);
+		dialog_enabled		= registry.Get_Bool (VALUE_NAME_DIALOG_ENABLED, true);
+		cinematic_enabled	= registry.Get_Bool (VALUE_NAME_CINEMATIC_ENABLED, true);
 
 		Load_Default_Volume (defaultmusicvolume, defaultsoundvolume, defaultdialogvolume, defaultcinematicvolume);
 
@@ -1529,10 +1529,10 @@ WWAudioClass::Save_To_Registry
 		registry.Set_Int (VALUE_NAME_IS_STEREO, is_stereo);
 		registry.Set_Int (VALUE_NAME_BITS, bits);
 		registry.Set_Int (VALUE_NAME_HERTZ, hertz);
-		registry.Set_Int (VALUE_NAME_MUSIC_ENABLED,		music_enabled);
-		registry.Set_Int (VALUE_NAME_SOUND_ENABLED,		sound_enabled);
-		registry.Set_Int (VALUE_NAME_DIALOG_ENABLED,		dialog_enabled);
-		registry.Set_Int (VALUE_NAME_CINEMATIC_ENABLED,	cinematic_enabled);
+		registry.Set_Bool (VALUE_NAME_MUSIC_ENABLED,		music_enabled);
+		registry.Set_Bool (VALUE_NAME_SOUND_ENABLED,		sound_enabled);
+		registry.Set_Bool (VALUE_NAME_DIALOG_ENABLED,		dialog_enabled);
+		registry.Set_Bool (VALUE_NAME_CINEMATIC_ENABLED,	cinematic_enabled);
 		registry.Set_Float (VALUE_NAME_MUSIC_VOL,			music_volume);
 		registry.Set_Float (VALUE_NAME_SOUND_VOL,			sound_volume);
 		registry.Set_Float (VALUE_NAME_DIALOG_VOL,			dialog_volume);
