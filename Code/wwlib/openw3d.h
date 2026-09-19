@@ -29,6 +29,7 @@ namespace OpenW3D
 	bool Has_Config_File_Path_Override();
 	bool Command_Line_Has_Arg(const char *command_line, const char *arg);
 	INIClass & Get_Config();
+	void Reload_Config();
 	bool Save_Config();
 }
 

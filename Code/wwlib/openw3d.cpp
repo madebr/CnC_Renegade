@@ -213,3 +213,9 @@ bool OpenW3D::Save_Config()
 	const std::string native_path = config_path.string();
 	return g_config.Save(native_path.c_str()) != 0;
 }
+
+void OpenW3D::Reload_Config()
+{
+	g_config.Clear();
+	g_config.Load(Get_Config_File_Path());
+}

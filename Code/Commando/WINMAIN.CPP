@@ -266,6 +266,7 @@ static bool Graphics_Settings_Trouble_Shooting()
 		process->Wait();
 		bool success = *process->Return_Code() == 0;
 		delete process;
+		OpenW3D::Reload_Config();
 		return success;
 	}
 	return true;
