@@ -159,7 +159,7 @@ void	RegistryClass::Get_Value_List( DynamicVectorClass<StringClass> &list )
 	if (!section) {
 		return;
 	}
-	for (INIEntry *ini_entry = section->EntryList.First(); ini_entry != section->EntryList.Last(); ini_entry = ini_entry->Next()) {
+	for (INIEntry *ini_entry = section->EntryList.First_Valid(); ini_entry != nullptr; ini_entry = ini_entry->Next_Valid()) {
 		list.Add( ini_entry->Entry);
 	}
 }
