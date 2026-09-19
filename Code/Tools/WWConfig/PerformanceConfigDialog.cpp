@@ -155,7 +155,7 @@ const char *VALUE_NAME_PRELIT_MODE		= "PrelitMode";
 const char *VALUE_NAME_SHADOW_MODE		= "ShadowMode";
 const char *VALUE_NAME_STATIC_SHADOWS	= "StaticProjectors";
 const char *VALUE_NAME_TEXTURE_RES		= "TextureResolution";
-const char *VALUE_NAME_SURFACE_EFFECT	= "SurfaceEffect_Detail";
+const char *VALUE_NAME_SURFACE_EFFECT	= "SurfaceEffectDetail";
 const char *VALUE_NAME_PARTICLE_DETAIL	= "ParticleDetail";
 
 
