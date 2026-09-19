@@ -39,6 +39,7 @@
 #include "registry.h"
 #include "Utils.h"
 #include "mixfile.h"
+#include "openw3d.h"
 #include "rawfile.h"
 #include "shlwapi.h"
 #include <algorithm>
@@ -60,7 +61,7 @@ MixFileDatabaseClass::MixFileDatabaseClass (void)
 	//
 	//	Open Renegade's registry
 	//
-	const char * const RENEGADE_REG_KEY	= "Software\\Westwood\\Renegade";
+	const char * const RENEGADE_REG_KEY	= "Options";
 	RegistryClass registry (RENEGADE_REG_KEY);
 	if (registry.Is_Valid ()) {
 
@@ -68,7 +69,7 @@ MixFileDatabaseClass::MixFileDatabaseClass (void)
 		//	Read the installation path from the registry
 		//
 		StringClass install_path;
-		const char * const RENEGADE_INSTALL_VALUE	= "InstallPath";
+		const char * const RENEGADE_INSTALL_VALUE	= "GameDir";
 		registry.Get_String (RENEGADE_INSTALL_VALUE, install_path);
 
 		if (install_path.Get_Length () > 0) {
