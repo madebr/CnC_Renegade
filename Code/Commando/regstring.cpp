@@ -80,7 +80,7 @@ const char *cRegistryString::Get()
 		WWASSERT(RegistryLocation[0] != '\0');
 		WWASSERT(KeyName[0] != '\0');
 		RegistryClass registry(RegistryLocation);
-		if (!registry.Exists(KeyName)) {
+		if (!registry.SectionExists(KeyName)) {
 			registry.Set_String(KeyName, Value);
 		} else {
 			registry.Get_String(KeyName, Value, sizeof(Value), Value);

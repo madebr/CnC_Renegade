@@ -79,7 +79,7 @@ bool cRegistryBool::Get()
 		WWASSERT(RegistryLocation[0] != '\0');
 		WWASSERT(KeyName[0] != '\0');
 		RegistryClass registry(RegistryLocation);
-		if (!registry.Exists(KeyName)) {
+		if (!registry.SectionExists(KeyName)) {
 			registry.Set_Bool(KeyName, Value);
 		} else {
 			Value = registry.Get_Bool(KeyName, Value);

@@ -45,7 +45,7 @@
 bool RegistryClass::IsLocked = false;
 
 
-bool RegistryClass::Exists(const char* sub_key)
+bool RegistryClass::SectionExists(const char* sub_key)
 {
 	INIClass &config = OpenW3D::Get_Config();
 	return config.Is_Present(sub_key, nullptr);
@@ -60,7 +60,7 @@ RegistryClass::RegistryClass( const char * sub_key, bool create ) :
 	if (create) {
 		IsValid = true;
 	} else {
-		IsValid = Exists(sub_key);
+		IsValid = SectionExists(sub_key);
 	}
 }
 

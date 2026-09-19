@@ -55,7 +55,7 @@ class INIClass;
 */
 class	RegistryClass {
 public:
-	static bool Exists(const char* sub_key);
+	static bool SectionExists(const char* sub_key);
 
 	// Constructor & Destructor
 	RegistryClass( const char * sub_key, bool create = true );
