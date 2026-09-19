@@ -51,6 +51,13 @@ bool RegistryClass::SectionExists(const char* sub_key)
 	return config.Is_Present(sub_key, nullptr);
 }
 
+
+bool RegistryClass::KeyExists(const char* name)
+{
+	INIClass &config = OpenW3D::Get_Config();
+	return config.Is_Present(SubKey, name);
+}
+
 /*
 **
 */

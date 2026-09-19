@@ -57,6 +57,8 @@ class	RegistryClass {
 public:
 	static bool SectionExists(const char* sub_key);
 
+	bool KeyExists(const char* name);
+
 	// Constructor & Destructor
 	RegistryClass( const char * sub_key, bool create = true );
 	~RegistryClass( void );
