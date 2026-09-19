@@ -119,13 +119,13 @@ PERFORMANCE_SETTING _PerformanceLevels[MAX_PERFORMANCE_LEVELS][MAX_EXPERT_OPTION
 	},
 };
 
-const char *VALUE_NAME_DYN_LOD			= "Dynamic_LOD_Budget";
-const char *VALUE_NAME_STATIC_LOD		= "Static_LOD_Budget";
-const char *VALUE_NAME_DYN_SHADOWS		= "Dynamic_Projectors";
-const char *VALUE_NAME_SHADOW_MODE		= "Shadow_Mode";
-const char *VALUE_NAME_STATIC_SHADOWS	= "Static_Projectors";
-const char *VALUE_NAME_TEXTURE_RES		= "Texture_Resolution";
-const char *VALUE_NAME_PARTICLE_DETAIL	= "Particle_Detail";
+const char *VALUE_NAME_DYN_LOD			= "DynamicLODBudget";
+const char *VALUE_NAME_STATIC_LOD		= "StaticLODBudget";
+const char *VALUE_NAME_DYN_SHADOWS		= "DynamicProjectors";
+const char *VALUE_NAME_SHADOW_MODE		= "ShadowMode";
+const char *VALUE_NAME_STATIC_SHADOWS	= "StaticProjectors";
+const char *VALUE_NAME_TEXTURE_RES		= "TextureResolution";
+const char *VALUE_NAME_PARTICLE_DETAIL	= "ParticleDetail";
 const char *VALUE_NAME_NPATCHES			= "NPatches";
 
 const int MAX_LOD_HIGH	= 10000;
