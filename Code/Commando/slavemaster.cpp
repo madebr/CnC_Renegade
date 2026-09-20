@@ -804,6 +804,7 @@ bool SlaveMasterClass::Create_Registry_Copies(void)
 		WWRELEASE_ERROR(("Failed to create a temporary file the registry clone"));
 		return false;
 	}
+	RegistryTempFile.Set_Remove_On_Close(false);
 
 	if (!OpenW3D::Get_Config().Save(RegistryTempFile)) {
 		WWRELEASE_ERROR(("Failed to save the registry to   a temporary file the registry clone"));
@@ -990,6 +991,9 @@ bool SlaveMasterClass::Create_Registry_Copies(void)
 			}
 		}
 	}
+
+	RegistryTempFile.Delete();
+
 	return true;
 }
 
