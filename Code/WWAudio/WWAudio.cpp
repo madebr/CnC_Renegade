@@ -1456,7 +1456,7 @@ WWAudioClass::Load_From_Registry
 		//
 		//	Read the 2D settings
 		//
-		is_stereo	= (registry.Get_Int (VALUE_NAME_IS_STEREO, true) == 1);
+		is_stereo	= (registry.Get_Bool (VALUE_NAME_IS_STEREO, true) == 1);
 		bits			= registry.Get_Int (VALUE_NAME_BITS, 16);
 		hertz			= registry.Get_Int (VALUE_NAME_HERTZ, 44100);
 
@@ -1526,7 +1526,7 @@ WWAudioClass::Save_To_Registry
 		//	Save the settings to the registry
 		//
 		registry.Set_String (VALUE_NAME_DEVICE_NAME, device_name);
-		registry.Set_Int (VALUE_NAME_IS_STEREO, is_stereo);
+		registry.Set_Bool (VALUE_NAME_IS_STEREO, is_stereo);
 		registry.Set_Int (VALUE_NAME_BITS, bits);
 		registry.Set_Int (VALUE_NAME_HERTZ, hertz);
 		registry.Set_Bool (VALUE_NAME_MUSIC_ENABLED,		music_enabled);
