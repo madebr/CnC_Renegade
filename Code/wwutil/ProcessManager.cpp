@@ -142,7 +142,7 @@ const char *Process::GetCurrentProcessPath()
 	if (!initialized) {
 #ifdef _WIN32
 		process_name_buffer.resize(MAX_PATH);
-		DWORD length = GetModuleFileNameA(NULL, process_name_buffer.data(), process_name_buffer.size());
+		DWORD length = GetModuleFileNameA(NULL, process_name_buffer.data(), static_cast<DWORD>(process_name_buffer.size()));
 		process_name_buffer.resize(length);
 		process_name = process_name_buffer.data();
 #elif defined(__linux__)
