@@ -217,7 +217,7 @@ bool LoadVideoSettingsFromRegistry(VideoSettings &settings)
     const int width = registry.Get_Int(VALUE_NAME_RENDER_DEVICE_WIDTH, -1);
     const int height = registry.Get_Int(VALUE_NAME_RENDER_DEVICE_HEIGHT, -1);
     const int bitDepth = registry.Get_Int(VALUE_NAME_RENDER_DEVICE_DEPTH, -1);
-    const int windowed = registry.Get_Int(VALUE_NAME_RENDER_DEVICE_WINDOWED, settings.windowed ? 1 : 0);
+    const int windowed = registry.Get_Bool(VALUE_NAME_RENDER_DEVICE_WINDOWED, settings.windowed );
     const int textureDepth = registry.Get_Int(VALUE_NAME_RENDER_DEVICE_TEXTURE_DEPTH, -1);
 
     if (width > 0) {
@@ -258,7 +258,7 @@ bool SaveVideoSettingsToRegistry(const VideoSettings &settings)
     registry.Set_Int(VALUE_NAME_RENDER_DEVICE_WIDTH, settings.width);
     registry.Set_Int(VALUE_NAME_RENDER_DEVICE_HEIGHT, settings.height);
     registry.Set_Int(VALUE_NAME_RENDER_DEVICE_DEPTH, settings.bitDepth);
-    registry.Set_Int(VALUE_NAME_RENDER_DEVICE_WINDOWED, settings.windowed ? 1 : 0);
+    registry.Set_Bool(VALUE_NAME_RENDER_DEVICE_WINDOWED, settings.windowed);
     registry.Set_Int(VALUE_NAME_RENDER_DEVICE_TEXTURE_DEPTH, settings.textureDepth);
     return true;
 }
@@ -435,7 +435,7 @@ static void InitializeAdapterSelection(IDirect3D9 **outD3D, D3DCAPS9 *outCaps, D
     renderRegistry.Set_Int(VALUE_NAME_RENDER_DEVICE_WIDTH, 800);
     renderRegistry.Set_Int(VALUE_NAME_RENDER_DEVICE_HEIGHT, 600);
     renderRegistry.Set_Int(VALUE_NAME_RENDER_DEVICE_DEPTH, 16);
-    renderRegistry.Set_Int(VALUE_NAME_RENDER_DEVICE_WINDOWED, 0);
+    renderRegistry.Set_Bool(VALUE_NAME_RENDER_DEVICE_WINDOWED, false);
     renderRegistry.Set_Int(VALUE_NAME_RENDER_DEVICE_TEXTURE_DEPTH, 16);
 
     displayFormat = D3DFMT_R5G6B5;

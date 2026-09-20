@@ -838,7 +838,7 @@ void AutoConfigSettings()
 		render_registry.Set_Int( VALUE_NAME_RENDER_DEVICE_WIDTH, 800 );
 		render_registry.Set_Int( VALUE_NAME_RENDER_DEVICE_HEIGHT, 600 );
 		render_registry.Set_Int( VALUE_NAME_RENDER_DEVICE_DEPTH, 16 );
-		render_registry.Set_Int( VALUE_NAME_RENDER_DEVICE_WINDOWED, 0 );
+		render_registry.Set_Bool( VALUE_NAME_RENDER_DEVICE_WINDOWED, false );
 		render_registry.Set_Int( VALUE_NAME_RENDER_DEVICE_TEXTURE_DEPTH, 16 );
 
 		d3dcaps=&tmp_caps;

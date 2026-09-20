@@ -1089,7 +1089,7 @@ public:
 		WWASSERT(registry.Is_Valid());
 		registry.Set_Int(VALUE_NAME_RENDER_DEVICE_WIDTH, 800);
 		registry.Set_Int(VALUE_NAME_RENDER_DEVICE_HEIGHT, 600);
-		registry.Set_Int(VALUE_NAME_RENDER_DEVICE_WINDOWED, true);
+		registry.Set_Bool(VALUE_NAME_RENDER_DEVICE_WINDOWED, true);
 		}
 
 		/*

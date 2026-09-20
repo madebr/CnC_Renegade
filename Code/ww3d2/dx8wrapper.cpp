@@ -1093,7 +1093,7 @@ bool DX8Wrapper::Registry_Save_Render_Device( const char *sub_key, int device, i
 	registry->Set_Int( VALUE_NAME_RENDER_DEVICE_WIDTH,	width );
 	registry->Set_Int( VALUE_NAME_RENDER_DEVICE_HEIGHT, height );
 	registry->Set_Int( VALUE_NAME_RENDER_DEVICE_DEPTH, depth );
-	registry->Set_Int( VALUE_NAME_RENDER_DEVICE_WINDOWED, windowed );
+	registry->Set_Bool( VALUE_NAME_RENDER_DEVICE_WINDOWED, windowed );
 	registry->Set_Int( VALUE_NAME_RENDER_DEVICE_TEXTURE_DEPTH, texture_depth );
 
 	delete registry;
