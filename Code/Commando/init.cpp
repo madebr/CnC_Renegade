@@ -1063,6 +1063,7 @@ bool Game_Init(void)
 	//
 	if (ServerSettingsClass::Is_Command_Line_Mode()) {
 		if (!ServerSettingsClass::Parse(false)) {
+			AutoRestart.Set_Restart_Flag(false);
 			Game_Shutdown();
 			return (false);
 		}

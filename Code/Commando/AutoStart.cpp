@@ -134,6 +134,7 @@ void AutoRestartClass::Restart_Game(void)
 		if (registry.Is_Valid()) {
 			GameMode = registry.Get_Int(REG_VALUE_AUTO_RESTART_TYPE, GameMode);
 		}
+		Set_Restart_Flag(false);
 	}
 }
 
@@ -396,6 +397,7 @@ void AutoRestartClass::Think(void)
 					RefPtr<WWOnline::Session> wol_session = WWOnline::Session::GetInstance(false);
 					ConsoleBox.Print("Downloading patch\n");
 					DlgDownload::DoDialog(TRANSLATE(IDS_WOL_DOWNLOAD), wol_session->GetPatchDownloadList(), true);
+					Set_Restart_Flag(true);
 					RestartState = STATE_DONE;
 					Observer<WWOnline::ServerError>::StopObserving();
 					break;
@@ -548,6 +550,7 @@ void AutoRestartClass::Think(void)
 			** Override gama settings in command line mode.
 			*/
 			if (ServerSettingsClass::Is_Command_Line_Mode()) {
+				The_Game()->IsAutoRestart.Set(true);
 				The_Game()->IsDedicated.Set(true);
 			}
 
@@ -863,6 +866,85 @@ void AutoRestartClass::ReceiveSignal(WolGameModeClass &game_mode)
 			}
 			ConsoleBox.Print("Failed to create channel\n");
 			RestartState = STATE_WAIT_CHANNEL_CREATE_RETRY;
+		}
+	}
+}
+
+
+
+/***********************************************************************************************
+ * AutoRestartClass::Set_Restart_Flag -- Set state of auto restart mode                        *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    New state                                                                         *
+ *                                                                                             *
+ * OUTPUT:   Nothing                                                                           *
+ *                                                                                             *
+ * WARNINGS: None                                                                              *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   11/5/2001 3:32PM ST : Created                                                             *
+ *=============================================================================================*/
+void AutoRestartClass::Set_Restart_Flag(bool enable)
+{
+	RegistryClass registry (APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
+	if (registry.Is_Valid ()) {
+		registry.Set_Int(REG_VALUE_AUTO_RESTART_FLAG, enable ? 1 : 0);
+
+		GameModeClass *game_mode = GameModeManager::Find("WOL");
+		if (game_mode && game_mode->Is_Active()) {
+			GameMode = 1;
+		} else {
+			game_mode = GameModeManager::Find("LAN");
+			if (game_mode && game_mode->Is_Active()) {
+				GameMode = 0;
+			}
+		}
+
+		if (enable) {
+			registry.Set_Int(REG_VALUE_AUTO_RESTART_TYPE, GameMode);
+			Set_Exit_On_Exception(true);
+		} else {
+			Set_Exit_On_Exception(false);
+		}
+
+		RegistryClass registry_too(WINDOWS_SUB_KEY_RUN_ONCE);
+		if (registry_too.Is_Valid()) {
+
+			if (enable) {
+				/*
+				** The the current path and build a path/file combo that points to the launcher.
+				*/
+				char path_to_exe[256];
+				char drive[_MAX_DRIVE];
+				char dir[_MAX_DIR];
+				char path[_MAX_PATH];
+				GetModuleFileNameA(ProgramInstance, path_to_exe, sizeof(path_to_exe));
+				_splitpath(path_to_exe, drive, dir, nullptr, nullptr);
+#ifdef FREEDEDICATEDSERVER
+				_makepath(path, drive, dir, "renegadeserver", "exe");
+#else  //FREEDEDICATEDSERVER
+				_makepath(path, drive, dir, "renegade", "exe");
+
+				char options[256];
+				options[0] = 0;
+				if (ServerSettingsClass::Is_Active()) {
+					sprintf(options, " /startserver=%s", ServerSettingsClass::Get_Settings_File_Name());
+				}
+
+				if (ConsoleBox.Is_Exclusive()) {
+					strcat(options, " /nodx");
+				}
+
+				strcat(path, options);
+#endif //FREEDEDICATEDSERVER
+				WWDEBUG_SAY(("Writing %s to RunOnce key\n", path));
+				registry_too.Set_String(WINDOWS_SUB_KEY_RUN_ONCE_APP, path);
+			} else {
+				WWDEBUG_SAY(("Removing RunOnce key\n"));
+				registry_too.Delete_Value(WINDOWS_SUB_KEY_RUN_ONCE_APP);
+			}
 		}
 	}
 }

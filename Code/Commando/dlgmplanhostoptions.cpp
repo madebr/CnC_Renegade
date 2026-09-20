@@ -667,8 +667,12 @@ MPLanHostAdvancedOptionsTabClass::On_Init_Dialog (void)
 	Enable_Dlg_Item(IDC_REMIX_TEAMS_CHECK, The_Game()->IsTeamChangingAllowed.Is_False());
 
 	//Check_Dlg_Button (IDC_TRUST_CLIENTS_CHECK,		The_Game ()->IsClientTrusted.Is_True ());
+#ifdef MULTIPLAYERDEMO
 	Enable_Dlg_Item(IDC_SERVER_RESTART_CHECK, false);
 	Check_Dlg_Button (IDC_SERVER_RESTART_CHECK, false);
+#else
+	Check_Dlg_Button (IDC_SERVER_RESTART_CHECK,		The_Game ()->IsAutoRestart.Is_True ());
+#endif // MULTIPLAYERDEMO
 
 	// Configure WOL settings
 	mIsWOLGame = GameModeManager::Find("WOL")->Is_Active();
@@ -720,6 +724,7 @@ MPLanHostAdvancedOptionsTabClass::On_Apply (void)
 	//
 	WWASSERT(PTheGameData != nullptr);
 	The_Game()->IsDedicated.Set (Is_Dlg_Button_Checked (IDC_DEDICATED_SERVER_CHECK));
+	The_Game()->IsAutoRestart.Set (Is_Dlg_Button_Checked (IDC_SERVER_RESTART_CHECK));
 	The_Game()->IsTeamChangingAllowed.Set (Is_Dlg_Button_Checked (IDC_TEAM_CHANGE_CHECK));
 	The_Game()->Set_QuickMatch_Server(Is_Dlg_Button_Checked(IDC_ALLOW_QUICKMATCH));
 	The_Game()->IsLaddered.Set (Is_Dlg_Button_Checked (IDC_LADDERED_CHECK));

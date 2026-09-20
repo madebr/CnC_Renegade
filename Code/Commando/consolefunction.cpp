@@ -3767,6 +3767,7 @@ public:
 
 		if (!IS_MISSION) {
 			if (AutoRestart.Is_Active()) {
+				AutoRestart.Set_Restart_Flag(false);
 				Set_Exit_On_Exception(true);
          	cGameData::Set_Manual_Exit(true);
 			} else {
@@ -3779,6 +3780,7 @@ public:
 						}
 
          			Print("Terminating game on demand...\n");
+						AutoRestart.Set_Restart_Flag(false);
 						Set_Exit_On_Exception(true);
          			cGameData::Set_Manual_Exit(true);
 					} else {
@@ -3789,6 +3791,7 @@ public:
 					** I_Am_Server may not report true if we just started up and we aren't a server yet.
 					*/
 					if (ConsoleBox.Is_Exclusive()) {
+						AutoRestart.Set_Restart_Flag(false);
 						Set_Exit_On_Exception(true);
          			cGameData::Set_Manual_Exit(true);
 					} else {
@@ -4280,6 +4283,7 @@ public:
 
 		if (!IS_MISSION) {
 			if (AutoRestart.Is_Active()) {
+				AutoRestart.Set_Restart_Flag(true);
 				Set_Exit_On_Exception(true);
          	cGameData::Set_Manual_Exit(true);
 			} else {
@@ -4292,6 +4296,7 @@ public:
 						}
 
          			Print("Restarting game on demand...\n");
+						AutoRestart.Set_Restart_Flag(true);
 						Set_Exit_On_Exception(true);
          			cGameData::Set_Manual_Exit(true);
 					} else {

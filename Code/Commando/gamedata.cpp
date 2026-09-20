@@ -161,6 +161,7 @@ cGameData::cGameData(void)	:
 
 	IsIntermission.Set(				false);
 	IsDedicated.Set(					false);
+	IsAutoRestart.Set(				false);
 	IsFriendlyFirePermitted.Set(	false);
 	IsTeamChangingAllowed.Set(		true);
 	IsPassworded.Set(					false);
@@ -223,6 +224,7 @@ cGameData& cGameData::operator=(const cGameData& rhs)
 	IsIntermission						= rhs.IsIntermission;
 
 	IsDedicated							= rhs.IsDedicated;
+	IsAutoRestart						= rhs.IsAutoRestart;
 	IsFriendlyFirePermitted			= rhs.IsFriendlyFirePermitted;
 	IsTeamChangingAllowed			= rhs.IsTeamChangingAllowed;
 	IsPassworded						= rhs.IsPassworded;
@@ -1055,6 +1057,9 @@ void cGameData::Load_From_Server_Config(LPCSTR config_file)
 	IsDedicated.Set(true);
 #endif //FREEDEDICATEDSERVER
 
+	b = p_ini->Get_Bool(	INI_SECTION_NAME, "IsAutoRestart",				IsAutoRestart.Get());
+	IsAutoRestart.Set(b);
+
 	b = p_ini->Get_Bool(	INI_SECTION_NAME, "IsPassworded",				IsPassworded.Get());
 	IsPassworded.Set(b);
 
@@ -1163,6 +1168,7 @@ void cGameData::Save_To_Server_Config(LPCSTR config_file)
    //p_ini->Put_Int(	   	INI_SECTION_NAME, "IntermissionTimeSeconds",	Get_Intermission_Time_Seconds());
    p_ini->Put_Int(			INI_SECTION_NAME, "Port",							Get_Port());
 	p_ini->Put_Bool(			INI_SECTION_NAME, "IsDedicated",					IsDedicated.Get());
+	p_ini->Put_Bool(			INI_SECTION_NAME, "IsAutoRestart",				IsAutoRestart.Get());
 	p_ini->Put_Bool(			INI_SECTION_NAME, "IsPassworded",				IsPassworded.Get());
 	p_ini->Put_Bool(			INI_SECTION_NAME, "IsQuickMatch",				IsQuickMatchServer.Get());
 	p_ini->Put_Bool(			INI_SECTION_NAME, "IsLaddered",					IsLaddered.Get());
