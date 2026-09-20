@@ -311,7 +311,7 @@ void SlaveMasterClass::Wait_For_Slave_Shutdown(void)
 				forced = true;
 				for (int i=0 ; i<NumSlaveServers ; i++) {
 					if (SlaveServers[i].ProcessInfo) {
-						WWDEBUG_SAY(("Terminating process %d due to timeout\n", SlaveServers[i].ProcessInfo->Pid()));
+						WWDEBUG_SAY(("Terminating process %d due to timeout\n", SlaveServers[i].ProcessInfo->Get_Pid()));
 						if (!SlaveServers[i].ProcessInfo->Kill()) {
 							WWDEBUG_SAY(("Failed to get process handle for termination - error code 0x%lx\n", GetLastError()));
 						}
@@ -598,7 +598,7 @@ void SlaveMasterClass::Startup_Slaves(void)
 								if (reg.Is_Valid()) {
 									char entry[128];
 									sprintf(entry, "%s%d", KEY_SLAVE_RUNNING_ID, i);
-									reg.Set_Int(entry, SlaveServers[i].ProcessInfo->Pid());
+									reg.Set_Int(entry, SlaveServers[i].ProcessInfo->Get_Pid());
 								}
 
 							} else {
