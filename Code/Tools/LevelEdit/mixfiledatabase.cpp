@@ -68,17 +68,16 @@ MixFileDatabaseClass::MixFileDatabaseClass (void)
 		//
 		//	Read the installation path from the registry
 		//
-		StringClass install_path;
-		const char * const RENEGADE_INSTALL_VALUE	= "InstallPath";
-		registry.Get_String (RENEGADE_INSTALL_VALUE, install_path);
+		StringClass game_dir;
+		const char * const RENEGADE_INSTALL_VALUE	= "GameDir";
+		registry.Get_String (RENEGADE_INSTALL_VALUE, game_dir);
 
-		if (install_path.Get_Length () > 0) {
+		if (game_dir.Get_Length () > 0) {
 
 			//
 			//	The mix files are contained in the data sub-directory
 			//
-			install_path	= ::Strip_Filename_From_Path (install_path);
-			MixFilePath		= ::Make_Path (install_path, "DATA");
+			MixFilePath.Format("%s/%s", game_dir.Peek_Buffer(), "DATA");
 		}
 	}
 
