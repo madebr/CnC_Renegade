@@ -69,7 +69,7 @@ MixFileDatabaseClass::MixFileDatabaseClass (void)
 		//	Read the installation path from the registry
 		//
 		StringClass install_path;
-		const char * const RENEGADE_INSTALL_VALUE	= "GameDir";
+		const char * const RENEGADE_INSTALL_VALUE	= "InstallPath";
 		registry.Get_String (RENEGADE_INSTALL_VALUE, install_path);
 
 		if (install_path.Get_Length () > 0) {
