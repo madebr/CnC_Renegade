@@ -395,6 +395,7 @@ static bool Video_Card_Driver_Check()
 		return true;
 	}
 	process->Wait();
+	OpenW3D::Reload_Config();
 	return process->Return_Code() == 0;
 }
 
