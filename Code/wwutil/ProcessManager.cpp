@@ -7,6 +7,12 @@
 #include <SDL3/SDL_timer.h>
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__linux__)
+#include <unistd.h>
+#endif
+
 #include "debug.h"
 #include <string>
 
@@ -139,20 +145,19 @@ const char *Process::GetCurrentProcessPath()
 		DWORD length = GetModuleFileNameA(NULL, process_name_buffer.data(), process_name_buffer.size());
 		process_name_buffer.resize(length);
 		process_name = process_name_buffer.data();
-#elif defiend(__linux__)
+#elif defined(__linux__)
 		process_name_buffer.resize(256);
 		StringClass proc_exe_path;
-		proc_exe.Format();
 		while (true) {
 			ssize_t path_length = readlink("/proc/self/exe", process_name_buffer.data(), process_name_buffer.size());
 			if (path_length == -1) {
 				process_name = nullptr;
 				break;
 			}
-			if (static_cast<size_t>(path_legnth) < process_name_buffer.size())
+			if (static_cast<size_t>(path_length) < process_name_buffer.size())
 			{
-				process_name_buffer.resize(static_cast<size_t>(path_legnth));
-				process_name = process_name.data();
+				process_name_buffer.resize(static_cast<size_t>(path_length));
+				process_name = process_name_buffer.data();
 				break;
 			}
 			process_name_buffer.resize(2 * process_name_buffer.size());
